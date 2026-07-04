@@ -1,5 +1,6 @@
 // Headless playtest — chạy: node test/sim.js
-// Kiểm: node/quote/item refs tồn tại, mọi ngày có >=1 choice, arc hoàn tất trước ngày 48, epilogue lắp được.
+// Dùng core.js THẬT (không mirror engine — hết sim-drift).
+// Kiểm: refs tồn tại, mọi ngày có >=1 đoạn văn + >=1 choice, arc hoàn tất trước ngày 48, epilogue lắp được.
 
 const fs = require("fs");
 const path = require("path");
@@ -8,9 +9,13 @@ const vm = require("vm");
 const src = ["data/arcs.js", "data/events.js", "data/quotes.js", "data/epilogue.js"]
   .map(f => fs.readFileSync(path.join(__dirname, "..", f), "utf8")).join("\n")
   + "\n;({ ARCS, ARC_STARTS, SEASON_EVENTS, EMPTY_DAY, QUOTES, ITEMS, YARD_LINES, EPILOGUE });";
-const { ARCS, ARC_STARTS, SEASON_EVENTS, EMPTY_DAY, QUOTES, ITEMS, YARD_LINES, EPILOGUE } = vm.runInNewContext(src, {}, { filename: "data-bundle" });
+const D = vm.runInNewContext(src, {}, { filename: "data-bundle" });
+const { ARCS, ARC_STARTS, SEASON_EVENTS, EMPTY_DAY, QUOTES, ITEMS, YARD_LINES, EPILOGUE } = D;
 
-const TOTAL_DAYS = 48, DPS = 12, SEASONS = ["xuan", "ha", "thu", "dong"];
+const createCore = require("../core.js");
+const C = createCore(D);
+const SEASONS = C.SEASONS;
+
 let failures = [];
 const fail = m => failures.push(m);
 
@@ -33,71 +38,45 @@ for (const s of SEASONS) {
   for (const k of ["tam", "duyen", "danh", "tinh", "none"]) if (!YARD_LINES[s][k]) fail(`YARD_LINES.${s}.${k} thiếu`);
   if (!EMPTY_DAY.title_by_season[s]) fail(`EMPTY_DAY title thiếu mùa ${s}`);
 }
+// core sanity: seededRand/weatherOf luôn hợp lệ cả 48 ngày
+for (let d = 1; d <= C.TOTAL_DAYS; d++) {
+  const r = C.seededRand(d);
+  if (!(r >= 0 && r < 1)) fail(`seededRand(${d}) = ${r} ngoài [0,1)`);
+  const w = C.weatherOf(d);
+  if (!["rain", "snow", "clear"].includes(w)) fail(`weatherOf(${d}) = '${w}' không hợp lệ`);
+}
 
-// ---------- sim engine (mirror game.js logic) ----------
-function makeState() {
-  return { day: 1, stats: { tam: 0, duyen: 0, danh: 0, tinh: 0 }, flags: {}, scheduled: ARC_STARTS.map(a => ({ ...a })), usedEvents: [], journal: [], items: [] };
-}
-function seasonOf(d) { return SEASONS[Math.min(3, Math.floor((d - 1) / DPS))]; }
-function hasFlag(S, f) {
-  if (f.startsWith("___")) { const m = f.match(/^___([a-z]+)(\d+)$/); return m ? S.stats[m[1]] >= +m[2] : false; }
-  return !!S.flags[f];
-}
-function condOk(S, o) {
-  if (o.if && !hasFlag(S, o.if)) return false;
-  if (o.ifNot && hasFlag(S, o.ifNot)) return false;
-  if (o.req) { const v = S.stats[o.req.stat] || 0; if (o.req.min !== undefined && v < o.req.min) return false; if (o.req.max !== undefined && v > o.req.max) return false; }
-  if (o.once && S.flags[o.once]) return false;
-  return true;
-}
-function todaysNode(S, rng) {
-  const due = S.scheduled.filter(s => s.day <= S.day).sort((a, b) => a.day - b.day);
-  if (due.length) { const p = due[0]; S.scheduled = S.scheduled.filter(s => s !== p); return { kind: "arc", id: p.node, node: ARCS[p.node] }; }
-  const season = seasonOf(S.day);
-  const pool = (SEASON_EVENTS[season] || []).filter(e => {
-    if (S.usedEvents.includes(e.id)) return false;
-    if (e.reqStat && (S.stats[e.reqStat.stat] || 0) < e.reqStat.min) return false;
-    if (e.reqFlag && !hasFlag(S, e.reqFlag)) return false;
-    return true;
-  });
-  if (pool.length) { const e = pool[Math.floor(rng() * pool.length)]; S.usedEvents.push(e.id); return { kind: "event", id: e.id, node: e }; }
-  return { kind: "empty", id: "empty", node: { title: EMPTY_DAY.title_by_season[season], paras: EMPTY_DAY.paras, choices: EMPTY_DAY.choices } };
-}
-function applyChoice(S, c) {
-  if (c.effects) for (const k in c.effects) S.stats[k] = (S.stats[k] || 0) + c.effects[k];
-  if (c.flags) c.flags.forEach(f => S.flags[f] = true);
-  if (c.once) S.flags[c.once] = true;
-  if (c.schedule) S.scheduled.push({ day: S.day + c.schedule.delay, node: c.schedule.node });
-  if (c.quote && !S.journal.includes(c.quote)) S.journal.push(c.quote);
-  if (c.item && !S.items.includes(c.item)) { S.items.push(c.item); S.flags["item_" + c.item] = true; }
-  if (c.kill) { S.flags[c.kill + "_dead"] = true; S.scheduled = S.scheduled.filter(s => !s.node.startsWith(c.kill + "_")); }
-}
+// ---------- playthrough qua core thật ----------
 function mulberry(seed) { return () => { seed |= 0; seed = seed + 0x6D2B79F5 | 0; let t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
 
 function playthrough(pickFn, seed, label) {
-  const S = makeState(), rng = mulberry(seed);
-  const seen = [];
-  for (; S.day <= TOTAL_DAYS; S.day++) {
-    const t = todaysNode(S, rng);
-    seen.push(t.id);
-    const paras = t.node.paras.filter(p => condOk(S, p));
+  const S = C.newState();
+  const rng = seed === null ? undefined : mulberry(seed); // undefined → core dùng seededRand(day) như browser thật
+  for (; S.day <= C.TOTAL_DAYS; S.day++) {
+    const cur = C.pickToday(S, rng);
+    const t = C.resolveNode(S, cur);
+    if (!t.node) { fail(`[${label}] ngày ${S.day}: resolveNode('${cur.id}') không có node`); continue; }
+    const paras = C.visibleParas(S, t.node);
     if (!paras.length) fail(`[${label}] ngày ${S.day} node '${t.id}': 0 đoạn văn hiển thị (flags=${Object.keys(S.flags)})`);
-    const vis = t.node.choices.filter(c => condOk(S, c));
+    const vis = C.visibleChoices(S, t.node);
     if (!vis.length) { fail(`[${label}] ngày ${S.day} node '${t.id}': 0 choice hiển thị (flags=${Object.keys(S.flags).join(",")})`); continue; }
-    applyChoice(S, pickFn(vis, rng));
+    C.applyChoice(S, pickFn(vis, rng || (() => C.seededRand(S.day))));
   }
   if (S.scheduled.length) fail(`[${label}] hết năm còn node chưa nổ: ${S.scheduled.map(s => s.node + "@" + s.day).join(", ")}`);
-  const arcBlocks = EPILOGUE.arcs.filter(b => condOk(S, b));
+  const arcBlocks = EPILOGUE.arcs.filter(b => C.condOk(S, b));
   const mocDone = arcBlocks.some(b => (b.if || "").startsWith("moc"));
   const thuDone = arcBlocks.some(b => (b.if || "").startsWith("thu_end") || b.if === "thu_dead");
   const coDone = arcBlocks.some(b => (b.if || "").startsWith("co_end") || b.if === "co_dead");
   if (!mocDone) fail(`[${label}] epilogue: không có block nào cho arc Mộc (flags=${Object.keys(S.flags).filter(f => f.startsWith("moc")).join(",")})`);
   if (!thuDone) fail(`[${label}] epilogue: không có block nào cho arc Trần Thức (flags=${Object.keys(S.flags).filter(f => f.startsWith("thu")).join(",")})`);
   if (!coDone) fail(`[${label}] epilogue: không có block nào cho arc ông lão cờ (flags=${Object.keys(S.flags).filter(f => f.startsWith("co")).join(",")})`);
+  const ep = C.epilogueParas(S);
+  if (ep.length < 4) fail(`[${label}] epilogue quá ngắn: ${ep.length} đoạn`);
   return S;
 }
 
 // ---------- run ----------
+playthrough(v => v[0], null, "first-choice-browserRNG"); // đúng RNG browser sẽ dùng
 playthrough(v => v[0], 1, "first-choice");
 playthrough(v => v[v.length - 1], 2, "last-choice");
 let totQ = 0, totI = 0, runs = 300;
@@ -112,4 +91,4 @@ if (failures.length) {
   [...new Set(failures)].slice(0, 40).forEach(f => console.error("  - " + f));
   process.exit(1);
 }
-console.log("✓ Tất cả playthrough sạch (2 deterministic + 300 random).");
+console.log("✓ Tất cả playthrough sạch (3 deterministic + 300 random) — chạy qua core.js thật.");

@@ -1,0 +1,15 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"></head><body>
+<pre id="out"></pre>
+<script src="../data/arcs.js"></script><script src="../data/events.js"></script><script src="../data/quotes.js"></script><script src="../data/epilogue.js"></script><script src="../core.js"></script>
+<script>
+const C = createCore({ ARCS, ARC_STARTS, SEASON_EVENTS, EMPTY_DAY, QUOTES, ITEMS, YARD_LINES, EPILOGUE });
+const S = C.newState(); const log = [];
+for (; S.day <= C.TOTAL_DAYS; S.day++) {
+  const t = C.resolveNode(S, C.pickToday(S));
+  const vis = C.visibleChoices(S, t.node);
+  log.push(`d${S.day} ${t.id} choices=${vis.length}`);
+  C.applyChoice(S, vis[0]);
+}
+log.push('EPILOGUE ' + C.epilogueParas(S).length + ' paras; ' + C.statsLine(S));
+document.getElementById('out').textContent = log.join('\n');
+</script></body></html>
