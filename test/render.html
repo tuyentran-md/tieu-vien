@@ -1,0 +1,21 @@
+<!DOCTYPE html><html lang="vi"><head><meta charset="UTF-8"><link rel="stylesheet" href="../style.css"></head>
+<body data-season="xuan">
+<div id="title-screen"><div class="title-inner"><button id="btn-begin" class="btn-main">Bắt đầu</button></div></div>
+<div id="game" class="hidden"><header><span id="hud-day"></span><nav><button id="btn-journal">Sổ Nhỏ</button><button id="btn-courtyard">Trong sân</button><button id="btn-reset">↺</button></nav></header>
+<main id="scene"><p id="yard-line" class="yard"></p><h2 id="event-title"></h2><div id="event-text"></div><div id="choices"></div><p id="result" class="hidden"></p><p id="notes"></p><button id="next-day" class="btn-main hidden">Qua ngày</button></main></div>
+<div id="epilogue" class="hidden"><div class="ep-inner"><h2>Đêm cuối năm</h2><div id="epilogue-text"></div><p id="epilogue-stats" class="dim"></p><button id="btn-again" class="btn-main">Qua thêm một năm nữa</button></div></div>
+<div id="modal" class="hidden"><div class="modal-box"><h3 id="modal-title"></h3><div id="modal-list"></div><button id="modal-close">Đóng</button></div></div>
+<script src="../data/arcs.js"></script><script src="../data/events.js"></script><script src="../data/quotes.js"></script><script src="../data/epilogue.js"></script><script src="../game.js"></script>
+<script>
+window.addEventListener("DOMContentLoaded", () => {
+  localStorage.removeItem("tieuvien_save_v1");
+  setTimeout(() => {
+    document.getElementById("btn-begin").click();          // vào ngày 1
+    document.querySelector(".choice").click();             // chọn choice đầu
+    document.getElementById("next-day").click();           // qua ngày 2
+    document.title = "OK:" + document.getElementById("hud-day").textContent
+      + "|" + document.getElementById("event-title").textContent
+      + "|choices=" + document.querySelectorAll(".choice").length;
+  }, 300);
+});
+</script></body></html>

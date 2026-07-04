@@ -1,0 +1,9 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"><link rel="stylesheet" href="../style.css"></head>
+<body><div id="stage" style="height:300px;position:relative;overflow:hidden"></div>
+<script src="../scene.js"></script>
+<script>
+const q = new URLSearchParams(location.search);
+Scene.update({season:q.get("s")||"xuan", weather:q.get("w")||"clear", items:(q.get("i")||"").split(",").filter(Boolean)});
+Scene.build(document.getElementById("stage"));
+Scene.update({season:q.get("s")||"xuan", weather:q.get("w")||"clear", items:(q.get("i")||"").split(",").filter(Boolean)});
+</script></body></html>

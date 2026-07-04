@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dưới Núi Có Một Tiểu Viện</title>
+<meta name="description" content="Một tiểu viện dưới chân núi. Một ấm trà cũ. Những người ghé qua, rồi đi tiếp. Bạn không cứu cả thiên hạ — bạn chỉ chọn hôm nay nên nói gì, giữ gì, buông gì.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body data-season="xuan">
+
+  <!-- Title -->
+  <div id="title-screen">
+    <div class="title-inner">
+      <div class="title-mark">山</div>
+      <h1>Dưới Núi<br>Có Một Tiểu Viện</h1>
+      <p class="title-sub">Một mái hiên, một gốc cây, một ấm trà cũ.<br>
+      Người ghé qua, rồi đi tiếp.<br>
+      Bạn chỉ chọn hôm nay nên nói gì, giữ gì, buông gì.</p>
+      <button id="btn-begin" class="btn-main">Bắt đầu một năm</button>
+    </div>
+  </div>
+
+  <!-- Game -->
+  <div id="game" class="hidden">
+    <div id="stage"></div>
+    <div id="game-col">
+    <header>
+      <span id="hud-day"></span>
+      <nav>
+        <button id="btn-journal" title="Sổ Nhỏ Dưới Núi">Sổ Nhỏ</button>
+        <button id="btn-courtyard" title="Vật trong sân">Trong sân</button>
+        <button id="btn-sound" title="Âm thanh">♪</button>
+        <button id="btn-reset" title="Bắt đầu lại">↺</button>
+      </nav>
+    </header>
+
+    <main id="scene">
+      <p id="yard-line" class="yard"></p>
+      <h2 id="event-title"></h2>
+      <div id="event-text"></div>
+      <div id="choices"></div>
+      <p id="result" class="hidden"></p>
+      <p id="notes"></p>
+      <button id="next-day" class="btn-main hidden">Qua ngày</button>
+    </main>
+    </div>
+  </div>
+
+  <!-- Epilogue -->
+  <div id="epilogue" class="hidden">
+    <div class="ep-inner">
+      <h2>Đêm cuối năm</h2>
+      <div id="epilogue-text"></div>
+      <p id="epilogue-stats" class="dim"></p>
+      <button id="btn-again" class="btn-main">Qua thêm một năm nữa</button>
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div id="modal" class="hidden">
+    <div class="modal-box">
+      <h3 id="modal-title"></h3>
+      <div id="modal-list"></div>
+      <button id="modal-close">Đóng</button>
+    </div>
+  </div>
+
+<script src="scene.js"></script>
+<script src="audio.js"></script>
+<script src="data/arcs.js"></script>
+<script src="data/events.js"></script>
+<script src="data/quotes.js"></script>
+<script src="data/epilogue.js"></script>
+<script src="game.js"></script>
+</body>
+</html>
