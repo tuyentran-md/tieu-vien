@@ -62,7 +62,7 @@
     $("#next-day").classList.add("hidden");
 
     if (S.phase === "result" && S.chosen) showResult(S.chosen);
-    if (world) world.setDay({ season: season(), weather: weather(), items: S.items.slice() });
+    if (world) world.setDay({ day: S.day, season: season(), weather: weather(), phase: S.phase, items: S.items.slice(), kind: current && current.kind });
   }
 
   function showResult(ch) {
@@ -194,10 +194,9 @@
     if (!ensureDay()) return;
 
     if (!world) {
-      world = TieuVienWorld.boot($("#stage"), { state: () => S });
-    } else {
-      world.setDay({ season: season(), weather: weather(), items: S.items.slice() });
+      world = InkScene.boot($("#stage"));
     }
+    world.setDay({ day: S.day, season: season(), weather: weather(), phase: S.phase, items: S.items.slice(), kind: current && current.kind });
 
     if (unlockAudio && Ambient) Ambient.boot(season(), weather());
     syncSoundButton();

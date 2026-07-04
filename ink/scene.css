@@ -1,0 +1,146 @@
+/* ===== Sơn thủy sống — scene layer ===== */
+
+#stage { height: clamp(240px, 46vh, 470px); }
+
+#ink-root { position: absolute; inset: 0; overflow: hidden;
+  background: linear-gradient(180deg, var(--sky-a) 0%, var(--sky-b) 34%, var(--sky-c) 62%, var(--sky-d) 100%);
+  transition: background 1.6s; }
+
+/* ---- season palettes ---- */
+#ink-root[data-season="xuan"] {
+  --sky-a:#dfe4dd; --sky-b:#e9e9df; --sky-c:#f0ecdd; --sky-d:#e6e2d2;
+  --mtn1:#aeb9b2; --mtn2:#98a69e; --mtn3:#7f9088; --ridge:#6d7f74; --pine:#5a6c60;
+  --ground:#e3ddc8; --ground2:#dcd5bd; --stone:#c5bfa8; --stoneline:#b3ac95;
+  --bamboo:#75846f; --bamboo2:#5f7060; --clump:#68795f;
+  --fol-a:#77876b; --fol-b:#8b9a7c; --lamp:#e8c988; --mist:rgba(240,240,234,.85);
+}
+#ink-root[data-season="ha"] {
+  --sky-a:#dce4d2; --sky-b:#e7ead6; --sky-c:#eeeadb; --sky-d:#e4dfcb;
+  --mtn1:#a3b2a6; --mtn2:#8c9e90; --mtn3:#71877a; --ridge:#5e7465; --pine:#4d6355;
+  --ground:#ddd6b9; --ground2:#d5cbaa; --stone:#c0b9a0; --stoneline:#aca489;
+  --bamboo:#6c8060; --bamboo2:#566b4f; --clump:#5d7355;
+  --fol-a:#5d7355; --fol-b:#71875f; --lamp:#e8c988; --mist:rgba(238,240,228,.55);
+}
+#ink-root[data-season="thu"] {
+  --sky-a:#e7e3d4; --sky-b:#ece5d2; --sky-c:#f0e7d2; --sky-d:#e7dcc3;
+  --mtn1:#b3ada0; --mtn2:#a29a89; --mtn3:#8b8272; --ridge:#7c7460; --pine:#6a6a55;
+  --ground:#e4d9bb; --ground2:#dccfa9; --stone:#c6bda2; --stoneline:#b1a689;
+  --bamboo:#7f8467; --bamboo2:#6a6f52; --clump:#8a835d;
+  --fol-a:#b5945a; --fol-b:#c7a86b; --lamp:#eac581; --mist:rgba(242,238,226,.7);
+}
+#ink-root[data-season="dong"] {
+  --sky-a:#dee2e4; --sky-b:#e6e8e8; --sky-c:#edecea; --sky-d:#e2e2df;
+  --mtn1:#aab4b8; --mtn2:#96a2a8; --mtn3:#7e8b92; --ridge:#6f7d84; --pine:#5d6b70;
+  --ground:#e8e8e4; --ground2:#dfe0da; --stone:#c3c2b8; --stoneline:#aeada2;
+  --bamboo:#6d7a72; --bamboo2:#59665e; --clump:#5f6c64;
+  --fol-a:#8a958c; --fol-b:#9aa49b; --lamp:#eec87e; --mist:rgba(238,240,240,.9);
+}
+
+.ink-svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+
+/* palette hookups */
+.mtn1 { fill: var(--mtn1); } .mtn2 { fill: var(--mtn2); } .mtn3 { fill: var(--mtn3); }
+.ridge { fill: var(--ridge); } .pine { fill: var(--pine); }
+.ground-far { fill: var(--ground); } .ground-near { fill: var(--ground2); }
+.stone { fill: var(--stone); stroke: var(--stoneline); }
+.bamboo-stalk { stroke: var(--bamboo); } .bamboo-twig { stroke: var(--bamboo2); }
+.bamboo-clump { fill: var(--clump); }
+.fol-a { fill: var(--fol-a); } .fol-b { fill: var(--fol-b); }
+.lamp { fill: var(--lamp); animation: ink-breathe 7s ease-in-out infinite; }
+svg .mtn1, svg .mtn2, svg .mtn3, svg .ridge, svg .pine,
+svg .ground-far, svg .ground-near, svg .fol-a, svg .fol-b { transition: fill 1.6s; }
+
+/* winter: bare tree + snow patches + mai bloom */
+.bare, .snowpatch { opacity: 0; transition: opacity 1.6s; }
+#ink-root[data-season="dong"] .bare, #ink-root[data-season="dong"] .snowpatch { opacity: 1; }
+#ink-root[data-season="dong"] .fol-a, #ink-root[data-season="dong"] .fol-b { opacity: .42; }
+.fol-a, .fol-b { transition: fill 1.6s, opacity 1.6s; }
+.mai-bloom { opacity: 0; transition: opacity 1.6s; }
+#ink-root[data-season="dong"] .mai-bloom { opacity: 1; }
+
+/* ---- mist ---- */
+.ink-mist { position: absolute; left: -30%; width: 160%; height: 17%; border-radius: 50%;
+  background: radial-gradient(ellipse at center, var(--mist) 0%, rgba(240,240,234,0) 70%);
+  animation: ink-drift 46s ease-in-out infinite; pointer-events: none; }
+.ink-mist.m1 { top: 28%; animation-duration: 52s; }
+.ink-mist.m2 { top: 41%; animation-duration: 38s; animation-delay: -18s; opacity: .8; }
+.ink-mist.m3 { top: 22%; animation-duration: 64s; animation-delay: -30s; opacity: .6; }
+@keyframes ink-drift { 0%,100% { transform: translateX(-6%); } 50% { transform: translateX(6%); } }
+@keyframes ink-breathe { 0%,100% { opacity: .85; } 50% { opacity: .55; } }
+
+/* ---- tea steam ---- */
+.ink-steam { position: absolute; left: 76.5%; top: 64%; width: 3px; height: 5%;
+  border-radius: 3px; filter: blur(1.6px); pointer-events: none;
+  background: linear-gradient(180deg, rgba(250,250,244,0), rgba(250,250,244,.8) 60%, rgba(250,250,244,0));
+  animation: ink-steam 5s ease-in-out infinite; }
+@keyframes ink-steam { 0% { transform: translateY(0) scaleY(.9); opacity: 0; }
+  30% { opacity: .8; } 100% { transform: translateY(-140%) scaleY(1.35); opacity: 0; } }
+
+/* ---- particles ---- */
+.ink-fx { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+.fx-p { position: absolute; top: -4%; animation: ink-fall linear infinite; }
+.fx-petal { width: 7px; height: 5px; border-radius: 60% 40% 55% 45%; background: #d8b0b4; opacity: .75; }
+.fx-leaf { width: 8px; height: 5px; border-radius: 70% 30% 60% 40%; background: #b98d4f; opacity: .8; }
+.fx-snow { width: 5px; height: 5px; border-radius: 50%; background: #fbfbf8; opacity: .9;
+  animation-name: ink-fall-sway; }
+.fx-rain { width: 1.5px; height: 16px; background: linear-gradient(rgba(160,175,180,0), rgba(160,175,180,.75));
+  animation-name: ink-rain; }
+@keyframes ink-fall { 0% { transform: translate(0,-3vh) rotate(0); }
+  100% { transform: translate(-16vh,58vh) rotate(340deg); } }
+@keyframes ink-fall-sway { 0% { transform: translate(0,-3vh); } 25% { transform: translate(2vh,12vh); }
+  50% { transform: translate(-1vh,27vh); } 75% { transform: translate(2vh,42vh); }
+  100% { transform: translate(0,58vh); } }
+@keyframes ink-rain { 0% { transform: translate(0,-6vh); } 100% { transform: translate(-3vh,60vh); } }
+
+/* ---- day-mood overlays ---- */
+.ink-dusk { position: absolute; inset: 0; background: #ffcf96; mix-blend-mode: multiply;
+  opacity: 0; transition: opacity 1.4s; pointer-events: none; }
+.ink-night { position: absolute; inset: 0; background: #1d2126;
+  opacity: 0; transition: opacity .8s; pointer-events: none; }
+#ink-root[data-phase="result"] .ink-dusk { opacity: .22; }
+#ink-root[data-phase="result"] .lamp { animation: none; opacity: .95; }
+#ink-root[data-phase="night"] .ink-night { opacity: .96; }
+
+/* ---- grain + vignette ---- */
+.ink-grain { position: absolute; inset: 0; pointer-events: none; mix-blend-mode: multiply; opacity: .5;
+  background-image: radial-gradient(rgba(120,110,90,.06) 1px, transparent 1.4px);
+  background-size: 5px 5px; }
+.ink-vignette { position: absolute; inset: 0; pointer-events: none;
+  background: radial-gradient(ellipse at 50% 42%, transparent 55%, rgba(72,76,70,.18) 100%); }
+
+/* ---- NPC ---- */
+#ink-npc { opacity: 0; }
+#ink-npc.on { opacity: 1; }
+#ink-npc g.walker { transition: transform 4.6s ease-in-out; }
+#ink-npc { transition: opacity .9s; cursor: pointer; }
+#ink-npc.glow { filter: drop-shadow(0 0 5px rgba(240,220,160,.9)); }
+
+/* ---- yard items ---- */
+.yi { opacity: 0; transition: opacity 1s; pointer-events: none; }
+.yi.on { opacity: 1; pointer-events: auto; cursor: pointer; }
+.cat-tail { transform-origin: left center; animation: ink-tail 4s ease-in-out infinite; }
+@keyframes ink-tail { 0%,100% { transform: rotate(0); } 50% { transform: rotate(-14deg); } }
+
+/* ---- hotspots ---- */
+.ink-hots { position: absolute; inset: 0; pointer-events: none; }
+.ink-hot { position: absolute; pointer-events: auto; cursor: pointer;
+  background: none; border: none; padding: 0; }
+.ink-hot .dot { position: absolute; left: 50%; top: 50%; width: 12px; height: 12px;
+  transform: translate(-50%,-50%); border-radius: 50%; opacity: 0;
+  background: radial-gradient(circle, rgba(245,230,190,.95) 0%, rgba(245,230,190,0) 70%); }
+#ink-root.glowing .ink-hot .dot { opacity: 1; animation: ink-pulse 2.6s ease-in-out infinite; }
+@keyframes ink-pulse { 0%,100% { transform: translate(-50%,-50%) scale(1); opacity: .5; }
+  50% { transform: translate(-50%,-50%) scale(2.1); opacity: .95; } }
+
+/* ---- item tooltip ---- */
+.ink-tip { position: absolute; max-width: 60%; padding: .55rem .9rem; z-index: 5;
+  background: rgba(246,243,232,.96); border: 1px solid #c9c2ad; border-radius: 3px;
+  color: #4b4a40; font-size: .86rem; font-style: italic; line-height: 1.5;
+  box-shadow: 0 2px 10px rgba(60,58,45,.18);
+  opacity: 0; pointer-events: none; transition: opacity .4s; }
+.ink-tip.on { opacity: 1; }
+
+@media (prefers-reduced-motion: reduce) {
+  .ink-mist, .fx-p, .ink-steam, .lamp, .cat-tail { animation: none !important; }
+  #ink-npc g.walker { transition: none; }
+}
