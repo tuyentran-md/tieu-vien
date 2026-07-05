@@ -33,9 +33,11 @@
     h_gieng: "villager",
     x_ganh_nuoc: "villager",
     t_lathu: "master",
-    d_baotuyet: "master",
+    d_baotuyet: "traveler",
   };
-  const MOUNTAIN_LEAVE = { moc_5: true, co_4: true };
+  // node có "thư đặt lại ngoài hiên": khách ghé, để thư, đi luôn
+  const LETTER_DROP = { t_lathu: true };
+  const MOUNTAIN_LEAVE = { co_4: true };
 
   function save() {
     try { localStorage.setItem(SAVE_KEY, JSON.stringify(S)); } catch (e) {}
@@ -84,6 +86,7 @@
     $("#hud-day").textContent = C.hudLine(S);
     $("#yard-line").textContent = C.yardLine(S);
     $("#yard-line").classList.remove("hidden");
+    setHint("");
 
     $("#event-title").textContent = "";
     $("#event-text").innerHTML = "";
@@ -93,8 +96,34 @@
     $("#next-day").classList.add("hidden");
     $("#next-day").disabled = false;
 
-    if (S.phase === "result" && S.chosen) showResult(S.chosen);
-    if (world) world.setDay({ day: S.day, season: season(), weather: weather(), phase: S.phase, items: S.items.slice(), kind: current && current.kind });
+    if (S.phase === "result" && S.chosen) {
+      renderCurrentText();
+      showResult(S.chosen);
+    }
+    if (world) {
+      world.setDay({
+        day: S.day,
+        season: season(),
+        weather: weather(),
+        phase: S.phase,
+        items: S.items.slice(),
+        kind: current && current.kind,
+        focus: focusFor(current && current.id, current && current.kind),
+      });
+    }
+  }
+
+  function renderCurrentText() {
+    if (!current || !current.node) return;
+    setHint("");
+    $("#event-title").textContent = current.node.title;
+    const text = $("#event-text");
+    text.innerHTML = "";
+    C.visibleParas(S, current.node).forEach(p => {
+      const el = document.createElement("p");
+      el.textContent = p.text;
+      text.appendChild(el);
+    });
   }
 
   function roleFor(id) {
@@ -102,6 +131,15 @@
     if (ROLE_BY_ID[id]) return ROLE_BY_ID[id];
     const prefix = id.split("_")[0];
     return ROLE_BY_PREFIX[prefix] || "villager";
+  }
+
+  function focusFor(id, kind) {
+    if (kind === "empty") return "center";
+    if (!id) return "center";
+    if (/^moc_|^x_mang|^x_hatgiong|^h_kiemkhach|^d_ruou|^d_baotuyet/.test(id)) return "gate";
+    if (/^co_|^t_covu/.test(id)) return "tree";
+    if (/^thu_|^t_lathu|^t_tangnhan|^x_haithuoc|^h_xinchu/.test(id)) return "porch";
+    return "center";
   }
 
   function activeToken(token) {
@@ -122,6 +160,11 @@
     }
   }
 
+  function setHint(text) {
+    const hint = $("#action-hint");
+    if (hint) hint.textContent = text || "";
+  }
+
   function startSceneFlow() {
     dayToken += 1;
     cancelTypewriter();
@@ -135,6 +178,7 @@
     const ctx = {
       token,
       role,
+      letterDrop: !!LETTER_DROP[current.id],
       npcReady: false,
       masterReady: false,
       dialogStarted: false,
@@ -143,6 +187,7 @@
     world.onTap(id => handleSceneTap(id, token));
 
     if (S.phase === "result" && S.chosen) {
+      setHint("");
       world.setHotspotsGlow(false);
       world.setPhase("result");
       return;
@@ -150,19 +195,27 @@
 
     world.setPhase("day");
     if (current.kind === "empty") {
+      setHint("Sân vắng. Chạm vào một điểm sáng trong sân để bắt đầu ngày.");
+      $("#event-title").textContent = current.node.title;
       world.setHotspotsGlow(true);
       return;
     }
 
+    setHint("Có người đang bước lên lối cổng. Đợi họ vào sân.");
     world.setHotspotsGlow(false);
-    world.npcArrive(role, () => {
+    world.npcArrive(ctx.letterDrop ? "master" : role, () => {
       if (!activeToken(token) || S.phase !== "day" || ctx.dialogStarted) return;
       ctx.npcReady = true;
-      if (role === "master") {
+      if (ctx.letterDrop) {
         ctx.masterReady = true;
+        $("#event-title").textContent = current.node.title;
+        setHint("Người ấy đặt lại một phong thư ngoài hiên, rồi đi. Chạm vào bậc hiên để đọc.");
         setTimeout(() => {
           if (activeToken(token) && S.phase === "day") world.npcLeave(false);
         }, 2000);
+      } else {
+        $("#event-title").textContent = current.node.title;
+        setHint("Ngoài sân có người đợi. Chạm vào bóng người ấy để mở lời.");
       }
     });
   }
@@ -186,12 +239,19 @@
     }
 
     if (current.kind !== "empty") {
-      if (dayCtx.role === "master" && (id === "porch" || id === "buc_thu" || id === "buc_thu_vodanh")) {
+      if (dayCtx.letterDrop && (id === "porch" || id === "buc_thu" || id === "buc_thu_vodanh")) {
         if (dayCtx.masterReady) openDialog(token);
         return;
       }
       if (id === "npc") {
-        if (dayCtx.npcReady) openDialog(token);
+        if (dayCtx.npcReady) {
+          openDialog(token);
+        } else if (world.npcHurry && world.npcHurry()) {
+          // khách vào sân ngay — callback arrive đã set npcReady
+          if (dayCtx.npcReady && !dayCtx.letterDrop) openDialog(token);
+        } else {
+          setHint("Đợi người ấy bước hẳn vào sân.");
+        }
         return;
       }
     }
@@ -217,6 +277,7 @@
 
     dayCtx.dialogStarted = true;
     dialogOpen = true;
+    setHint("");
     if (world) world.setHotspotsGlow(false);
 
     $("#event-title").textContent = current.node.title;
@@ -314,6 +375,7 @@
   }
 
   function showResult(ch, playUnlock) {
+    setHint("");
     const r = $("#result");
     r.textContent = ch.result;
     r.classList.remove("hidden");

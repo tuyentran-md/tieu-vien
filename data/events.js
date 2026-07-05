@@ -15,7 +15,7 @@ const SEASON_EVENTS = {
       choices: [
         {
           label: "“Có. Nhưng lên tới nơi mới biết nó không phải chỗ cao nhất.”",
-          result: "Con bé nhíu mày, chưa hiểu. Nó sẽ hiểu vào một lúc nào đó không phải hôm nay. Vậy là đủ.",
+          result: "Con bé nhíu mày, nhìn lên núi lần nữa, rồi nhìn bạn. Nó không hỏi thêm, chỉ mang cái nhíu mày ấy xuống dốc, cùng với rổ không.",
           effects: { tam: 1 },
           flags: ["gap_conbe"],
         },
@@ -49,7 +49,7 @@ const SEASON_EVENTS = {
         },
         {
           label: "Cất vào ngăn kéo, đợi xem đã.",
-          result: "Hạt giống nằm trong ngăn kéo. Thỉnh thoảng mở ra thấy nó, bạn lại nghĩ: để mai. Chữ 'mai' này không phải chữ 'mai' kia.",
+          result: "Hạt giống nằm trong ngăn kéo. Thỉnh thoảng mở ra thấy nó, bạn lại nghĩ: để mai. Chữ “mai” này không phải chữ “mai” kia.",
           effects: {},
           flags: ["cat_hat"],
         },
@@ -70,14 +70,14 @@ const SEASON_EVENTS = {
           quote: "q_khongchac",
         },
         {
-          label: "Đưa cô mượn cuốn sách thuốc cũ trong thư phòng.",
-          result: "Cô nhận sách bằng hai tay, cẩn thận bọc vào vải dầu chống mưa trước cả khi bọc gùi thuốc. Người biết quý sách thì tin được.",
+          label: "Vào thư phòng, lấy cuốn sách thuốc cũ đưa cô mượn.",
+          result: "Cô nhận sách bằng hai tay, bọc vào vải dầu trước cả khi bọc gùi thuốc. Mưa chưa dứt hẳn cô đã xuống tới khúc quành — một tay giữ gùi, một tay ôm sách trước ngực.",
           effects: { duyen: 1 },
           flags: ["muon_sach_thuoc"],
         },
         {
           label: "Pha trà gừng, ngồi nghe cô kể về mẹ.",
-          result: "Mưa tạnh lúc nào không hay. Cô gái xuống núi, bước chân nhẹ hơn lúc chạy vào. Người ta đôi khi chỉ cần một chỗ để kể.",
+          result: "Mưa tạnh lúc nào không hay. Chuyện về mẹ còn dở thì trời đã hửng. Cô xuống núi, bước chân nhẹ hơn lúc chạy vào; chén trà gừng cạn tới đáy.",
           effects: { tinh: 1, duyen: 1 },
         },
       ],
@@ -92,13 +92,13 @@ const SEASON_EVENTS = {
       choices: [
         {
           label: "“Còn lại ông. Còn bến thì còn người về.”",
-          result: "Ông lái đò cười khà, tay vẫn vá lưới: “Ừ. Thì tôi chèo tiếp.” Có những nghề giữ làng mà không ai gọi tên.",
+          result: "Ông lái đò cười khà, tay vẫn vá lưới: “Ừ. Thì tôi chèo tiếp.” Mũi kim trong tay ông lại lên xuống, đều như nhịp chèo.",
           effects: { duyen: 1 },
           quote: "q_dixa",
         },
         {
           label: "Ngồi im nghe, không đáp.",
-          result: "Có những câu hỏi người ta hỏi trời, mình chen vào làm gì. Ông lái đò vá xong tấm lưới thì tự vui trở lại.",
+          result: "Câu ấy ông hỏi trời chứ không hỏi bạn. Bạn ngồi thêm một lát. Vá xong tấm lưới, ông tự huýt sáo trở lại — tiếng huýt đứt quãng theo mũi kim.",
           effects: { tinh: 1 },
         },
       ],
@@ -117,12 +117,12 @@ const SEASON_EVENTS = {
       choices: [
         {
           label: "“Trâu ăn mạ thì đền mạ. Rào thấp thì cùng đắp lại rào.”",
-          result: "Hai người im. Cãi từ sáng vì mỗi bên chỉ nói một nửa chuyện. Ghép hai nửa lại thì hết cãi. Họ xuống núi, còn kịp về đắp rào trước tối.",
+          result: "Hai người im. Người mất mạ gãi đầu trước, người có trâu gãi đầu theo. Họ xuống núi khi nắng còn cao, kịp đắp lại rào trước tối.",
           effects: { danh: 1, tam: 1 },
         },
         {
           label: "Rót hai chén nước vối, bảo uống xong rồi nói.",
-          result: "Nước vối uống chậm. Uống xong, người có trâu tự nói trước: “Thôi tôi đền.” Nhiều chuyện không cần xử, chỉ cần chậm lại.",
+          result: "Nước vối nóng, muốn uống phải chậm. Chén cạn, người có trâu đặt xuống trước: “Thôi, tôi đền.” Người kia cầm ấm, rót cho ông ta thêm một chén.",
           effects: { tinh: 1, danh: 1 },
           quote: "q_chamlai",
         },
@@ -147,7 +147,7 @@ const SEASON_EVENTS = {
         },
         {
           label: "Cho gánh, nhưng hẹn giờ: sáng sớm và chập tối.",
-          result: "Người làng giữ đúng hẹn, còn tự cắt cử nhau. Nước cho đi có nề nếp thì chảy được lâu.",
+          result: "Người làng giữ đúng hẹn, còn tự cắt cử nhau, nhà nào gánh hôm nào. Tiếng đòn gánh đầu ngày cuối ngày, dần thành một thứ đồng hồ mới của tiểu viện.",
           effects: { danh: 1, tinh: 1 },
         },
         {
@@ -173,12 +173,12 @@ const SEASON_EVENTS = {
         },
         {
           label: "Múc nước dội cho tỉnh.",
-          result: "Hắn choàng dậy, tay chụp cán kiếm theo phản xạ — rồi thấy gáo nước, thấy bạn, thấy mình. Hắn cười méo xẹo, chắp tay xin lỗi, đi thẳng. Người còn biết ngượng là người còn cứu được.",
+          result: "Hắn choàng dậy, tay chụp cán kiếm theo phản xạ — rồi thấy gáo nước, thấy bạn, thấy mình. Hắn cười méo xẹo, chắp tay một cái rất sâu, đi thẳng. Vệt nước trên nền đá khô dần theo bóng hắn xuống dốc.",
           effects: { tam: 1 },
         },
         {
           label: "Để yên. Say ở đâu tỉnh ở đó.",
-          result: "Hắn nằm tới xế chiều, tỉnh dậy tự đi. Trước khi đi, hắn sửa lại đôi dép cho ngay ngắn — của hắn, và của bạn để ở thềm. Người lạ thật.",
+          result: "Hắn nằm tới xế chiều, tỉnh dậy tự đi. Trước khi đi, hắn sửa lại đôi dép cho ngay ngắn — của hắn, và của bạn để ở thềm.",
           effects: { tinh: 1 },
         },
       ],
@@ -189,7 +189,7 @@ const SEASON_EVENTS = {
       reqStat: { stat: "danh", min: 3 },
       paras: [
         { text: "Một vị mặc áo the từ huyện lên, kẻ hầu gánh theo lễ vật. Nghe đồn dưới núi có cao nhân, ông ta lên xin một bức chữ treo phòng khách, “nói thách bao nhiêu cũng được.”" },
-        { text: "Đây là cái giá của việc được người ta biết đến: người ta biết đến một thứ mà mình chưa từng nhận là mình." },
+        { text: "Hai chữ “cao nhân” leo dốc núi nhanh hơn người. Trong sân, chum nước vẫn là chum nước, ấm trà vẫn là ấm trà cũ." },
       ],
       choices: [
         {
@@ -205,7 +205,7 @@ const SEASON_EVENTS = {
         },
         {
           label: "Từ chối tiếp, cáo bận.",
-          result: "Vị khách về, không giận — người như thế lại càng tin dưới núi có cao nhân. Đồn đại từ đó thêm một tầng. Có những cánh cửa càng đóng, người ta càng muốn gõ.",
+          result: "Vị khách về, không giận — người như thế lại càng tin dưới núi có cao nhân. Đồn đại từ đó dày thêm một tầng, như rêu sau mưa.",
           effects: { tinh: -1, danh: 1 },
         },
       ],
@@ -225,14 +225,14 @@ const SEASON_EVENTS = {
       choices: [
         {
           label: "Cố nhớ xem là ai. Bao nhiêu người đã qua sân này?",
-          result: "Nhớ không ra. Người qua sân nhiều như lá qua mùa. Hóa ra có những việc mình làm mà không biết là mình đã làm.",
+          result: "Nhớ không ra. Người qua sân nhiều như lá qua mùa. Bạn rót một chén nước, đặt lên thềm — chỗ vẫn hay đặt cho khách qua đường — rồi ngồi nhìn nó nguội.",
           effects: { tam: 1 },
           quote: "q_chennuoc",
           item: "buc_thu_vodanh",
         },
         {
           label: "Không cần nhớ. Gấp thư, để lên kệ sách.",
-          result: "Là ai không quan trọng. Quan trọng là con dốc ấy đã có người qua được. Phong thư nằm trên kệ, mỏng như một chiếc lá.",
+          result: "Bạn gấp thư theo đúng nếp cũ của nó, để lên kệ. Phong thư mỏng như một chiếc lá — vậy mà kệ sách, từ hôm đó, nhìn có vẻ đầy hơn.",
           effects: { tinh: 1 },
           quote: "q_chennuoc",
           item: "buc_thu_vodanh",
@@ -248,20 +248,20 @@ const SEASON_EVENTS = {
       ],
       choices: [
         {
-          label: "Viết giúp bà một lá thư, gửi theo người buôn mạn ngược.",
+          label: "Mài mực, viết giúp bà một lá thư gửi theo người buôn mạn ngược.",
           result: "Bà đọc không thạo, bạn viết, bà nói. Nói đến câu cuối — “về hay không cũng được, nhớ mặc ấm” — thì bà nghẹn. Thư gửi đi theo chuyến hàng cuối tuần.",
           effects: { duyen: 1, tam: 1 },
           flags: ["thu_gui_me"],
         },
         {
           label: "“Câu đó bà phải tự đi nói. Thư không chở nổi.”",
-          result: "Bà đứng lặng hồi lâu, rồi hỏi đường lên mạn ngược. Đường xa. Nhưng có những đoạn đường chính là lời nhắn.",
+          result: "Bà đứng lặng hồi lâu, rồi hỏi đường lên mạn ngược — hỏi kỹ, từng chặng một, như người sắp đi thật. Hôm ấy bà xuống núi sớm hơn lúc lên.",
           effects: { tam: 1 },
           quote: "q_loinhan",
         },
         {
           label: "Mời bà nghỉ chân, nghe hết chuyện ba năm.",
-          result: "Chuyện ba năm kể trong một buổi chiều. Kể xong, chính bà tự thấy: “Chắc tôi phải đi tìm nó thật, ông nhỉ.” Người ta thường tự biết câu trả lời, chỉ thiếu người ngồi nghe câu hỏi.",
+          result: "Chuyện ba năm kể hết một buổi chiều. Cuối cùng bà tự nói, không hẳn với bạn: “Chắc tôi phải đi tìm nó thật.” Chén trà trước mặt bà nguội từ lâu, chưa vơi một nửa.",
           effects: { tinh: 1, duyen: 1 },
           quote: "q_ngoiim",
         },
@@ -299,7 +299,7 @@ const SEASON_EVENTS = {
       choices: [
         {
           label: "“Người thì đi rồi. Ván cờ thì vẫn đây. Ông ngồi không?”",
-          result: "Ông khách ngồi xuống, đánh với bạn một ván. Đánh xong ông ta thở ra: “Thắng thua giờ nhẹ như lá. Hồi đó sao mình cay thế nhỉ.” Có những món nợ chỉ cần đủ năm tháng là tự xóa.",
+          result: "Ông khách ngồi xuống, đánh với bạn một ván. Đánh xong ông ta thở ra: “Thắng thua giờ nhẹ như lá. Hồi đó sao mình cay thế nhỉ.” Ông xin chép thế tàn cuộc vào một tờ giấy, gấp làm tư, cất vào ngực áo.",
           effects: { duyen: 1, tinh: 1 },
           quote: "q_thangthua",
         },
@@ -325,14 +325,14 @@ const SEASON_EVENTS = {
       choices: [
         {
           label: "“Hôm nay quang mây. Con tự nhìn xem.”",
-          result: "Nó nhìn rất lâu, rồi reo: “Có! Mà nhỏ xíu à!” — Ừ. Đỉnh núi nào nhìn từ xa cũng nhỏ xíu. Chỉ có đường lên là dài.",
+          result: "Nó nhìn rất lâu, rồi reo: “Có! Mà nhỏ xíu à!” — “Ừ. Đỉnh núi nào nhìn từ xa cũng nhỏ xíu. Chỉ có đường lên là dài.”",
           effects: { duyen: 1, tam: 1 },
           quote: "q_dinhnui",
         },
         {
           label: "“Câu này con hỏi từ mùa xuân. Sao con nhớ dai vậy?”",
           if: "gap_conbe",
-          result: "Nó nghiêng đầu: “Tại chưa ai trả lời đàng hoàng hết á.” Bạn bật cười. Trẻ con giữ câu hỏi bền hơn người lớn giữ câu trả lời.",
+          result: "Nó nghiêng đầu: “Tại chưa ai trả lời đàng hoàng hết á.” Bạn bật cười, khói khoai bay ngang mặt. Dưới thung lũng, khói bếp nhà nó cũng vừa lên.",
           effects: { duyen: 1 },
           quote: "q_cauhoi",
         },
@@ -354,12 +354,12 @@ const SEASON_EVENTS = {
       choices: [
         {
           label: "Nấu nồi cháo nóng, nhường chăn.",
-          result: "Sáng ra trời quang. Người cha vét túi đòi gửi tiền, bạn không nhận. Ông ta bèn bổ hết đống củi sau nhà rồi mới chịu xuống núi. Ơn nghĩa của người lao động là thế — trả bằng lưng áo.",
+          result: "Sáng ra trời quang. Người cha vét túi đòi gửi tiền, bạn không nhận. Ông ta bèn bổ hết đống củi sau nhà rồi mới chịu xuống núi. Đứa con gánh đỡ nửa gánh hàng của cha, ngoái lại chào tới ba lần.",
           effects: { duyen: 1, danh: 1 },
         },
         {
           label: "Chỉ chỗ ngủ, còn mình thức canh bếp lửa.",
-          result: "Đêm đó bạn ngồi canh lửa tới sáng, nghe gió đập mái hiên. Có người ngủ được vì có người thức. Xưa nay vẫn vậy.",
+          result: "Đêm đó bạn ngồi canh lửa tới sáng, nghe gió đổi giọng ba lần trên mái. Hai cha con ngủ say, người con mê ngủ còn cười. Củi trong bếp cháy suốt đêm, đỏ một màu rất bền.",
           effects: { tam: 1, tinh: 1 },
           quote: "q_canhlua",
         },
@@ -402,13 +402,13 @@ const SEASON_EVENTS = {
       choices: [
         {
           label: "“Chum nước đó tôi để cho ai qua đường cũng uống được. Không riêng ông.”",
-          result: "Hắn cười lớn: “Thì thế mới quý!” Uống hết vò rượu, hắn xuống núi, dáng đi vững. Cứu một người đôi khi chỉ tốn một chum nước — và không biết mình đã cứu.",
+          result: "Hắn cười lớn: “Thì thế mới quý!” Vò rượu cạn thì trăng cũng lên. Hắn xuống núi, bước chân vững; ngang qua chum nước còn múc một gáo, uống như để chào.",
           effects: { duyen: 1, tam: 1 },
           quote: "q_chumnuoc",
         },
         {
           label: "Nâng chén: “Vì sư huynh của ông.”",
-          result: "Hắn khựng lại, rồi nâng chén bằng cả hai tay, uống cạn. Không khóc. Nhưng chén sau hắn rót đầy hơn, đặt ra mép bàn, không ai uống. Rượu cuối năm là để rót cho cả người vắng mặt.",
+          result: "Hắn khựng lại, rồi nâng chén bằng cả hai tay, uống cạn. Không khóc. Nhưng chén sau hắn rót đầy hơn, đặt ra mép bàn, không ai uống. Tuyết ngoài hiên rơi dày thêm một lớp.",
           effects: { duyen: 1, tinh: 1 },
         },
       ],
@@ -432,26 +432,26 @@ const EMPTY_DAY = {
   choices: [
     {
       label: "Đọc sách trong thư phòng.",
-      result: "Đọc hết một cuốn cũ, thấy một câu hay, chép ra giấy dán cạnh án thư. Chữ trong sách là của người xưa, nhưng lúc nào dùng là chuyện của mình.",
+      result: "Đọc hết một cuốn cũ. Gặp một câu hay, chép ra mảnh giấy, dán cạnh án thư. Mực khô chậm; ngoài hiên, ngày cũng khô chậm như thế.",
       effects: { tam: 1 },
       flags: ["doc_sach"],
     },
     {
       label: "Vá lại mái hiên trước khi mùa mưa bão tới.",
       once: "va_maihien",
-      result: "Loay hoay nửa ngày, tay xước hai chỗ, nhưng mái hiên chắc lại rồi. Việc hôm nay làm, đêm nào đó sẽ có người cảm ơn — mà mình không nghe thấy.",
+      result: "Loay hoay nửa ngày, xước hai chỗ trên tay, mái hiên chắc lại rồi. Đứng dưới hiên nhìn lên, chỗ mới vá đậm màu hơn chỗ cũ — như một miếng vá trên vai áo.",
       effects: {},
       flags: ["va_maihien"],
     },
     {
       label: "Bày bàn cờ, đánh một mình một ván.",
-      result: "Cầm quân đen đi một nước, xoay bàn, cầm quân trắng nghĩ cách trả. Đánh cờ một mình không phải để thắng — để nghe mình nghĩ.",
+      result: "Cầm quân đen đi một nước, xoay bàn, ngồi sang phía bên kia nghĩ cách trả. Được nửa ván thì quên mất mình đang cầm bên nào. Trời chiều xuống chậm.",
       effects: { tam: 1 },
       flags: ["danh_co_mot_minh"],
     },
     {
       label: "Ngồi ở hiên, nhìn trời, không làm gì cả.",
-      result: "Một ngày không làm gì, nhìn từ ngoài giống một ngày bỏ đi. Nhìn từ trong thì khác.",
+      result: "Ngồi từ lúc trà còn nóng tới lúc ấm nguội hẳn. Mây qua núi mấy lượt, không đám nào giống đám nào. Chuyện đó, ngoài bạn ra, không ai biết.",
       effects: { tinh: 1 },
     },
   ],

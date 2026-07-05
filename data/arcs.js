@@ -2,6 +2,9 @@
 // Node schema:
 // { title, paras:[{text, if?:flag, ifNot?:flag}], choices:[{label, if?, ifNot?, req?:{stat,min}, result, effects?, flags?, schedule?:{node,delay}, quote?, item?, kill?:arcId }] }
 // effects: {tam,duyen,danh,tinh} ; schedule.delay tính từ ngày hiện tại.
+//
+// Giọng văn: hình ảnh đi trước, kết luận nhường cho người chơi.
+// Result để dư âm ở vật, thời tiết, nhịp tay, chỗ im lặng — không giải nghĩa.
 
 const ARC_STARTS = [
   { day: 1, node: "moc_1" },
@@ -16,38 +19,38 @@ const ARCS = {
   // ============================================================
 
   moc_1: {
-    title: "Thiếu niên ngoài cửa",
+    title: "Bóng nhỏ ngoài cổng",
     paras: [
-      { text: "Từ sáng sớm đã có một đứa trẻ đứng ngoài cửa. Áo vá ở vai, chân đất, tay cầm một nhánh trúc đã tước hết lá." },
-      { text: "Nó đứng đến khi bạn ra sân mới dám lên tiếng:" },
-      { text: "“Học kiếm… có thể không bị bắt nạt nữa không?”" },
+      { text: "Sương còn nằm ngang lối đá. Ngoài cổng, một đứa trẻ đứng từ lúc bếp chưa đỏ lửa; áo vá ở vai, chân đất, hai tay giữ một nhánh trúc đã tước sạch lá." },
+      { text: "Bạn mở cổng. Nó lùi nửa bước, như sợ tiếng then cửa cũng có thể làm mình sai." },
+      { text: "Mãi một lúc sau, nó mới nhìn vào khoảng sân sau lưng bạn: “Học kiếm… có thể không bị bắt nạt nữa không?”" },
     ],
     choices: [
       {
-        label: "Dạy nó một đường kiếm ngay hôm nay.",
-        result: "Nó học rất nhanh. Nhanh đến mức, khi ra về, bước chân nó đã khác lúc đến.",
+        label: "Nhận nhánh trúc, bảo nó thử một đường trước sân.",
+        result: "Nhánh trúc đi qua tay nó một lần đã thành một vệt rất thẳng. Đứa trẻ mừng quá, quên cả vết đất ở gót chân. Lúc nó xuống dốc, sân vẫn còn tiếng áo quệt qua hàng trúc.",
         effects: { danh: 1 },
         flags: ["moc_som"],
         schedule: { node: "moc_2a", delay: 9 },
       },
       {
-        label: "Đưa nó cây rìu, chỉ đống củi sau nhà.",
-        result: "Nó nhìn cây rìu, nhìn bạn, rồi im lặng đi ra sau nhà. Tiếng chẻ củi vang đến chiều.",
+        label: "Dẫn nó ra sau nhà, đặt cây rìu bên đống củi.",
+        result: "Nó nhìn cây rìu, rồi nhìn hai bàn tay mình. Một lát sau, tiếng củi tách ra trong sương sớm — khô, gọn, tiếng sau chắc hơn tiếng trước.",
         effects: { tam: 1 },
         flags: ["moc_cui"],
         schedule: { node: "moc_2b", delay: 9 },
       },
       {
-        label: "Đưa nó thanh kiếm gỗ, không nói gì.",
-        result: "Thiếu niên ôm kiếm gỗ rời đi. Ngoài sân, lá trúc rơi rất chậm.",
+        label: "Lấy thanh kiếm gỗ cũ trên hiên, trao mà không giảng giải.",
+        result: "Nó đỡ thanh kiếm bằng cả hai tay, nghiêm trang như nhận một thứ nặng hơn gỗ. Suốt quãng dốc xuống núi, nó không đổi tay lấy một lần. Sương trên lối đá tan lúc nào không hay.",
         effects: { duyen: 1 },
         flags: ["moc_go"],
         item: "kiem_go_trao",
         schedule: { node: "moc_2c", delay: 9 },
       },
       {
-        label: "“Khi nào biết vì sao muốn học kiếm, hãy quay lại.”",
-        result: "Nó cúi đầu, không cãi. Bóng nó nhỏ dần trên đường núi.",
+        label: "Rót một chén nước, hỏi nó muốn cầm kiếm để làm gì.",
+        result: "Nó cúi đầu rất thấp. Câu trả lời mắc ở cổ, chưa ra được. Bạn để chén nước trên bậc đá; đến khi nó đi rồi, trong chén vẫn còn một vòng sương mỏng.",
         effects: { tinh: 1 },
         flags: ["moc_ve"],
         schedule: { node: "moc_2d", delay: 11 },
@@ -60,28 +63,28 @@ const ARCS = {
   moc_2a: {
     title: "Mộc quay lại, mắt sáng",
     paras: [
-      { text: "Mộc chạy lên núi, chưa tới cửa đã gọi. Nó vừa thắng thằng lớn nhất đám hay chặn đường nó." },
+      { text: "Chưa tới cổng đã nghe tiếng nó gọi. Mộc chạy một mạch lên dốc núi mà không mệt — nó vừa thắng thằng lớn nhất trong đám hay chặn đường nó." },
       { text: "“Chỉ một đường thôi! Nó ngã ngồi luôn!” — nó kể lại ba lần, mỗi lần tay vung cao hơn một chút." },
-      { text: "Bạn nhận ra: nó không kể chuyện hết bị bắt nạt. Nó kể chuyện thắng." },
+      { text: "Chén nước bạn rót nguội dần trên bậc thềm. Nó mải kể. Câu “từ nay hết bị chặn đường” — không thấy nó nhắc tới." },
     ],
     choices: [
       {
         label: "“Rồi sao nữa?” — hỏi, và chỉ hỏi vậy.",
-        result: "Nó khựng lại giữa chừng câu kể. Hình như chưa ai hỏi nó câu đó.",
+        result: "Nó khựng giữa câu kể, tay còn vung dở trên không. Hình như chưa ai hỏi nó câu đó bao giờ. Nó ngồi xuống bậc thềm, cầm chén nước lên, quên cả uống.",
         effects: { tam: 1 },
         flags: ["moc_khung"],
         schedule: { node: "moc_3", delay: 10 },
       },
       {
-        label: "Dạy tiếp đường thứ hai.",
-        result: "Nó học đường thứ hai còn nhanh hơn đường thứ nhất. Bạn thấy vui, và thấy một chút gì đó không yên.",
+        label: "Gọi nó ra giữa sân, dạy tiếp đường thứ hai.",
+        result: "Đường thứ hai nó bắt còn nhanh hơn đường thứ nhất. Nhánh trúc vút qua, lá trong sân dạt ra một vệt. Bạn đứng xem, vui được nửa buổi; nửa còn lại không gọi được tên.",
         effects: { danh: 1 },
         flags: ["moc_kieu"],
         schedule: { node: "moc_3", delay: 10 },
       },
       {
         label: "“Thằng bé đó ngã, có ai đỡ nó dậy không?”",
-        result: "Mộc im. Lúc về, nó quên cả chào. Nhưng đi được mấy bước thì quay đầu lại nhìn.",
+        result: "Mộc im bặt. Lúc về nó quên cả chào, đi được mươi bước lại ngoái đầu nhìn — như định hỏi gì, rồi thôi.",
         effects: { tam: 1, duyen: 1 },
         flags: ["moc_khung"],
         schedule: { node: "moc_3", delay: 10 },
@@ -92,21 +95,21 @@ const ARCS = {
   moc_2b: {
     title: "Đống củi sau nhà",
     paras: [
-      { text: "Chín ngày, Mộc lên núi chín lần. Không hỏi kiếm nữa. Chẻ củi, gánh nước, quét lá." },
-      { text: "Hôm nay củi đã hết. Nó đứng giữa sân, hai tay chai, hỏi:" },
+      { text: "Chín ngày, Mộc lên núi đủ chín lần. Không nhắc gì đến kiếm nữa. Chẻ củi, gánh nước, quét lá; áo ướt mồ hôi rồi khô lại ngay trên lưng." },
+      { text: "Sáng nay củi hết. Nó đứng giữa sân, hai bàn tay đã lên chai, hỏi:" },
       { text: "“Con chẻ hết củi rồi. Giờ… con còn phải làm gì nữa?”" },
     ],
     choices: [
       {
         label: "“Con thấy tay mình khác gì chín ngày trước?”",
-        result: "Nó xòe hai bàn tay ra nhìn rất lâu. “Chắc hơn,” nó nói. Bạn gật đầu, đưa nó thanh kiếm gỗ.",
+        result: "Nó xòe hai bàn tay, nhìn rất lâu, như nhìn tay của ai khác. “Chắc hơn,” nó nói. Bạn vào hiên, lấy thanh kiếm gỗ xuống, đặt vào giữa hai bàn tay ấy.",
         effects: { tam: 1, duyen: 1 },
         flags: ["moc_kien"],
         item: "kiem_go_trao",
         schedule: { node: "moc_3", delay: 10 },
       },
       {
-        label: "Bắt đầu dạy nó thật.",
+        label: "Không nói gì, ra giữa sân đứng thế, chờ nó đứng theo.",
         result: "Đường kiếm đầu tiên, nó vung như chẻ củi. Không đẹp. Nhưng chắc.",
         effects: { tam: 1 },
         flags: ["moc_kien"],
@@ -131,8 +134,8 @@ const ARCS = {
     ],
     choices: [
       {
-        label: "Nhận lời. Sửa từng lỗi một, từ cách đứng.",
-        result: "Buổi đầu tiên, bạn chỉ sửa cho nó mỗi cách đứng. Nó không phàn nàn một câu.",
+        label: "Gật đầu, dẫn nó ra sân. Buổi đầu chỉ sửa cách đứng.",
+        result: "Cả buổi sáng chỉ có một chuyện: đứng cho vững. Nó không phàn nàn một câu. Đến trưa, dấu hai bàn chân nó in giữa sân đã sâu và thẳng.",
         effects: { duyen: 1, tam: 1 },
         flags: ["moc_tro"],
         schedule: { node: "moc_3", delay: 10 },
@@ -149,24 +152,24 @@ const ARCS = {
   },
 
   moc_2d: {
-    title: "Nó có quay lại không",
+    title: "Mười một ngày",
     paras: [
       { text: "Mười một ngày. Con đường núi trước cửa vẫn vắng.", ifNot: "___duyen2" },
       { text: "Chiều nay, có bóng người nhỏ đứng dưới gốc cây — Mộc. Nó không gõ cửa, chỉ đặt ở bậc thềm một bó rau, rồi đứng đó.", if: "___duyen2" },
       { text: "Bạn ra sân. Nó nói, mắt nhìn xuống: “Con nghĩ rồi. Con muốn học kiếm… không phải để đánh lại tụi nó. Con muốn tụi nó nhìn con kiểu khác.”", if: "___duyen2" },
-      { text: "Có thể nó đã tìm được câu trả lời ở nơi khác. Có thể nó vẫn đang tìm. Cũng có thể, câu hỏi của bạn đã đóng một cánh cửa mà bạn tưởng là mở.", ifNot: "___duyen2" },
+      { text: "Chiều nào quét sân, đến khúc nhìn ra con dốc, tay chổi cũng chậm lại một nhịp. Chén nước hôm ấy cất đi lâu rồi; câu hỏi thì chưa cất được.", ifNot: "___duyen2" },
     ],
     choices: [
       {
         label: "“Nhìn kiểu khác — là kiểu gì?”",
         if: "___duyen2",
-        result: "“Là… không phải sợ. Là nể.” Nó nói xong tự thấy chưa đúng, cau mày. Bạn quyết định bắt đầu dạy nó — từ chính chỗ cau mày đó.",
+        result: "“Là… không phải sợ. Là nể.” Nói xong nó tự cau mày, thấy vẫn chưa đúng. Bạn nhặt bó rau trên thềm, bảo nó mang vào bếp. Học kiếm, bắt đầu từ sáng mai.",
         effects: { duyen: 1, tam: 1 },
         flags: ["moc_hieu"],
         schedule: { node: "moc_3", delay: 9 },
       },
       {
-        label: "Nhận nó, không hỏi gì thêm.",
+        label: "Đẩy cổng mở rộng thêm, nghiêng đầu về phía sân.",
         if: "___duyen2",
         result: "Nó thở ra một hơi rất dài, như đã nín từ mười một ngày trước.",
         effects: { duyen: 1 },
@@ -176,7 +179,7 @@ const ARCS = {
       {
         label: "Nhìn con đường vắng thêm một lát, rồi vào nhà.",
         ifNot: "___duyen2",
-        result: "Có những hạt gieo xuống không nảy mầm ở sân nhà mình. Bạn chép một dòng vào sổ, rồi thôi.",
+        result: "Gió lật mấy tờ lá khô qua lối đá, không có bước chân nào theo sau. Tối đó bạn chép vào sổ một dòng, gấp sổ, thổi đèn.",
         effects: { tinh: 1 },
         quote: "q_hat",
         kill: "moc",
@@ -189,7 +192,7 @@ const ARCS = {
   moc_3: {
     title: "Chuyện dưới chợ phiên",
     paras: [
-      { text: "Người gánh hàng lên núi kể: hôm chợ phiên, đám trẻ làng bên gây sự, đánh một đứa bé bán bánh." },
+      { text: "Người gánh hàng lên núi kể chuyện chợ phiên: đám trẻ làng bên gây sự, đánh một đứa bé bán bánh." },
       { text: "Mộc có ở đó.", },
       { text: "Nghe nói nó xông vào rất nhanh, đánh trả rất rát — cho tới khi người lớn kéo ra. Đứa bị đánh đầu tiên thì chạy thoát từ lâu.", if: "moc_kieu" },
       { text: "Nghe nói nó không đánh. Nó đứng chắn trước đứa bé bán bánh, ăn trọn mấy quyền, không lùi. Đám kia đánh chán thì bỏ đi.", ifNot: "moc_kieu" },
@@ -197,8 +200,8 @@ const ARCS = {
     ],
     choices: [
       {
-        label: "Lấy thuốc, bôi cho nó. Không hỏi.",
-        result: "Nó ngồi im cho bạn bôi thuốc. Được nửa chừng thì kể hết, tự kể, không cần ai hỏi.",
+        label: "Lấy hũ thuốc trong thư phòng, ngồi xuống bôi cho nó. Không hỏi.",
+        result: "Nó ngồi im cho bạn bôi thuốc. Được nửa chừng, nó tự kể, kể hết, không đợi ai hỏi. Thuốc bôi xong thì chuyện cũng vừa xong.",
         effects: { duyen: 1, tinh: 1 },
         schedule: { node: "moc_4", delay: 13 },
       },
@@ -251,7 +254,7 @@ const ARCS = {
       },
       {
         label: "“Nó có căn cơ thật. Ông dạy được nhiều hơn tôi.” — nói thật lòng.",
-        result: "Người võ quán nhìn bạn một lúc, cái nhìn của người gặp được kẻ không tranh. Mộc thì quay mặt đi. Hôm sau, nó xuống huyện.",
+        result: "Người võ quán nhìn bạn một lúc lâu, rồi chắp tay — cái chắp tay của người gặp được kẻ không tranh. Mộc thì quay mặt đi. Hôm sau, nó xuống huyện.",
         effects: { tam: 1, danh: 1 },
         flags: ["moc_dihuyen_tot"],
         schedule: { node: "moc_5", delay: 11 },
@@ -273,7 +276,7 @@ const ARCS = {
     paras: [
       { text: "Tuyết xuống từ đêm qua, phủ mỏng trên mái hiên." },
       { text: "Mộc lên núi từ sớm, quét lối đi từ cổng vào thềm rồi mới gõ cửa. Nó đã cao hơn hồi mùa xuân gần nửa cái đầu. Nó xin bạn một việc: mùa xuân tới, cho nó dẫn thằng bé bán bánh dưới chợ lên theo học — “nó bị bắt nạt, giống con hồi đó.”", if: "moc_olai" },
-      { text: "Mộc từ huyện về thăm nhà, ghé tiểu viện. Áo võ quán mới, đi đứng đã ra dáng. Nó đặt lên bàn một gói trà — thứ trà đắt hơn mọi thứ trong tiểu viện này. “Thầy dưới đó dạy nhanh lắm,” nó nói, rồi im. Cái im của người thấy nhanh chưa chắc là đủ.", if: "moc_dihuyen_tot" },
+      { text: "Mộc từ huyện về thăm nhà, ghé tiểu viện. Áo võ quán mới, đi đứng đã ra dáng. Nó đặt lên bàn một gói trà — thứ trà đắt hơn mọi thứ trong tiểu viện này. “Thầy dưới đó dạy nhanh lắm,” nó nói, rồi im, tay xoay xoay cái chén chưa uống.", if: "moc_dihuyen_tot" },
       { text: "Có tiếng gõ cửa. Mộc — áo võ quán, mặt già đi. Nó đứng ngoài thềm, không dám vào hẳn. “Con xuống đó mới biết… ở đây thầy dạy con cái gì.” Nó đặt lên bậc thềm một gói trà, cúi đầu thật thấp, rồi về trong tuyết.", if: "moc_dihuyen" },
     ],
     choices: [
@@ -289,7 +292,7 @@ const ARCS = {
       {
         label: "Pha đúng gói trà nó mang tới, hai thầy trò uống.",
         if: "moc_dihuyen_tot",
-        result: "Trà ngon thật. Uống được nửa chén, Mộc nói: “Mùa xuân con xin nghỉ mấy hôm, lên đây chẻ củi.” Bạn không hỏi vì sao. Không cần.",
+        result: "Trà ngon thật. Uống được nửa chén, Mộc nói: “Mùa xuân con xin nghỉ mấy hôm, lên đây chẻ củi.” Bạn không hỏi vì sao, chỉ rót thêm. Ngoài hiên tuyết vẫn xuống, đều và im.",
         effects: { duyen: 1 },
         quote: "q_moc_ket",
         flags: ["moc_end_venui"],
@@ -305,7 +308,7 @@ const ARCS = {
       {
         label: "Để gói trà trên thềm thêm một đêm, cho tuyết xem trước.",
         if: "moc_dihuyen",
-        result: "Sáng ra, gói trà phủ một lớp tuyết mỏng, như được gói thêm lần nữa. Bạn cất nó vào thư phòng, chưa uống. Có những thứ để dành được.",
+        result: "Sáng ra, gói trà phủ một lớp tuyết mỏng, như được gói thêm một lần nữa. Bạn phủi nhẹ, cất vào thư phòng. Chưa uống vội.",
         effects: { tinh: 1 },
         flags: ["moc_end_lang"],
       },
@@ -376,7 +379,7 @@ const ARCS = {
       {
         label: "Không nói gì. Gật đầu một cái.",
         req: { stat: "tinh", min: 2 },
-        result: "Có những nửa câu không cần nửa còn lại. Hắn hiểu cái gật đầu đó, và bạn hiểu cái bỏ lửng kia.",
+        result: "Hắn nhìn cái gật đầu ấy một lúc, rồi chắp tay — sâu hơn mọi lần từ đêm qua. Nửa câu kia hắn mang theo xuống núi, không rơi lại chữ nào.",
         effects: { tinh: 1, duyen: 1 },
         flags: ["thu_hua"],
         quote: "q_nuacau",
@@ -410,7 +413,7 @@ const ARCS = {
       },
       {
         label: "Rót thêm nước cho người buôn, không hỏi nữa.",
-        result: "Chuyện của người dưng, nghe một nửa đã là nhiều. Nhưng đêm đó, tiếng mưa trên mái nghe rõ hơn mọi khi.",
+        result: "Người buôn uống xong, gánh hàng xuống dốc. Chuyện dừng ở đó. Nhưng đêm ấy trời lại mưa, và tiếng mưa trên mái nghe rõ hơn mọi khi.",
         effects: { tinh: 1 },
         quote: "q_cuadong",
         kill: "thu",
@@ -448,7 +451,7 @@ const ARCS = {
       {
         label: "Rót thêm một chén, chờ hắn tự nói tiếp.",
         req: { stat: "tinh", min: 3 },
-        result: "Chén thứ hai cạn, hắn tự đứng dậy: “Trà đủ ấm rồi. Tiểu sinh đi đây.” Có những quyết định chỉ cần một người ngồi im bên cạnh là đủ chín.",
+        result: "Chén thứ hai cạn, hắn tự đứng dậy: “Trà đủ ấm rồi. Tiểu sinh đi đây.” Hắn xuống núi khi nắng chiều còn trên vai áo. Hai cái chén nằm cạnh nhau trên bàn, một cái đã khô.",
         effects: { tinh: 1, duyen: 1 },
         flags: ["thu_ditim", "thu_tralanh"],
         quote: "q_ngoiim",
@@ -456,7 +459,7 @@ const ARCS = {
       },
       {
         label: "“Ở lại đây ôn thi. Chuyện cũ, coi như nước chảy qua cầu.”",
-        result: "Hắn nhìn bạn, có gì đó tắt đi trong mắt. Hắn ở lại ba hôm, chữ vẫn nhòe, rồi lặng lẽ xuống núi. Lời khuyên dễ nhất đôi khi là lời khuyên sai nhất.",
+        result: "Hắn nhìn bạn, có gì đó tắt đi trong mắt. Hắn ở lại ba hôm. Đèn phòng khách sáng khuya cả ba đêm, mà nghiên mực cạn rất chậm. Sáng ngày thứ tư, chiếu gấp vuông vức, người đã xuống núi.",
         effects: { duyen: -1, tam: -1 },
         flags: ["thu_khuyensai"],
         quote: "q_khuyensom",
@@ -489,7 +492,7 @@ const ARCS = {
       {
         label: "Đọc lại lần nữa, dưới hiên, cho tuyết cùng đọc.",
         if: "thu_ditim",
-        result: "Đọc lần hai mới thấy: chữ trong thư này không nhòe nữa. Chữ của người đã dám quay đầu.",
+        result: "Đọc lần thứ hai mới để ý: chữ trong thư không nhòe một nét nào. Vài bông tuyết lọt qua mái, chạm vào mép giấy, tan thành một chấm nhỏ, rồi khô.",
         effects: { tinh: 1, tam: 1 },
         item: "buc_thu",
         quote: "q_thatha",
@@ -498,7 +501,7 @@ const ARCS = {
       {
         label: "Viết thư trả lời: “Sân dưới núi mùa nào cũng có lá rụng.”",
         if: "thu_khuyensai",
-        result: "Nghĩa là: khi nào tới cũng có việc cho ngươi làm, và có trà. Người đưa hàng mang thư đi chuyến đầu năm. Còn lại thì để thời gian lo.",
+        result: "Bạn viết đúng một dòng ấy, không thêm chữ nào. Người đưa hàng mang thư đi chuyến đầu năm. Đèn thư phòng đêm đó tắt muộn hơn thường lệ một chút.",
         effects: { duyen: 1 },
         item: "buc_thu",
         quote: "q_thoigian",
@@ -556,7 +559,7 @@ const ARCS = {
     choices: [
       {
         label: "Đi tiếp một nước quân đen, không thắc mắc.",
-        result: "Bạn đặt quân, rồi quét sân tiếp. Có những chuyện dưới núi này không cần hiểu, chỉ cần đừng bỏ dở.",
+        result: "Bạn đặt quân đen xuống, nhặt chiếc lá trên thành bàn, rồi quét sân tiếp. Chổi đưa tới đâu sân sạch tới đó. Thế cờ sau lưng, cứ để nó tự dở dang.",
         effects: { tinh: 1, duyen: 1 },
         flags: ["co_danhtiep"],
         quote: "q_khonghieu",
@@ -590,7 +593,7 @@ const ARCS = {
     choices: [
       {
         label: "Kể thật về ông lão áo trắng và những nước cờ tự đi.",
-        result: "Ông ta nghe xong, ngồi phịch xuống bậc thềm. “Bạn cờ của cha tôi… mất trước cha tôi hai năm.” Không ai nói gì thêm. Không cần.",
+        result: "Ông ta nghe xong, ngồi phịch xuống bậc thềm. “Bạn cờ của cha tôi… mất trước cha tôi hai năm.” Không ai nói gì thêm. Gió chiều lật một chiếc lá trên mặt bàn đá; quân cờ không quân nào xê dịch.",
         effects: { tam: 1, danh: 1 },
         flags: ["co_kethat"],
         schedule: { node: "co_4", delay: 10 },

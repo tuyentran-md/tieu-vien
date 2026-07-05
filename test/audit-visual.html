@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!-- Visual stage driver: ?stage=walk|glow|dialog|empty|epilogue -->
-<html><head><meta charset="UTF-8"><style>
+<html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><style>
   body { margin: 0; } iframe { width: 100vw; height: 100vh; border: 0; display: block; }
 </style></head>
 <body><iframe id="f"></iframe>
@@ -18,13 +18,33 @@ async function main() {
     await step(stage === "walk" ? 2300 : 5400);
   }
   if (stage === "dialog") {
-    d().querySelector("#ink-npc").dispatchEvent(new f.contentWindow.MouseEvent("click", { bubbles: true }));
+    d().querySelector(".ink-npc-hot").click();
     await step(350);
     d().getElementById("scene").click();
     await step(250);
   }
   if (stage === "empty") await step(800);
   if (stage === "epilogue") await step(1200);
+  const metrics = d().defaultView;
+  const pick = (sel) => {
+    const el = d().querySelector(sel);
+    if (!el) return null;
+    const r = el.getBoundingClientRect();
+    return { x: Math.round(r.x), y: Math.round(r.y), w: Math.round(r.width), h: Math.round(r.height), text: (el.textContent || "").trim().slice(0, 80) };
+  };
+  const pre = document.createElement("pre");
+  pre.id = "metrics";
+  pre.hidden = true;
+  pre.textContent = JSON.stringify({
+    width: metrics.innerWidth,
+    height: metrics.innerHeight,
+    mobile: metrics.matchMedia("(max-width: 480px)").matches,
+    stage: pick("#stage"),
+    header: pick("header"),
+    nav: pick("header nav"),
+    scene: pick("#scene"),
+  });
+  document.body.appendChild(pre);
   document.title = "STAGED:" + stage;
 }
 main();

@@ -1,6 +1,8 @@
 /* ===== Dưới Núi Có Một Tiểu Viện — giấy, mực, bốn mùa ===== */
 
 :root {
+  --font-body: "Iowan Old Style", "Palatino Linotype", "Noto Serif", Georgia, serif;
+  --font-display: "Noto Serif Display", "Iowan Old Style", "Palatino Linotype", "Noto Serif", Georgia, serif;
   --ink: #2b2620;
   --ink-dim: #8a7f6f;
   --paper: #f4efe6;
@@ -16,7 +18,7 @@ body[data-season="dong"] { --paper:#f0f1f2; --paper-deep:#e2e5e8; --accent:#5c6e
 * { margin:0; padding:0; box-sizing:border-box; }
 
 body {
-  font-family: "Noto Serif", Georgia, serif;
+  font-family: var(--font-body);
   background: var(--paper);
   color: var(--ink);
   line-height: 1.85;
@@ -41,7 +43,13 @@ body {
   width: 6.5rem; height: 6.5rem; line-height: 6.3rem;
   margin: 0 auto 2rem;
 }
-#title-screen h1 { font-weight: 600; font-size: 2rem; letter-spacing: .12em; margin-bottom: 1.6rem; }
+#title-screen h1 {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 2rem;
+  letter-spacing: .08em;
+  margin-bottom: 1.6rem;
+}
 .title-sub { color: var(--ink-dim); margin-bottom: 2.6rem; font-size: .98rem; }
 
 /* ---- Buttons ---- */
@@ -56,7 +64,7 @@ body {
 .btn-main:hover { background: var(--ink); color: var(--paper); }
 
 /* ---- Game layout ---- */
-#game-col { max-width: 640px; margin: 0 auto; padding: 1.2rem 1.4rem 4rem; }
+#game-col { max-width: 660px; margin: 0 auto; padding: .95rem 1.4rem 4rem; }
 
 /* ---- Stage (cảnh sân) ---- */
 #stage {
@@ -97,7 +105,7 @@ header {
   flex-wrap: wrap; row-gap: .4rem;
   padding: .6rem 0 1rem;
   border-bottom: 1px solid var(--line);
-  margin-bottom: 2rem;
+  margin-bottom: 1.25rem;
 }
 #hud-day { flex: 0 0 auto; letter-spacing: .08em; color: var(--accent); font-size: .95rem; }
 header nav {
@@ -116,9 +124,23 @@ header nav button {
 }
 header nav button:hover { color: var(--ink); border-bottom-color: var(--ink-dim); }
 
-.yard { color: var(--ink-dim); font-style: italic; font-size: .95rem; margin-bottom: 2rem; }
+.yard { color: var(--ink-dim); font-style: italic; font-size: .95rem; margin-bottom: .45rem; }
+.action-hint {
+  color: var(--accent);
+  font-size: .94rem;
+  line-height: 1.65;
+  margin-bottom: 1.35rem;
+}
+.action-hint:empty { display: none; }
 
-#event-title { font-weight: 600; font-size: 1.25rem; letter-spacing: .04em; margin-bottom: 1.2rem; }
+#event-title {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: 1.28rem;
+  letter-spacing: .02em;
+  margin-bottom: 1.2rem;
+}
+#event-title:empty { display: none; }
 #event-text p { margin-bottom: 1rem; }
 
 #choices { margin-top: 2rem; display: flex; flex-direction: column; gap: .7rem; }
@@ -147,7 +169,13 @@ header nav button:hover { color: var(--ink); border-bottom-color: var(--ink-dim)
   padding: 2rem;
 }
 .ep-inner { max-width: 620px; width: 100%; min-width: 0; }
-#epilogue h2 { font-size: 1.5rem; letter-spacing: .1em; margin-bottom: 1.8rem; color: var(--accent); }
+#epilogue h2 {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  letter-spacing: .06em;
+  margin-bottom: 1.8rem;
+  color: var(--accent);
+}
 #epilogue-text p { margin-bottom: 1.1rem; }
 #epilogue-stats { margin: 1.6rem 0 2.2rem; }
 
@@ -163,7 +191,7 @@ header nav button:hover { color: var(--ink); border-bottom-color: var(--ink-dim)
   max-width: 540px; width: 100%; max-height: 78vh; overflow-y: auto;
   padding: 2rem;
 }
-.modal-box h3 { letter-spacing: .08em; margin-bottom: 1.4rem; color: var(--accent); }
+.modal-box h3 { font-family: var(--font-display); letter-spacing: .04em; margin-bottom: 1.4rem; color: var(--accent); }
 .modal-box .quote { margin-bottom: 1.1rem; font-style: italic; }
 .modal-box .item { margin-bottom: 1.2rem; }
 .item-name { font-weight: 600; }
@@ -178,7 +206,7 @@ header nav button:hover { color: var(--ink); border-bottom-color: var(--ink-dim)
 .fade-in { animation: fade .7s ease; }
 @keyframes fade { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
 
-@media (max-width: 480px) {
+@media (max-width: 560px) {
   #game-col { padding: 1rem 1rem 3rem; }
   #title-screen h1 { font-size: 1.6rem; }
   header { align-items: flex-start; }

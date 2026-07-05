@@ -49,10 +49,10 @@ const ITEMS = {
 
 const YARD_LINES = {
   xuan: {
-    tam:   "Sương sớm tan chậm. Tay áo chạm vào đâu cũng thấy vững.",
+    tam:   "Sương sớm tan chậm. Chén trà đầu ngày cầm trên tay, không sóng sánh.",
     duyen: "Chim về làm tổ dưới mái hiên. Sân dạo này hay có dấu chân.",
     danh:  "Dưới làng lại có người hỏi đường lên tiểu viện.",
-    tinh:  "Mưa bụi giăng ngoài hiên. Ấm trà pha từ sáng vẫn còn ấm.",
+    tinh:  "Sương sớm chưa tan hẳn ngoài hiên. Ấm trà pha từ sáng vẫn còn ấm.",
     none:  "Một sớm mùa xuân như mọi sớm mùa xuân.",
   },
   ha: {

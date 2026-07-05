@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!-- Audit harness N2 (không commit vào release; chỉ dùng cho headless check) -->
-<html><head><meta charset="UTF-8"><style>
+<html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><style>
   body { font: 16px monospace; padding: 20px; } .ok { color: green; } .bad { color: red; }
   iframe { width: 900px; height: 700px; border: 1px solid #ccc; display: block; margin-top: 12px; }
 </style></head>
@@ -27,7 +27,12 @@ async function main() {
   const npcOn = d().querySelector("#ink-npc").classList.contains("on");
   put("NPC xuất hiện ngày 1", npcOn);
   await step(5200); // walk 4.6s + glow
-  d().querySelector("#ink-npc").dispatchEvent(new f.contentWindow.MouseEvent("click", { bubbles: true }));
+  const npcHot = d().querySelector(".ink-npc-hot");
+  const hotRect = npcHot.getBoundingClientRect();
+  const hotReady = d().getElementById("ink-root").classList.contains("npc-ready");
+  put("Hotspot khách sẵn sàng", hotReady && hotRect.width > 40 && hotRect.height > 80,
+    "ready=" + hotReady + " size=" + Math.round(hotRect.width) + "x" + Math.round(hotRect.height));
+  npcHot.click();
   await step(400);
   const title = d().getElementById("event-title").textContent;
   put("Dialog mở sau tap NPC", title.length > 0, "title=" + title);
@@ -43,6 +48,15 @@ async function main() {
     const dusk = d().getElementById("ink-root").dataset.phase === "result";
     put("Chọn xong: result + Qua ngày + dusk", resShown && nextShown && dusk,
       "res=" + resShown + " next=" + nextShown + " phase=" + d().getElementById("ink-root").dataset.phase);
+    await loadFrame("/index.html?audit=t1-result");
+    await step(300);
+    d().getElementById("btn-begin").click();
+    await step(600);
+    const resumedResult = !d().getElementById("result").classList.contains("hidden");
+    const resumedTitle = d().getElementById("event-title").textContent;
+    const resumedText = d().getElementById("event-text").textContent.trim();
+    put("Reload giữa result giữ lại truyện", resumedResult && resumedTitle.length > 0 && resumedText.length > 0,
+      "title=" + resumedTitle + " text=" + resumedText.length);
     d().getElementById("next-day").click();
     await step(1300);
     const day2 = d().getElementById("hud-day").textContent;
@@ -67,7 +81,9 @@ async function main() {
   await step(5300);
   const root = d().getElementById("ink-root");
   if (d().querySelector("#ink-npc").classList.contains("on")) {
-    d().querySelector("#ink-npc").dispatchEvent(new f.contentWindow.MouseEvent("click", { bubbles: true }));
+    const hot = d().querySelector(".ink-npc-hot");
+    if (hot && d().getElementById("ink-root").classList.contains("npc-ready")) hot.click();
+    else d().querySelector("#ink-npc").dispatchEvent(new f.contentWindow.MouseEvent("click", { bubbles: true }));
   } else {
     d().querySelector('[data-hot="tree"]').dispatchEvent(new f.contentWindow.MouseEvent("click", { bubbles: true }));
   }

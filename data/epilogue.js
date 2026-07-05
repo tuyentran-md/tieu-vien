@@ -7,13 +7,13 @@ const EPILOGUE = {
   arcs: [
     // --- Mộc ---
     { if: "moc_end_totdep", text: "Mộc giờ quét lối đi trước cả khi gõ cửa. Mùa xuân tới, sân này sẽ có thêm một đứa trẻ chẻ củi — và một đứa đứng dạy, cố làm mặt nghiêm. Kiếm gỗ treo bên hiên, lâu rồi không ai cần rút xuống." },
-    { if: "moc_end_venui", text: "Mộc học ở võ quán dưới huyện, nhưng mùa xuân nào cũng xin nghỉ mấy hôm lên núi chẻ củi. Người dưới đó chắc không hiểu. Không cần ai hiểu." },
-    { if: "moc_end_lang", text: "Gói trà của Mộc vẫn trong thư phòng, chưa mở. Có những thứ để dành được. Có những đứa trẻ cũng vậy — cứ để nó đi hết đoạn đường của nó." },
+    { if: "moc_end_venui", text: "Mộc học ở võ quán dưới huyện, nhưng mùa xuân nào cũng xin nghỉ mấy hôm, lên núi chẻ củi. Người dưới đó hỏi thì nó chỉ cười. Đống củi sau nhà chưa mùa nào vơi." },
+    { if: "moc_end_lang", text: "Gói trà của Mộc vẫn trong thư phòng, chưa mở. Trà để dành được. Đứa trẻ ấy cũng vậy — cứ để nó đi hết đoạn đường của nó đã." },
     { if: "moc_dihuyen_tot", ifNot: "moc_end_venui", text: "Mộc ở võ quán dưới huyện. Thỉnh thoảng người quen kể: thằng bé đánh giỏi, nhưng ít khoe. Nghe câu sau mừng hơn câu trước." },
     { if: "moc_dead", text: "Thiếu niên hỏi học kiếm mùa xuân ấy không quay lại. Đôi khi quét sân, bạn vẫn nhìn ra khúc quành. Hạt đã gieo thì ở đâu đó vẫn là hạt." },
 
     // --- Trần Thức ---
-    { if: "thu_end_tot", text: "Thư của Trần Thức nằm trong tráp gỗ. Xuân tới sân sẽ có người quét — lần này không phải để trả ơn. Hai người phương nam ấy, một người mất cánh tay, một người tìm lại được chính mình. Tính ra không lỗ." },
+    { if: "thu_end_tot", text: "Thư của Trần Thức nằm trong tráp gỗ. Hai người phương nam ấy, một người mất một cánh tay, một người vừa tìm lại được đường về. Xuân tới sân sẽ có người quét — lần này không phải để trả ơn." },
     { if: "thu_end_lung", text: "Trần Thức vẫn chép sách thuê ở trấn bên, ngày chép chữ người, đêm viết chữ mình. Thư trả lời đã gửi: sân dưới núi mùa nào cũng có lá rụng. Còn lại, để thời gian lo." },
     { if: "thu_dead", text: "Người thư sinh đêm mưa ấy đã xuống thuyền về phương nam, để lại một bài thơ trên vách quán trọ. Mỗi lần mưa đêm, tiếng mưa trên mái nghe rõ hơn mọi khi." },
 

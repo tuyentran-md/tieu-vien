@@ -7,6 +7,7 @@ const Ambient = (() => {
   const music = {};
   const sfx = {};
   const PREF_KEY = "tieuvien_sound";
+  const USE_MUSIC = false;
   const MUSIC_SRC = {
     title: "assets/ninja/music/title.ogg",
     xuan: "assets/ninja/music/xuan.ogg",
@@ -47,7 +48,7 @@ const Ambient = (() => {
     Object.keys(SFX_SRC).forEach(k => {
       const a = new Audio(SFX_SRC[k]);
       a.preload = "auto";
-      a.volume = k === "quote" ? .3 : .45;
+      a.volume = k === "quote" ? .2 : k === "menu" ? .12 : .22;
       sfx[k] = a;
     });
     mediaReady = true;
@@ -57,7 +58,7 @@ const Ambient = (() => {
     ensureMedia();
     if (ac) { ac.resume(); return; }
     ac = new (window.AudioContext || window.webkitAudioContext)();
-    master = ac.createGain(); master.gain.value = .10; master.connect(ac.destination);
+    master = ac.createGain(); master.gain.value = .085; master.connect(ac.destination);
 
     // gió — brown noise + lowpass, phập phồng chậm
     const wind = ac.createBufferSource(); wind.buffer = noiseBuffer(4, true); wind.loop = true;
@@ -121,7 +122,7 @@ const Ambient = (() => {
   }
 
   function fadeToMusic(key) {
-    if (!on) return;
+    if (!USE_MUSIC || !on) return;
     ensureMedia();
     const next = music[key] || music.xuan;
     if (!next || currentMusicKey === key) return;

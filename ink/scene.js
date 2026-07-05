@@ -4,35 +4,242 @@
 
 (function (root) {
 
-  // ---- NPC silhouettes (feet at local 0,0, drawn upward) ----
-  const SKIN = "#caa27e", HAIR = "#454036";
-  function fig(robe, extra, headDy, scale) {
-    return '<g transform="scale(' + (scale || 1) + ')">'
-      + '<ellipse cx="0" cy="1" rx="11" ry="3.4" fill="rgba(60,56,44,.25)"/>'
-      + '<path d="M-9,0 q-2,-24 9,-24 q11,0 9,24 Z" fill="' + robe + '"/>'
-      + '<circle cx="0" cy="' + (-30 - (headDy || 0)) + '" r="6.5" fill="' + SKIN + '"/>'
-      + '<path d="M-7,' + (-32 - (headDy || 0)) + ' a7,7 0 0 1 14,0 q-3.5,-4.5 -7,-4.5 q-3.5,0 -7,4.5 Z" fill="' + HAIR + '"/>'
-      + (extra || "") + "</g>";
+  // ---- NPC ink figures (feet at local 0,0, drawn upward; adult ~78 units) ----
+  // Dáng người thủy mặc: áo chữ A, cổ giao lĩnh, tay chắp trong tay áo,
+  // màu lấy từ bảng màu tranh nền. Mỗi vai một phụ kiện nhận diện.
+  const SKIN = "#c9a582", SKIN_D = "#b6906d", HAIR = "#3a352c";
+  const INK = "rgba(46,40,30,.42)", FOLD = "rgba(40,34,24,.18)";
+
+  function pShadow(w) {
+    return '<ellipse cx="0" cy="1.6" rx="' + w + '" ry="3" fill="rgba(50,44,32,.26)"/>';
   }
+  // thân áo: hem half-width hw, vai sw, vai ở độ cao H
+  function pRobe(c, hw, sw, H, dark) {
+    return '<path d="M' + -hw + ',0 Q' + -(hw + 1.5) + ',' + (-H * .5) + ' ' + -sw + ',' + -H
+      + ' Q0,' + -(H + 4.5) + ' ' + sw + ',' + -H
+      + ' Q' + (hw + 1.5) + ',' + (-H * .5) + ' ' + hw + ',0 Q0,3 ' + -hw + ',0 Z"'
+      + ' fill="' + c + '" stroke="' + INK + '" stroke-width=".7"/>'
+      + '<path d="M' + -hw + ',0 Q0,3 ' + hw + ',0 Q' + (hw - 3) + ',-6.5 0,-7.5 Q' + -(hw - 3) + ',-6.5 ' + -hw + ',0 Z" fill="'
+      + (dark || "rgba(40,34,24,.14)") + '"/>'
+      + '<path d="M' + (-hw * .42) + ',' + (-H * .42) + ' Q' + (-hw * .5) + ',' + (-H * .2) + ' ' + (-hw * .6) + ',-2" stroke="' + FOLD + '" stroke-width=".8" fill="none"/>'
+      + '<path d="M' + (hw * .42) + ',' + (-H * .42) + ' Q' + (hw * .5) + ',' + (-H * .2) + ' ' + (hw * .6) + ',-2" stroke="' + FOLD + '" stroke-width=".8" fill="none"/>';
+  }
+  // tay chắp trước ngực, bàn tay giấu trong tay áo
+  function pSleeves(c, H) {
+    const y1 = -H * .76, y2 = -H * .58;
+    return '<path d="M-9,' + y1 + ' Q0,' + (y1 + 6) + ' 9,' + y1 + ' L7,' + y2 + ' Q0,' + (y2 + 5) + ' -7,' + y2 + ' Z"'
+      + ' fill="' + c + '" stroke="' + INK + '" stroke-width=".7"/>'
+      + '<path d="M-8.4,' + (y1 + 2.2) + ' Q0,' + (y1 + 8) + ' 8.4,' + (y1 + 2.2) + '" stroke="rgba(40,34,24,.22)" stroke-width=".7" fill="none"/>';
+  }
+  // cổ áo giao lĩnh
+  function pCollar(inner, H) {
+    return '<path d="M-4.4,' + -(H - 1) + ' L0,' + -(H - 12) + ' L4.4,' + -(H - 1) + ' L0,' + -(H + 2) + ' Z" fill="' + inner + '"/>'
+      + '<path d="M-4.4,' + -(H - 1) + ' L0,' + -(H - 12) + ' M4.4,' + -(H - 1) + ' L0,' + -(H - 12) + '" stroke="' + INK + '" stroke-width=".7" fill="none"/>';
+  }
+  // thắt lưng + dải rủ
+  function pBelt(c, H) {
+    const y = -H * .565;
+    return '<path d="M-7.6,' + y + ' L7.6,' + y + ' L7,' + (y + 4.2) + ' L-7,' + (y + 4.2) + ' Z" fill="' + c + '"/>'
+      + '<path d="M-.7,' + (y + 4) + ' q-1.6,6 -3.2,9.5 M.7,' + (y + 4) + ' q1.8,6 3.4,9" stroke="rgba(30,26,18,.4)" stroke-width=".9" fill="none"/>';
+  }
+  // cổ + đầu; style: bun | white | bald | scarf | buns | boy | band | hat | lowbun
+  function pHead(H, style, skin, hairC) {
+    const hy = -(H + 9.2), r = 5.2, sk = skin || SKIN, hc = hairC || HAIR;
+    let s = '<path d="M-2.1,' + -(H - 1.5) + ' L2.1,' + -(H - 1.5) + ' L1.9,' + -(H + 3.5) + ' L-1.9,' + -(H + 3.5) + ' Z" fill="' + SKIN_D + '"/>'
+      + '<circle cx="0" cy="' + hy + '" r="' + r + '" fill="' + sk + '" stroke="rgba(110,82,55,.3)" stroke-width=".5"/>';
+    if (style !== "bald") {
+      // tóc ôm đầu, rẽ đường ngôi thấp trên trán
+      s += '<path d="M-' + (r + .3) + ',' + (hy + 1) + ' Q' + -(r + .1) + ',' + (hy - r - 1.4) + ' 0,' + (hy - r - 1.7)
+        + ' Q' + (r + .1) + ',' + (hy - r - 1.4) + ' ' + (r + .3) + ',' + (hy + 1)
+        + ' Q' + (r * .78) + ',' + (hy - r * .1) + ' ' + (r * .66) + ',' + (hy - r * .48)
+        + ' Q' + (r * .3) + ',' + (hy - r * .28) + ' 0,' + (hy - r * .3)
+        + ' Q' + -(r * .3) + ',' + (hy - r * .28) + ' -' + (r * .66) + ',' + (hy - r * .48)
+        + ' Q' + -(r * .78) + ',' + (hy - r * .1) + ' -' + (r + .3) + ',' + (hy + 1) + ' Z" fill="' + hc + '"/>';
+    }
+    if (style === "bun" || style === "white") {
+      s += '<ellipse cx="0" cy="' + (hy - r - 3) + '" rx="2.5" ry="2.1" fill="' + hc + '"/>'
+        + '<path d="M-4,' + (hy - r - 3.4) + ' L4.4,' + (hy - r - 2.4) + '" stroke="#8a7355" stroke-width=".9"/>';
+    }
+    if (style === "boy") {
+      s += '<path d="M-1.6,' + (hy - r - 1) + ' q1.6,-3.4 3.4,-1.6 q-1.4,2 -3.4,1.6 Z" fill="' + hc + '"/>';
+    }
+    if (style === "buns") {
+      s += '<circle cx="-4.6" cy="' + (hy - r + .4) + '" r="2" fill="' + hc + '"/>'
+        + '<circle cx="4.6" cy="' + (hy - r + .4) + '" r="2" fill="' + hc + '"/>';
+    }
+    if (style === "lowbun") {
+      s += '<ellipse cx="-4.2" cy="' + (hy + 2.6) + '" rx="2.2" ry="1.8" fill="' + hc + '"/>'
+        + '<path d="M-6.4,' + (hy + 1.2) + ' L-1.6,' + (hy + 3.6) + '" stroke="#a08a5e" stroke-width=".8"/>';
+    }
+    if (style === "band") {
+      s += '<ellipse cx="0" cy="' + (hy - r - 2.6) + '" rx="2.3" ry="2" fill="' + hc + '"/>'
+        + '<path d="M2,' + (hy - r - 2.4) + ' q4.2,1.6 4.6,7.6" stroke="' + hc + '" stroke-width="1.8" fill="none" stroke-linecap="round"/>'
+        + '<path d="M-' + (r - .4) + ',' + (hy - 1.8) + ' Q0,' + (hy - 3.6) + ' ' + (r - .4) + ',' + (hy - 1.8) + '" stroke="#5a4a36" stroke-width="1" fill="none"/>';
+    }
+    if (style === "scarf") {
+      s += '<path d="M-' + (r + .6) + ',' + (hy + 1) + ' Q' + -(r - .2) + ',' + (hy - r - 2.4) + ' 0,' + (hy - r - 2.6)
+        + ' Q' + (r - .2) + ',' + (hy - r - 2.4) + ' ' + (r + .6) + ',' + (hy + 1)
+        + ' L' + (r * .7) + ',' + (hy + r) + ' Q0,' + (hy + r + 1.6) + ' -' + (r * .7) + ',' + (hy + r) + ' Z"'
+        + ' fill="#a29a8a" stroke="' + INK + '" stroke-width=".6"/>'
+        + '<circle cx="0" cy="' + (hy + r + 1.2) + '" r="1.1" fill="#8a8274"/>';
+    }
+    if (style === "hat") {
+      s += '<path d="M-10,' + (hy - .4) + ' Q-4,' + (hy - 9.6) + ' 0,' + (hy - 9.8) + ' Q4,' + (hy - 9.6) + ' 10,' + (hy - .4)
+        + ' Q0,' + (hy - 3.2) + ' -10,' + (hy - .4) + ' Z" fill="#8a7a58" stroke="' + INK + '" stroke-width=".7"/>'
+        + '<path d="M-7.8,' + (hy - 1.6) + ' Q0,' + (hy - 4.6) + ' 7.8,' + (hy - 1.6) + '" stroke="rgba(60,50,36,.35)" stroke-width=".6" fill="none"/>';
+    }
+    return s;
+  }
+  function pBeard(H, c) {
+    const hy = -(H + 9.2);
+    return '<path d="M-2.8,' + (hy + 4) + ' Q0,' + (hy + 12) + ' 2.8,' + (hy + 4) + ' Q0,' + (hy + 5.8) + ' -2.8,' + (hy + 4) + ' Z" fill="' + (c || "#cfc8b8") + '"/>';
+  }
+  function pStaff(x1, x2, c) {
+    return '<path d="M' + x1 + ',1.5 L' + x2 + ',-58" stroke="' + (c || "#6b5c44") + '" stroke-width="1.7" stroke-linecap="round"/>';
+  }
+  function assemble(parts) { return "<g>" + parts.join("") + "</g>"; }
+
   const FIGS = {
-    boy:       fig("#6a5a40", '<line x1="-11" y1="-18" x2="9" y2="-33" stroke="#7a6248" stroke-width="3" stroke-linecap="round"/>', 0, .92),
-    scholar:   fig("#5b6270", '<rect x="7" y="-21" width="8" height="6" rx="1" fill="#e8e2cf"/>'),
-    oldman:    fig("#57534a", '<line x1="11" y1="0" x2="15" y2="-21" stroke="#4a463a" stroke-width="2.6" stroke-linecap="round"/>', -3),
-    oldman2:   fig("#4e4a42", '<line x1="-11" y1="0" x2="-15" y2="-21" stroke="#4a463a" stroke-width="2.6" stroke-linecap="round"/>', -3),
-    swordsman: fig("#464a52", '<line x1="-13" y1="-15" x2="-3" y2="-8" stroke="#3a3f45" stroke-width="2.6" stroke-linecap="round"/><circle cx="9" cy="-11" r="3.4" fill="#a4531f"/>'),
-    monk:      fig("#6d5f4a", '<path d="M-10,-31 Q0,-42 10,-31 Q0,-35 -10,-31 Z" fill="#c9b989"/>'),
-    woman:     fig("#6b5a5e", '<rect x="6" y="-27" width="9" height="13" rx="2.5" fill="#8a7a5a"/>'),
-    child:     fig("#7a6248", "", 0, .68),
-    oldwoman:  fig("#5a5450", '<path d="M-7,-35 a7,7 0 0 1 14,0 l0,4 l-14,0 Z" fill="#8a8274"/>', -2),
-    trader:    fig("#5f584a", '<line x1="-17" y1="-31" x2="17" y2="-31" stroke="#6b6353" stroke-width="2.4"/><rect x="-20" y="-31" width="6" height="7" rx="1.5" fill="#8a7a5a"/><rect x="14" y="-31" width="6" height="7" rx="1.5" fill="#8a7a5a"/>'),
-    villager:  fig("#4a4438", ""),
-    master:    fig("#3f4147", '<path d="M-11,-33 Q0,-39 11,-33 L11,-31 L-11,-31 Z" fill="#35322a"/>'),
+    // Mộc — thiếu niên áo vá, cầm nhánh trúc
+    boy: assemble([
+      pShadow(10),
+      '<path d="M6.5,2 L11.5,-42" stroke="#7d8a5e" stroke-width="1.4" stroke-linecap="round"/>',
+      '<path d="M11.5,-42 q3,-2.6 5.6,-2 M11,-38.5 q-3.2,-1.6 -5.4,-.4" stroke="#7d8a5e" stroke-width="1" fill="none"/>',
+      pRobe("#7c6a4e", 10.5, 5, 48),
+      '<path d="M2.6,-44.5 l4.6,1.6 l-1.2,4.6 l-4.6,-1.6 Z" fill="#94815f" stroke="rgba(40,34,24,.3)" stroke-width=".5"/>',
+      pCollar("#c9bfa6", 48),
+      pBelt("#57503f", 48),
+      pSleeves("#7c6a4e", 48),
+      pHead(48, "boy"),
+    ]),
+    // Trần Thức — thư sinh áo xám lam, tráp sách sau lưng
+    scholar: assemble([
+      pShadow(12),
+      '<rect x="-13" y="-53" width="7.5" height="19" rx="1.6" fill="#7a6a50" stroke="rgba(40,34,24,.35)" stroke-width=".6"/>',
+      '<path d="M-13,-48 l7.5,0 M-13,-40 l7.5,0" stroke="rgba(40,34,24,.3)" stroke-width=".6"/>',
+      pRobe("#5d6572", 12.5, 5.8, 62),
+      '<path d="M-6,-61 L4,-38" stroke="#4a4438" stroke-width="1.1"/>',
+      pCollar("#d8d2c0", 62),
+      pBelt("#454c58", 62),
+      pSleeves("#5d6572", 62),
+      pHead(62, "bun"),
+    ]),
+    // ông lão đánh cờ — áo trắng, râu bạc, gậy trúc
+    oldman: assemble([
+      pShadow(12),
+      pStaff(10, 12.5),
+      pRobe("#d8d4c6", 13, 6, 58, "rgba(90,84,70,.2)"),
+      pCollar("#b8b2a2", 58),
+      pBelt("#a39c8a", 58),
+      pSleeves("#d8d4c6", 58),
+      pHead(58, "white", SKIN, "#cfc9bb"),
+      pBeard(58, "#d5cfc1"),
+    ]),
+    // khách cờ trung niên
+    oldman2: assemble([
+      pShadow(12),
+      pStaff(-10, -12.5),
+      pRobe("#625c50", 12.5, 5.8, 58),
+      pCollar("#c2b9a4", 58),
+      pBelt("#4a4438", 58),
+      pSleeves("#625c50", 58),
+      pHead(58, "bun", SKIN, "#6b655a"),
+      pBeard(58, "#8a8274"),
+    ]),
+    // kiếm khách — áo sẫm, kiếm bên hông trái
+    swordsman: assemble([
+      pShadow(12),
+      pRobe("#474c55", 12, 5.8, 62),
+      '<path d="M-7.5,-30 L-13,-8" stroke="#33363c" stroke-width="2.4" stroke-linecap="round"/>',
+      '<path d="M-7.5,-30 L-5,-38" stroke="#8a7a58" stroke-width="1.6" stroke-linecap="round"/>',
+      '<circle cx="-6.8" cy="-32.5" r="1.7" fill="#a4531f"/>',
+      pCollar("#b8b2a2", 62),
+      pBelt("#8f4a22", 62),
+      pSleeves("#474c55", 62),
+      pHead(62, "band"),
+    ]),
+    // tăng nhân — đầu trần, cà sa vắt chéo
+    monk: assemble([
+      pShadow(12),
+      pStaff(10, 11.5, "#5a4a36"),
+      pRobe("#6b6150", 12.5, 5.8, 60),
+      '<path d="M-5.4,-59 Q6,-54 6.8,-38 Q7.4,-20 6,-4 L-1.5,-3 Q-6.5,-30 -5.4,-59 Z" fill="#8a7355" stroke="' + INK + '" stroke-width=".6"/>',
+      pSleeves("#6b6150", 60),
+      '<path d="M-5,-42 Q0,-38.5 5,-42" stroke="#4a4438" stroke-width="1" fill="none" stroke-dasharray="1.4 1.6"/>',
+      pHead(60, "bald"),
+    ]),
+    // cô gái hái thuốc — gùi thuốc sau lưng
+    woman: assemble([
+      pShadow(11.5),
+      '<path d="M5.5,-52 L14,-49.5 L11.8,-27 L5,-29.5 Z" fill="#a08a5e" stroke="rgba(40,34,24,.35)" stroke-width=".6"/>',
+      '<path d="M6.2,-46 l6.8,2 M5.9,-40 l6.4,1.8 M5.6,-34 l6.2,1.8" stroke="rgba(40,34,24,.28)" stroke-width=".5"/>',
+      '<path d="M8,-52.5 q1.4,-3 3.8,-2.4 M10.6,-51.6 q2.4,-2.2 4.2,-1" stroke="#6c7a62" stroke-width="1" fill="none"/>',
+      pRobe("#7b636b", 12, 5.5, 60),
+      pCollar("#cfc4ae", 60),
+      pBelt("#a3927c", 60),
+      pSleeves("#7b636b", 60),
+      pHead(60, "lowbun"),
+    ]),
+    // con bé dưới chân núi
+    child: assemble([
+      pShadow(9),
+      pRobe("#8a6f52", 9.5, 4.6, 40),
+      pCollar("#cfc4ae", 40),
+      pBelt("#6b5c44", 40),
+      pSleeves("#8a6f52", 40),
+      pHead(40, "buns"),
+    ]),
+    // người mẹ tìm con — khăn vấn, dáng nâu bạc
+    oldwoman: assemble([
+      pShadow(11.5),
+      pStaff(-9.5, -11.5),
+      pRobe("#6b6154", 12, 5.6, 56),
+      pCollar("#b8ab92", 56),
+      pBelt("#57503f", 56),
+      pSleeves("#6b6154", 56),
+      pHead(56, "scarf"),
+    ]),
+    // người buôn — đòn gánh, hai bọc hàng
+    trader: assemble([
+      pShadow(12),
+      '<path d="M-23,-55 Q0,-60 23,-55.5" stroke="#6b5c44" stroke-width="1.6" fill="none"/>',
+      '<path d="M-21.5,-55.5 l0,7 M21.5,-55.8 l0,7.5" stroke="rgba(40,34,24,.5)" stroke-width=".7"/>',
+      '<path d="M-25.5,-48.5 q4,-2.6 8,0 q.4,5 -4,6.5 q-4.4,-1.5 -4,-6.5 Z" fill="#8a7a5e" stroke="rgba(40,34,24,.35)" stroke-width=".6"/>',
+      '<path d="M17.5,-48.2 q4,-2.6 8,0 q.4,5 -4,6.5 q-4.4,-1.5 -4,-6.5 Z" fill="#8a7a5e" stroke="rgba(40,34,24,.35)" stroke-width=".6"/>',
+      pRobe("#665e4c", 12, 5.8, 60),
+      pCollar("#c2b59a", 60),
+      pBelt("#4c463a", 60),
+      pSleeves("#665e4c", 60),
+      pHead(60, "bun"),
+    ]),
+    // người làng
+    villager: assemble([
+      pShadow(11.5),
+      pRobe("#57503f", 12, 5.6, 58),
+      '<path d="M-5.6,-57 Q-8,-44 -6.8,-34 L-3.4,-35 Q-4.4,-46 -2.8,-56 Z" fill="#8a7a5e" opacity=".85"/>',
+      pCollar("#b8ab92", 58),
+      pBelt("#3f3a30", 58),
+      pSleeves("#57503f", 58),
+      pHead(58, "bun"),
+    ]),
+    // người đưa thư / khách lỡ đường — nón lá, áo sẫm
+    master: assemble([
+      pShadow(12),
+      pRobe("#45484e", 12.5, 5.8, 60),
+      pCollar("#9a9284", 60),
+      pBelt("#33363c", 60),
+      pSleeves("#45484e", 60),
+      pHead(60, "hat"),
+    ]),
   };
 
-  const POS = { gate: [236, 468], yard: [356, 432], mountain: [56, 322] };
+  // khách lỡ đường đội nón như người đưa thư — cùng một dáng
+  FIGS.traveler = FIGS.master;
+
+  const POS = { gate: [150, 438], yard: [340, 416], mountain: [58, 310] };
 
   const SVG = ''
-  + '<svg class="ink-svg" viewBox="0 0 800 520" preserveAspectRatio="xMidYMax slice" xmlns="http://www.w3.org/2000/svg">'
+  + '<svg class="ink-svg" viewBox="0 0 800 520" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">'
 
   // far mountains
   + '<path class="mtn1" opacity=".5" d="M-10,238 L60,150 Q80,124 108,142 L170,86 Q186,72 204,90 L268,170 L330,120 Q348,102 366,124 L430,224 L800,238 L800,260 L-10,260 Z"/>'
@@ -121,7 +328,7 @@
   + '<ellipse cx="618" cy="368" rx="17" ry="5" fill="#7d7057"/>'
   + '<path d="M606,360 q4,-10 12,-10 q10,0 12,10 Z" fill="#a4531f" opacity=".85"/>'
   + '<circle cx="600" cy="364" r="4" fill="#e8e2cf"/>'
-  + '<g transform="translate(576,382)"><g class="breathe">' + FIGS.villager.replace('#4a4438', '#7a6248') + '</g></g></g>'
+  + '<g transform="translate(576,382)"><g class="breathe">' + FIGS.villager.split('#57503f').join('#7a6248') + '</g></g></g>'
 
   // porch items: sword / letter / leaf-book / cat
   + '<g id="it-kiem_go_hien" class="yi"><line x1="533" y1="388" x2="524" y2="330" stroke="#7a6248" stroke-width="4" stroke-linecap="round"/>'
@@ -160,23 +367,23 @@
   + '<path d="M182,416 q-10,-1 -15,-9 q12,0 19,4 Z" fill="#3e4440"/>'
   + '<path d="M291,416 q10,-1 15,-9 q-12,0 -19,4 Z" fill="#3e4440"/></g>'
 
-  // NPC layer
-  + '<g id="ink-npc"><g class="walker"></g></g>'
   + '</svg>';
 
   // hotspots: [id, left%, top%, width%, height%]
   const HOTS = [
-    ["tree", 21, 44, 25, 36],
-    ["gate", 22, 76, 15, 21],
-    ["jar", 56.5, 70, 6, 12],
-    ["porch", 63, 66, 34, 16],
+    ["tree", 0, 5, 25, 76],
+    ["gate", 6, 38, 24, 51],
+    ["jar", 52, 58, 12, 22],
+    ["porch", 66, 38, 32, 48],
   ];
 
   const ITEM_IDS = ["kiem_go_hien", "ban_co", "quan_co_khuyet", "buc_thu", "cay_mai", "la_de", "con_meo"];
 
   function boot(el) {
-    el.innerHTML = '<div id="ink-root" data-season="xuan" data-phase="day">'
+    el.innerHTML = '<div id="ink-root" class="painted-mode" data-season="xuan" data-phase="day" data-focus="center">'
+      + '<div class="painted-bg" aria-hidden="true"></div>'
       + SVG
+      + '<div id="ink-npc"><svg viewBox="-28 -84 56 90" aria-hidden="true"><g class="walker"></g></svg></div>'
       + '<div class="ink-mist m1"></div><div class="ink-mist m2"></div><div class="ink-mist m3"></div>'
       + '<div class="ink-fx"></div><div class="ink-steam"></div>'
       + '<div class="ink-dusk"></div>'
@@ -184,6 +391,8 @@
           return '<button class="ink-hot" data-hot="' + h[0] + '" style="left:' + h[1] + '%;top:' + h[2]
             + '%;width:' + h[3] + '%;height:' + h[4] + '%"><span class="dot"></span></button>';
         }).join("")
+      + '<button class="ink-hot ink-npc-hot" data-hot="npc" aria-label="Mở lời với khách" '
+      + 'style="left:33%;top:48%;width:20%;height:42%"><span class="dot"></span></button>'
       + '</div>'
       + '<div class="ink-grain"></div><div class="ink-vignette"></div>'
       + '<div class="ink-tip"></div>'
@@ -198,7 +407,8 @@
     let tapCb = null, tipTimer = null;
     let dayItems = [];
     let curSeason = "xuan", curWeather = "";
-    let npcRun = 0, arriveTimer = null, leaveTimer = null;
+    let npcRun = 0, arriveTimer = null, leaveTimer = null, walkTimer = null;
+    let pendingArrive = null; // {run, role, cb} — để tap "giục" khách vào sân
 
     function emit(id) { if (tapCb) tapCb(id); }
     function itemDomId(id) { return id === "buc_thu_vodanh" ? "buc_thu" : id; }
@@ -220,7 +430,9 @@
     rootEl.addEventListener("click", function () { hideTip(); });
 
     function place(pos, scale) {
-      walker.style.transform = "translate(" + pos[0] + "px," + pos[1] + "px) scale(" + (scale || 1) + ")";
+      npcG.style.left = (pos[0] / 800 * 100) + "%";
+      npcG.style.top = (pos[1] / 520 * 100) + "%";
+      npcG.style.transform = "translate(-50%,-100%) scale(" + (scale || 1) + ")";
     }
 
     // ---- particles ----
@@ -268,10 +480,13 @@
         npcRun += 1;
         clearTimeout(arriveTimer);
         clearTimeout(leaveTimer);
+        clearTimeout(walkTimer);
+        pendingArrive = null;
         curSeason = o.season || "xuan";
         curWeather = o.weather || "";
         rootEl.dataset.season = o.season || "xuan";
         rootEl.dataset.phase = o.phase || "day";
+        rootEl.dataset.focus = o.focus || "center";
         weatherFx(curSeason, curWeather, o.phase || "day");
         const items = o.items || [];
         dayItems = items.slice();
@@ -281,35 +496,53 @@
             || (id === "buc_thu" && items.indexOf("buc_thu_vodanh") >= 0));
         });
         npcG.classList.remove("on", "glow");
-        rootEl.classList.remove("glowing");
+        rootEl.classList.remove("glowing", "npc-ready");
         hideTip();
       },
       npcArrive: function (role, cb) {
         npcRun += 1;
         clearTimeout(arriveTimer);
         clearTimeout(leaveTimer);
+        clearTimeout(walkTimer);
+        rootEl.classList.remove("npc-ready");
         const run = npcRun;
+        function settle() {
+          if (run !== npcRun) return;
+          pendingArrive = null;
+          npcG.classList.remove("walking");
+          npcG.classList.add("glow");
+          if (role !== "master") rootEl.classList.add("npc-ready");
+          if (cb) cb();
+        }
+        pendingArrive = { run: run, settle: settle };
         walker.innerHTML = '<g class="stride">' + (FIGS[role] || FIGS.villager) + '</g>';
-        walker.style.transition = "none";
+        npcG.style.transition = "none";
         place(POS.gate, 1);
-        void walker.getBoundingClientRect();
-        walker.style.transition = "";
+        void npcG.getBoundingClientRect();
+        npcG.style.transition = "";
         npcG.classList.add("on", "walking");
-        requestAnimationFrame(function () {
-          requestAnimationFrame(function () {
-            place(POS.yard, .95);
-            arriveTimer = setTimeout(function () {
-              if (run !== npcRun) return;
-              npcG.classList.remove("walking");
-              npcG.classList.add("glow");
-              if (cb) cb();
-            }, 4700);
-          });
-        });
+        // setTimeout thay vì rAF: tab ẩn vẫn đi tiếp, không kẹt ngoài cổng
+        walkTimer = setTimeout(function () {
+          if (run !== npcRun) return;
+          place(POS.yard, .95);
+          arriveTimer = setTimeout(settle, 4700);
+        }, 60);
+      },
+      // tap vào bóng người đang đi: khách vào sân ngay, khỏi đợi
+      npcHurry: function () {
+        if (!pendingArrive || pendingArrive.run !== npcRun) return false;
+        clearTimeout(arriveTimer);
+        clearTimeout(walkTimer);
+        npcG.style.transition = "left .5s ease-out, top .5s ease-out, transform .5s ease-out, opacity .9s";
+        place(POS.yard, .95);
+        setTimeout(function () { npcG.style.transition = ""; }, 550);
+        pendingArrive.settle();
+        return true;
       },
       npcLeave: function (toMountain) {
         const run = npcRun;
         clearTimeout(leaveTimer);
+        rootEl.classList.remove("npc-ready");
         npcG.classList.remove("glow");
         npcG.classList.add("walking");
         if (toMountain) { place(POS.mountain, .5); }
@@ -323,6 +556,7 @@
         weatherFx(curSeason, curWeather, p);
       },
       onTap: function (cb) { tapCb = cb; },
+      setFocus: function (focus) { rootEl.dataset.focus = focus || "center"; },
       setHotspotsGlow: function (on) { rootEl.classList.toggle("glowing", !!on); },
       tipAt: tipAt,
       destroy: function () { el.innerHTML = ""; },
