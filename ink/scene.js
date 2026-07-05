@@ -121,7 +121,7 @@
   + '<ellipse cx="618" cy="368" rx="17" ry="5" fill="#7d7057"/>'
   + '<path d="M606,360 q4,-10 12,-10 q10,0 12,10 Z" fill="#a4531f" opacity=".85"/>'
   + '<circle cx="600" cy="364" r="4" fill="#e8e2cf"/>'
-  + '<g transform="translate(576,382)">' + FIGS.villager.replace('#4a4438', '#7a6248') + '</g></g>'
+  + '<g transform="translate(576,382)"><g class="breathe">' + FIGS.villager.replace('#4a4438', '#7a6248') + '</g></g></g>'
 
   // porch items: sword / letter / leaf-book / cat
   + '<g id="it-kiem_go_hien" class="yi"><line x1="533" y1="388" x2="524" y2="330" stroke="#7a6248" stroke-width="4" stroke-linecap="round"/>'
@@ -196,15 +196,25 @@
     const walker = npcG.querySelector(".walker");
     const tip = el.querySelector(".ink-tip");
     let tapCb = null, tipTimer = null;
+    let dayItems = [];
+    let curSeason = "xuan", curWeather = "";
+    let npcRun = 0, arriveTimer = null, leaveTimer = null;
 
     function emit(id) { if (tapCb) tapCb(id); }
+    function itemDomId(id) { return id === "buc_thu_vodanh" ? "buc_thu" : id; }
+    function emittedItemId(id) {
+      if (id === "buc_thu" && dayItems.indexOf("buc_thu_vodanh") >= 0 && dayItems.indexOf("buc_thu") < 0) {
+        return "buc_thu_vodanh";
+      }
+      return id;
+    }
 
     el.querySelectorAll(".ink-hot").forEach(function (b) {
       b.addEventListener("click", function (e) { e.stopPropagation(); emit(b.dataset.hot); });
     });
     ITEM_IDS.forEach(function (id) {
-      const g = el.querySelector("#it-" + (id === "buc_thu_vodanh" ? "buc_thu" : id));
-      if (g) g.addEventListener("click", function (e) { e.stopPropagation(); emit(id); });
+      const g = el.querySelector("#it-" + itemDomId(id));
+      if (g) g.addEventListener("click", function (e) { e.stopPropagation(); emit(emittedItemId(id)); });
     });
     npcG.addEventListener("click", function (e) { e.stopPropagation(); emit("npc"); });
     rootEl.addEventListener("click", function () { hideTip(); });
@@ -224,11 +234,12 @@
         fx.appendChild(d);
       }
     }
-    function weatherFx(season, weather) {
+    function weatherFx(season, weather, phase) {
       fx.innerHTML = "";
       const w = weather || "";
-      if (/mưa/.test(w)) { spawn("fx-rain", 18, 1.1, 1.9); return; }
+      if (/mưa/.test(w)) { spawn("fx-rain", 14, 1.1, 1.9); return; }
       if (/tuyết/.test(w) || season === "dong") { spawn("fx-snow", 14, 9, 16); return; }
+      if (season === "ha" && phase === "result") { spawn("fx-firefly", 10, 5, 8); return; }
       if (season === "xuan") spawn("fx-petal", 8, 10, 15);
       if (season === "thu") spawn("fx-leaf", 9, 8, 14);
     }
@@ -237,7 +248,7 @@
     function hideTip() { tip.classList.remove("on"); }
     function tipAt(hotOrItemId, text) {
       const target = el.querySelector('[data-hot="' + hotOrItemId + '"]')
-        || el.querySelector("#it-" + hotOrItemId);
+        || el.querySelector("#it-" + itemDomId(hotOrItemId));
       tip.textContent = text;
       let x = 50, y = 50;
       if (target) {
@@ -254,10 +265,16 @@
 
     const api = {
       setDay: function (o) {
+        npcRun += 1;
+        clearTimeout(arriveTimer);
+        clearTimeout(leaveTimer);
+        curSeason = o.season || "xuan";
+        curWeather = o.weather || "";
         rootEl.dataset.season = o.season || "xuan";
         rootEl.dataset.phase = o.phase || "day";
-        weatherFx(o.season, o.weather);
+        weatherFx(curSeason, curWeather, o.phase || "day");
         const items = o.items || [];
+        dayItems = items.slice();
         ITEM_IDS.forEach(function (id) {
           const g = el.querySelector("#it-" + id);
           if (g) g.classList.toggle("on", items.indexOf(id) >= 0
@@ -268,26 +285,43 @@
         hideTip();
       },
       npcArrive: function (role, cb) {
-        walker.innerHTML = FIGS[role] || FIGS.villager;
+        npcRun += 1;
+        clearTimeout(arriveTimer);
+        clearTimeout(leaveTimer);
+        const run = npcRun;
+        walker.innerHTML = '<g class="stride">' + (FIGS[role] || FIGS.villager) + '</g>';
         walker.style.transition = "none";
         place(POS.gate, 1);
         void walker.getBoundingClientRect();
         walker.style.transition = "";
-        npcG.classList.add("on");
+        npcG.classList.add("on", "walking");
         requestAnimationFrame(function () {
           requestAnimationFrame(function () {
             place(POS.yard, .95);
-            setTimeout(function () { npcG.classList.add("glow"); if (cb) cb(); }, 4700);
+            arriveTimer = setTimeout(function () {
+              if (run !== npcRun) return;
+              npcG.classList.remove("walking");
+              npcG.classList.add("glow");
+              if (cb) cb();
+            }, 4700);
           });
         });
       },
       npcLeave: function (toMountain) {
+        const run = npcRun;
+        clearTimeout(leaveTimer);
         npcG.classList.remove("glow");
+        npcG.classList.add("walking");
         if (toMountain) { place(POS.mountain, .5); }
         else { place(POS.gate, 1); }
-        setTimeout(function () { npcG.classList.remove("on"); }, 3800);
+        leaveTimer = setTimeout(function () {
+          if (run === npcRun) npcG.classList.remove("on", "walking");
+        }, 3800);
       },
-      setPhase: function (p) { rootEl.dataset.phase = p; },
+      setPhase: function (p) {
+        rootEl.dataset.phase = p;
+        weatherFx(curSeason, curWeather, p);
+      },
       onTap: function (cb) { tapCb = cb; },
       setHotspotsGlow: function (on) { rootEl.classList.toggle("glowing", !!on); },
       tipAt: tipAt,

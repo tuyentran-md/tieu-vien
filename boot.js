@@ -1,0 +1,528 @@
+// ===== Dưới Núi Có Một Tiểu Viện — DOM boot + day loop (SPEC v3) =====
+
+(function () {
+  const SAVE_KEY = "tieuvien_save_v1";
+
+  let C = null;
+  let S = null;
+  let current = null;
+  let world = null;
+  let dayToken = 0;
+  let dayCtx = null;
+  let dialogOpen = false;
+  let typing = false;
+  let typeTimer = null;
+  let revealAllText = null;
+  let advancing = false;
+
+  const $ = sel => document.querySelector(sel);
+  const HOTSPOTS = ["tree", "gate", "jar", "porch"];
+  const ROLE_BY_PREFIX = { moc: "boy", thu: "scholar", co: "oldman" };
+  const ROLE_BY_ID = {
+    t_covu: "oldman2",
+    h_kiemkhach: "swordsman",
+    d_ruou: "swordsman",
+    t_tangnhan: "monk",
+    x_haithuoc: "woman",
+    x_mang: "child",
+    d_khoai: "child",
+    t_timcon: "oldwoman",
+    x_hatgiong: "trader",
+    h_xinchu: "trader",
+    h_trau: "villager",
+    h_gieng: "villager",
+    x_ganh_nuoc: "villager",
+    t_lathu: "master",
+    d_baotuyet: "master",
+  };
+  const MOUNTAIN_LEAVE = { moc_5: true, co_4: true };
+
+  function save() {
+    try { localStorage.setItem(SAVE_KEY, JSON.stringify(S)); } catch (e) {}
+  }
+
+  function load() {
+    try {
+      const raw = localStorage.getItem(SAVE_KEY);
+      if (raw) return JSON.parse(raw);
+    } catch (e) {}
+    return null;
+  }
+
+  function season() {
+    return C.seasonOf(S.day);
+  }
+
+  function weather() {
+    if (!current) return C.weatherOf(S.day);
+    return current.kind === "empty" ? C.EMPTY_WEATHER[season()] : C.weatherOf(S.day);
+  }
+
+  function ensureDay() {
+    if (S.day > C.TOTAL_DAYS) {
+      showEpilogue();
+      return false;
+    }
+
+    if (!S.current) {
+      S.current = C.pickToday(S);
+      S.phase = "day";
+      S.chosen = null;
+    }
+    current = C.resolveNode(S, S.current);
+    save();
+    renderShell();
+    startSceneFlow();
+    return true;
+  }
+
+  function renderShell() {
+    cancelTypewriter();
+    dialogOpen = false;
+    advancing = false;
+    document.body.dataset.season = season();
+    $("#hud-day").textContent = C.hudLine(S);
+    $("#yard-line").textContent = C.yardLine(S);
+    $("#yard-line").classList.remove("hidden");
+
+    $("#event-title").textContent = "";
+    $("#event-text").innerHTML = "";
+    $("#choices").innerHTML = "";
+    $("#result").classList.add("hidden");
+    $("#notes").textContent = "";
+    $("#next-day").classList.add("hidden");
+    $("#next-day").disabled = false;
+
+    if (S.phase === "result" && S.chosen) showResult(S.chosen);
+    if (world) world.setDay({ day: S.day, season: season(), weather: weather(), phase: S.phase, items: S.items.slice(), kind: current && current.kind });
+  }
+
+  function roleFor(id) {
+    if (!id) return "villager";
+    if (ROLE_BY_ID[id]) return ROLE_BY_ID[id];
+    const prefix = id.split("_")[0];
+    return ROLE_BY_PREFIX[prefix] || "villager";
+  }
+
+  function activeToken(token) {
+    return token === dayToken && dayCtx && dayCtx.token === token;
+  }
+
+  function cancelTypewriter() {
+    if (typeTimer) clearTimeout(typeTimer);
+    typeTimer = null;
+    typing = false;
+    revealAllText = null;
+  }
+
+  function revealTypewriter() {
+    if (typing && revealAllText) {
+      if (typeof Ambient !== "undefined") Ambient.play("menu");
+      revealAllText();
+    }
+  }
+
+  function startSceneFlow() {
+    dayToken += 1;
+    cancelTypewriter();
+    dialogOpen = false;
+    dayCtx = null;
+
+    if (!world || !current) return;
+
+    const token = dayToken;
+    const role = roleFor(current.id);
+    const ctx = {
+      token,
+      role,
+      npcReady: false,
+      masterReady: false,
+      dialogStarted: false,
+    };
+    dayCtx = ctx;
+    world.onTap(id => handleSceneTap(id, token));
+
+    if (S.phase === "result" && S.chosen) {
+      world.setHotspotsGlow(false);
+      world.setPhase("result");
+      return;
+    }
+
+    world.setPhase("day");
+    if (current.kind === "empty") {
+      world.setHotspotsGlow(true);
+      return;
+    }
+
+    world.setHotspotsGlow(false);
+    world.npcArrive(role, () => {
+      if (!activeToken(token) || S.phase !== "day" || ctx.dialogStarted) return;
+      ctx.npcReady = true;
+      if (role === "master") {
+        ctx.masterReady = true;
+        setTimeout(() => {
+          if (activeToken(token) && S.phase === "day") world.npcLeave(false);
+        }, 2000);
+      }
+    });
+  }
+
+  function handleSceneTap(id, token) {
+    if (!activeToken(token)) return;
+
+    if (dialogOpen) {
+      revealTypewriter();
+      return;
+    }
+
+    if (S.phase === "result") {
+      showItemTip(id);
+      return;
+    }
+
+    if (current.kind === "empty" && HOTSPOTS.includes(id)) {
+      openDialog(token);
+      return;
+    }
+
+    if (current.kind !== "empty") {
+      if (dayCtx.role === "master" && (id === "porch" || id === "buc_thu" || id === "buc_thu_vodanh")) {
+        if (dayCtx.masterReady) openDialog(token);
+        return;
+      }
+      if (id === "npc") {
+        if (dayCtx.npcReady) openDialog(token);
+        return;
+      }
+    }
+
+    showItemTip(id);
+  }
+
+  function showItemTip(id) {
+    let itemId = id;
+    if (id === "buc_thu" && S.items.includes("buc_thu_vodanh") && !S.items.includes("buc_thu")) {
+      itemId = "buc_thu_vodanh";
+    }
+    const it = ITEMS[itemId];
+    if (it && world) world.tipAt(itemId, it.memory);
+  }
+
+  function openDialog(token) {
+    if (!activeToken(token) || !current || S.phase === "result") return;
+    if (dialogOpen) {
+      revealTypewriter();
+      return;
+    }
+
+    dayCtx.dialogStarted = true;
+    dialogOpen = true;
+    if (world) world.setHotspotsGlow(false);
+
+    $("#event-title").textContent = current.node.title;
+    $("#event-text").innerHTML = "";
+    $("#choices").innerHTML = "";
+    $("#result").classList.add("hidden");
+    $("#notes").textContent = "";
+    $("#next-day").classList.add("hidden");
+
+    typeDialog(C.visibleParas(S, current.node), token);
+  }
+
+  function typeDialog(paras, token) {
+    cancelTypewriter();
+    const texts = paras.map(p => p.text);
+    const chars = texts.map(t => Array.from(t));
+    const parasEl = $("#event-text");
+    const els = texts.map(() => {
+      const p = document.createElement("p");
+      parasEl.appendChild(p);
+      return p;
+    });
+
+    function finishText() {
+      if (!activeToken(token)) return;
+      cancelTypewriter();
+      texts.forEach((t, i) => { els[i].textContent = t; });
+      renderChoices(token);
+    }
+
+    if (!texts.length) {
+      renderChoices(token);
+      return;
+    }
+
+    let pi = 0;
+    let ci = 0;
+    typing = true;
+    revealAllText = finishText;
+
+    function tick() {
+      if (!activeToken(token) || !dialogOpen) return;
+      if (pi >= chars.length) {
+        cancelTypewriter();
+        renderChoices(token);
+        return;
+      }
+      if (ci < chars[pi].length) {
+        els[pi].textContent += chars[pi][ci];
+        ci += 1;
+        typeTimer = setTimeout(tick, 36);
+        return;
+      }
+      pi += 1;
+      ci = 0;
+      typeTimer = setTimeout(tick, 120);
+    }
+
+    tick();
+  }
+
+  function renderChoices(token) {
+    if (!activeToken(token) || !dialogOpen || !current || S.phase === "result") return;
+    const wrap = $("#choices");
+    wrap.innerHTML = "";
+    C.visibleChoices(S, current.node).forEach(choice => {
+      const btn = document.createElement("button");
+      btn.className = "choice";
+      btn.textContent = choice.label;
+      btn.onclick = e => {
+        e.stopPropagation();
+        choose(choice, token);
+      };
+      wrap.appendChild(btn);
+    });
+  }
+
+  function choose(choice, token) {
+    if (!activeToken(token) || S.phase === "result") return;
+    if (typeof Ambient !== "undefined") Ambient.play("accept");
+    cancelTypewriter();
+    C.applyChoice(S, choice);
+    S.chosen = { result: choice.result, quote: choice.quote || null, item: choice.item || null };
+    S.phase = "result";
+    save();
+
+    $("#choices").innerHTML = "";
+    dialogOpen = false;
+    showResult(S.chosen, true);
+
+    if (world) {
+      world.setPhase("result");
+      if (current.kind !== "empty") world.npcLeave(!!MOUNTAIN_LEAVE[current.id]);
+    }
+  }
+
+  function showResult(ch, playUnlock) {
+    const r = $("#result");
+    r.textContent = ch.result;
+    r.classList.remove("hidden");
+
+    const notes = [];
+    if (ch.quote) notes.push("✎ Một câu được chép vào Sổ Nhỏ.");
+    if (ch.item && ITEMS[ch.item]) notes.push("◦ " + ITEMS[ch.item].name + " — giờ thuộc về tiểu viện.");
+    $("#notes").textContent = notes.join("   ");
+    if (playUnlock && (ch.quote || ch.item) && typeof Ambient !== "undefined") Ambient.play("quote");
+    $("#next-day").classList.remove("hidden");
+  }
+
+  function nextDay() {
+    if (advancing) return;
+    advancing = true;
+    $("#next-day").disabled = true;
+    if (world) world.setPhase("night");
+
+    setTimeout(() => {
+      S.day += 1;
+      S.current = null;
+      S.chosen = null;
+      S.phase = "day";
+      if (ensureDay() && typeof Ambient !== "undefined" && Ambient.isOn()) Ambient.setScene(season(), weather());
+    }, world ? 750 : 0);
+  }
+
+  function showEpilogue() {
+    S.phase = "end";
+    save();
+    $("#title-screen").classList.add("hidden");
+    $("#game").classList.add("hidden");
+    $("#epilogue").classList.remove("hidden");
+    document.body.dataset.season = "dong";
+    if (typeof Ambient !== "undefined" && Ambient.isOn()) Ambient.setEpilogue();
+
+    if (!$("#epilogue .ink-fx")) {
+      const fxc = document.createElement("div");
+      fxc.className = "ink-fx";
+      for (let i = 0; i < 12; i++) {
+        const d = document.createElement("div");
+        d.className = "fx-p fx-snow";
+        d.style.left = (3 + (i * 89) % 94) + "%";
+        d.style.animationDuration = (9 + ((i * 37) % 100) / 100 * 7) + "s";
+        d.style.animationDelay = "-" + ((i * 53) % 140) / 10 + "s";
+        fxc.appendChild(d);
+      }
+      $("#epilogue").prepend(fxc);
+    }
+
+    const box = $("#epilogue-text");
+    box.innerHTML = "";
+    C.epilogueParas(S).forEach(t => {
+      const p = document.createElement("p");
+      p.textContent = t;
+      box.appendChild(p);
+    });
+    $("#epilogue-stats").textContent = C.statsLine(S);
+  }
+
+  function openJournal() {
+    if (typeof Ambient !== "undefined") Ambient.play("quote");
+    const list = $("#modal-list");
+    list.innerHTML = "";
+    $("#modal-title").textContent = "Sổ Nhỏ Dưới Núi";
+
+    if (!S.journal.length) {
+      list.innerHTML = "<p class='dim'>Sổ còn trắng. Chuyện chưa tới, hoặc mình chưa nhận ra.</p>";
+    } else {
+      S.journal.forEach(q => {
+        const p = document.createElement("p");
+        p.className = "quote";
+        p.textContent = "“" + QUOTES[q] + "”";
+        list.appendChild(p);
+      });
+    }
+    $("#modal").classList.remove("hidden");
+  }
+
+  function openCourtyard() {
+    if (typeof Ambient !== "undefined") Ambient.play("menu");
+    const list = $("#modal-list");
+    list.innerHTML = "";
+    $("#modal-title").textContent = "Trong sân";
+
+    if (!S.items.length) {
+      list.innerHTML = "<p class='dim'>Sân còn trống. Một mái hiên, một gốc cây, một ấm trà cũ.</p>";
+    } else {
+      S.items.forEach(id => {
+        const it = ITEMS[id];
+        if (!it) return;
+        const d = document.createElement("div");
+        d.className = "item";
+
+        const name = document.createElement("div");
+        name.className = "item-name";
+        name.textContent = it.name;
+
+        const mem = document.createElement("div");
+        mem.className = "item-mem";
+        mem.textContent = it.memory;
+
+        d.appendChild(name);
+        d.appendChild(mem);
+        list.appendChild(d);
+      });
+    }
+    $("#modal").classList.remove("hidden");
+  }
+
+  function resetGame() {
+    if (!confirm("Bắt đầu lại một năm mới? Năm cũ sẽ không giữ lại.")) return;
+    localStorage.removeItem(SAVE_KEY);
+    location.reload();
+  }
+
+  function runAutoplay(days) {
+    function chooseFirstVisible() {
+      if (!S.current) S.current = C.pickToday(S);
+      current = C.resolveNode(S, S.current);
+
+      if (!(S.phase === "result" && S.chosen)) {
+        const choice = C.visibleChoices(S, current.node)[0];
+        if (!choice) return false;
+        C.applyChoice(S, choice);
+        S.chosen = { result: choice.result, quote: choice.quote || null, item: choice.item || null };
+        S.phase = "result";
+      }
+      return true;
+    }
+
+    for (let i = 0; i < days && S.day <= C.TOTAL_DAYS; i++) {
+      if (!chooseFirstVisible()) break;
+
+      S.day += 1;
+      S.current = null;
+      S.chosen = null;
+      S.phase = "day";
+    }
+
+    save();
+  }
+
+  function syncSoundButton() {
+    const btn = $("#btn-sound");
+    btn.classList.toggle("muted", !Ambient.isOn());
+  }
+
+  function enterGame(opts) {
+    const unlockAudio = !opts || opts.unlockAudio !== false;
+
+    $("#title-screen").classList.add("hidden");
+    $("#epilogue").classList.add("hidden");
+    $("#game").classList.remove("hidden");
+
+    if (!world) {
+      world = InkScene.boot($("#stage"));
+    }
+
+    if (!ensureDay()) return;
+
+    if (unlockAudio && Ambient) Ambient.boot(season(), weather());
+    syncSoundButton();
+  }
+
+  window.addEventListener("DOMContentLoaded", () => {
+    C = createCore({ ARCS, ARC_STARTS, SEASON_EVENTS, EMPTY_DAY, QUOTES, ITEMS, YARD_LINES, EPILOGUE });
+
+    $("#btn-journal").onclick = openJournal;
+    $("#btn-courtyard").onclick = openCourtyard;
+    $("#btn-reset").onclick = resetGame;
+    $("#modal-close").onclick = () => { if (typeof Ambient !== "undefined") Ambient.play("cancel"); $("#modal").classList.add("hidden"); };
+    $("#modal").onclick = e => {
+      if (e.target.id === "modal") {
+        if (typeof Ambient !== "undefined") Ambient.play("cancel");
+        $("#modal").classList.add("hidden");
+      }
+    };
+    $("#next-day").onclick = nextDay;
+    $("#scene").onclick = () => { if (dialogOpen) revealTypewriter(); };
+    $("#btn-again").onclick = () => { localStorage.removeItem(SAVE_KEY); location.reload(); };
+    $("#btn-sound").onclick = () => {
+      Ambient.toggle();
+      if (Ambient.isOn() && S) {
+        if (S.phase === "end") Ambient.setEpilogue();
+        else Ambient.setScene(season(), weather());
+      }
+      syncSoundButton();
+    };
+
+    const saved = load();
+    const begin = $("#btn-begin");
+    if (saved && saved.phase === "end") {
+      S = saved;
+      begin.textContent = "Xem lại đêm cuối năm";
+      begin.onclick = showEpilogue;
+    } else if (saved && saved.day) {
+      S = saved;
+      begin.textContent = "Tiếp tục · " + C.SEASON_NAMES[C.seasonOf(S.day)] + ", ngày " + S.day;
+      begin.onclick = () => enterGame();
+    } else {
+      S = C.newState();
+      begin.onclick = () => enterGame();
+    }
+
+    const autoplay = parseInt(new URLSearchParams(location.search).get("autoplay") || "0", 10);
+    if (autoplay > 0) {
+      runAutoplay(autoplay);
+      enterGame({ unlockAudio: false });
+    }
+  });
+})();

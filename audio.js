@@ -3,7 +3,24 @@
 const Ambient = (() => {
   let ac = null, master = null, on = false;
   let windGain, rainGain, chimeTimer = null, birdTimer = null;
+  let mediaReady = false, currentMusic = null, currentMusicKey = null, fadeTimer = null;
+  const music = {};
+  const sfx = {};
   const PREF_KEY = "tieuvien_sound";
+  const MUSIC_SRC = {
+    title: "assets/ninja/music/title.ogg",
+    xuan: "assets/ninja/music/xuan.ogg",
+    ha: "assets/ninja/music/ha.ogg",
+    thu: "assets/ninja/music/thu.ogg",
+    dong: "assets/ninja/music/dong.ogg",
+    epilogue: "assets/ninja/music/epilogue.ogg",
+  };
+  const SFX_SRC = {
+    accept: "assets/ninja/sfx/Accept.wav",
+    cancel: "assets/ninja/sfx/Cancel.wav",
+    menu: "assets/ninja/sfx/Menu1.wav",
+    quote: "assets/ninja/sfx/quote.wav",
+  };
 
   function noiseBuffer(seconds, brown) {
     const len = ac.sampleRate * seconds;
@@ -18,10 +35,29 @@ const Ambient = (() => {
     return buf;
   }
 
+  function ensureMedia() {
+    if (mediaReady) return;
+    Object.keys(MUSIC_SRC).forEach(k => {
+      const a = new Audio(MUSIC_SRC[k]);
+      a.preload = "auto";
+      a.loop = true;
+      a.volume = 0;
+      music[k] = a;
+    });
+    Object.keys(SFX_SRC).forEach(k => {
+      const a = new Audio(SFX_SRC[k]);
+      a.preload = "auto";
+      a.volume = k === "quote" ? .3 : .45;
+      sfx[k] = a;
+    });
+    mediaReady = true;
+  }
+
   function start() {
+    ensureMedia();
     if (ac) { ac.resume(); return; }
     ac = new (window.AudioContext || window.webkitAudioContext)();
-    master = ac.createGain(); master.gain.value = .22; master.connect(ac.destination);
+    master = ac.createGain(); master.gain.value = .10; master.connect(ac.destination);
 
     // gió — brown noise + lowpass, phập phồng chậm
     const wind = ac.createBufferSource(); wind.buffer = noiseBuffer(4, true); wind.loop = true;
@@ -84,18 +120,84 @@ const Ambient = (() => {
       birdTimer = setInterval(() => { if (Math.random()<.55) chirp(); }, 6500);
   }
 
+  function fadeToMusic(key) {
+    if (!on) return;
+    ensureMedia();
+    const next = music[key] || music.xuan;
+    if (!next || currentMusicKey === key) return;
+    clearInterval(fadeTimer);
+
+    const prev = currentMusic;
+    currentMusic = next;
+    currentMusicKey = key;
+    next.volume = 0;
+    next.play().catch(() => {});
+
+    const dur = 1200;
+    const startAt = performance.now();
+    fadeTimer = setInterval(() => {
+      const t = Math.min(1, (performance.now() - startAt) / dur);
+      next.volume = .35 * t;
+      if (prev && prev !== next) prev.volume = .35 * (1 - t);
+      if (t >= 1) {
+        clearInterval(fadeTimer);
+        fadeTimer = null;
+        next.volume = .35;
+        if (prev && prev !== next) {
+          prev.pause();
+          prev.currentTime = 0;
+          prev.volume = 0;
+        }
+      }
+    }, 50);
+  }
+
+  function stopMusic() {
+    clearInterval(fadeTimer);
+    fadeTimer = null;
+    Object.keys(music).forEach(k => {
+      music[k].pause();
+      music[k].volume = 0;
+    });
+    currentMusic = null;
+    currentMusicKey = null;
+  }
+
   function setScene(season, weather) {
     if (!ac || !on) return;
     const t = ac.currentTime;
     rainGain.gain.linearRampToValueAtTime(weather==="rain" ? .16 : 0, t+1.5);
     windGain.gain.linearRampToValueAtTime(season==="dong" ? .34 : season==="ha" ? .16 : .25, t+1.5);
     schedule(season, weather);
+    fadeToMusic(season);
+  }
+
+  function setEpilogue() {
+    if (!ac || !on) return;
+    clearInterval(chimeTimer); clearInterval(birdTimer);
+    fadeToMusic("epilogue");
+  }
+
+  function play(name) {
+    if (!on) return;
+    ensureMedia();
+    const base = sfx[name];
+    if (!base) return;
+    const a = base.cloneNode();
+    a.volume = base.volume;
+    a.play().catch(() => {});
   }
 
   function toggle() {
     on = !on;
     try { localStorage.setItem(PREF_KEY, on ? "1" : "0"); } catch(e){}
-    if (on) start(); else if (ac) { ac.suspend(); clearInterval(chimeTimer); clearInterval(birdTimer); }
+    if (on) start();
+    else if (ac) {
+      ac.suspend();
+      clearInterval(chimeTimer);
+      clearInterval(birdTimer);
+      stopMusic();
+    }
     return on;
   }
   function enabledPref() { try { return localStorage.getItem(PREF_KEY) !== "0"; } catch(e){ return true; } }
@@ -104,5 +206,5 @@ const Ambient = (() => {
     on = true; start(); setScene(season, weather); return true;
   }
 
-  return { toggle, boot, setScene, isOn: () => on };
+  return { toggle, boot, setScene, setEpilogue, play, isOn: () => on };
 })();

@@ -16,7 +16,9 @@ python3 -m http.server 8000
 One year = 48 days across four seasons. Progress autosaves to localStorage.
 
 ## Structure
-- `game.js` — engine (day loop, hidden stats, delayed-consequence scheduler)
+- `core.js` — pure game logic (day picker, hidden stats, delayed-consequence scheduler)
+- `boot.js` — DOM shell, save/resume, day loop, dialog, epilogue, autoplay audit
+- `ink/scene.js` / `ink/scene.css` — living ink-wash courtyard scene
 - `data/arcs.js` — three hand-written character arcs
 - `data/events.js` — seasonal one-shot events + quiet days
 - `data/quotes.js` — the unlockable notebook, courtyard items, yard descriptions

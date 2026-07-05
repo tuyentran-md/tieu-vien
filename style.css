@@ -99,8 +99,15 @@ header {
   border-bottom: 1px solid var(--line);
   margin-bottom: 2rem;
 }
-#hud-day { letter-spacing: .08em; color: var(--accent); font-size: .95rem; }
-header nav { display: flex; gap: 1rem; }
+#hud-day { flex: 0 0 auto; letter-spacing: .08em; color: var(--accent); font-size: .95rem; }
+header nav {
+  display: flex;
+  flex: 1 1 12rem;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: .2rem 1rem;
+  min-width: 0;
+}
 header nav button {
   font-family: inherit; font-size: .85rem;
   background: none; border: none; cursor: pointer;
@@ -174,6 +181,18 @@ header nav button:hover { color: var(--ink); border-bottom-color: var(--ink-dim)
 @media (max-width: 480px) {
   #game-col { padding: 1rem 1rem 3rem; }
   #title-screen h1 { font-size: 1.6rem; }
+  header { align-items: flex-start; }
+  header nav {
+    width: 100%;
+    flex: 0 0 100%;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    gap: .25rem .85rem;
+  }
+  header nav button {
+    min-height: 40px;
+    font-size: .82rem;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

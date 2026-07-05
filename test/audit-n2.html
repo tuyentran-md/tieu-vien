@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<!-- Audit harness N2 (không commit vào release; chỉ dùng cho headless check) -->
+<html><head><meta charset="UTF-8"><style>
+  body { font: 16px monospace; padding: 20px; } .ok { color: green; } .bad { color: red; }
+  iframe { width: 900px; height: 700px; border: 1px solid #ccc; display: block; margin-top: 12px; }
+</style></head>
+<body>
+<div id="log">running…</div>
+<iframe id="f"></iframe>
+<script>
+const log = [];
+function put(name, pass, extra) {
+  log.push('<div class="' + (pass ? "ok" : "bad") + '">' + (pass ? "PASS" : "FAIL") + " — " + name + (extra ? " · " + extra : "") + "</div>");
+  document.getElementById("log").innerHTML = log.join("");
+}
+const f = document.getElementById("f");
+const step = (ms) => new Promise(r => setTimeout(r, ms));
+const loadFrame = (src) => new Promise(r => { f.onload = r; f.src = src; });
+
+async function main() {
+  // ---- Test 1: fresh day 1 = Mộc, NPC tap → dialog → 4 choices ----
+  localStorage.removeItem("tieuvien_save_v1");
+  await loadFrame("/index.html?audit=t1");
+  const d = () => f.contentDocument;
+  d().getElementById("btn-begin").click();
+  await step(300);
+  const npcOn = d().querySelector("#ink-npc").classList.contains("on");
+  put("NPC xuất hiện ngày 1", npcOn);
+  await step(5200); // walk 4.6s + glow
+  d().querySelector("#ink-npc").dispatchEvent(new f.contentWindow.MouseEvent("click", { bubbles: true }));
+  await step(400);
+  const title = d().getElementById("event-title").textContent;
+  put("Dialog mở sau tap NPC", title.length > 0, "title=" + title);
+  d().getElementById("scene").click(); // reveal typewriter
+  await step(300);
+  const nChoices = d().querySelectorAll(".choice").length;
+  put("Ngày 1 có 4 lựa chọn", nChoices === 4, "choices=" + nChoices);
+  if (nChoices) {
+    d().querySelector(".choice").click();
+    await step(300);
+    const resShown = !d().getElementById("result").classList.contains("hidden");
+    const nextShown = !d().getElementById("next-day").classList.contains("hidden");
+    const dusk = d().getElementById("ink-root").dataset.phase === "result";
+    put("Chọn xong: result + Qua ngày + dusk", resShown && nextShown && dusk,
+      "res=" + resShown + " next=" + nextShown + " phase=" + d().getElementById("ink-root").dataset.phase);
+    d().getElementById("next-day").click();
+    await step(1300);
+    const day2 = d().getElementById("hud-day").textContent;
+    put("Qua ngày 2", /Ngày 2/.test(day2), day2);
+  }
+
+  // ---- Test 2: reload resumes saved day ----
+  await loadFrame("/index.html?audit=t2");
+  await step(300);
+  d().getElementById("btn-begin").click();
+  await step(500);
+  put("Tiếp tục sau reload về đúng ngày", /Ngày 2/.test(d().getElementById("hud-day").textContent),
+    d().getElementById("hud-day").textContent);
+
+  // ---- Test 3: autoplay 47 ngày + 1 Qua ngày → epilogue ----
+  localStorage.removeItem("tieuvien_save_v1");
+  await loadFrame("/index.html?autoplay=47&audit=t3");
+  await step(700);
+  const hud48 = d().getElementById("hud-day").textContent;
+  put("Autoplay tới ngày 48", /Ngày 48/.test(hud48), hud48);
+  // day 48 chưa chọn → mở dialog qua NPC hoặc hotspot rồi chọn
+  await step(5300);
+  const root = d().getElementById("ink-root");
+  if (d().querySelector("#ink-npc").classList.contains("on")) {
+    d().querySelector("#ink-npc").dispatchEvent(new f.contentWindow.MouseEvent("click", { bubbles: true }));
+  } else {
+    d().querySelector('[data-hot="tree"]').dispatchEvent(new f.contentWindow.MouseEvent("click", { bubbles: true }));
+  }
+  await step(400);
+  d().getElementById("scene").click();
+  await step(300);
+  const c48 = d().querySelectorAll(".choice");
+  put("Ngày 48 mở được node", c48.length > 0, "choices=" + c48.length);
+  if (c48.length) { c48[0].click(); await step(300); }
+  d().getElementById("next-day").click();
+  await step(1400);
+  const ep = !d().getElementById("epilogue").classList.contains("hidden");
+  const epParas = d().querySelectorAll("#epilogue-text p").length;
+  put("Epilogue hiện sau ngày 48", ep && epParas > 3, "paras=" + epParas);
+
+  document.title = "AUDIT:" + (log.every(l => l.includes("PASS")) ? "ALLPASS" : "HASFAIL");
+  document.getElementById("log").innerHTML = log.join("") + "<div>— hết —</div>";
+}
+main();
+</script>
+</body></html>
