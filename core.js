@@ -25,8 +25,9 @@
       journal: [],   // quote ids, in unlock order
       items: [],     // item ids
       current: null, // {kind,id} — node đã rút cho hôm nay (chống reroll khi reload)
-      chosen: null,  // {result,quote,item} — đã chọn xong, đợi "Qua ngày"
-      phase: "day",  // day | result | end
+      chosen: null,  // {result,quote,item} — đã chọn xong, đợi "Qua ngày"/"tiếp"
+      beat: 0,       // nhịp hiện tại trong ngày (node nhiều nhịp)
+      phase: "day",  // day | beat | result | end
     };
   }
 
@@ -123,8 +124,18 @@
     return { kind: "empty", id: "empty", node: { title: D.EMPTY_DAY.title_by_season[season], paras: D.EMPTY_DAY.paras, choices: D.EMPTY_DAY.choices } };
   }
 
-  function visibleParas(S, node)   { return node.paras.filter(p => condOk(S, p)); }
-  function visibleChoices(S, node) { return node.choices.filter(c => condOk(S, c)); }
+  // ---- multi-beat: một node có thể là chuỗi nhịp {paras,choices} ----
+  // node.beats vắng => node tự nó là một nhịp (tương thích ngược).
+  function beatOf(node, S) {
+    if (!node.beats) return node;
+    const i = Math.min(S.beat || 0, node.beats.length - 1);
+    return node.beats[i];
+  }
+  function beatCount(node) { return node.beats ? node.beats.length : 1; }
+  function isFinalBeat(node, S) { return !node.beats || (S.beat || 0) >= node.beats.length - 1; }
+
+  function visibleParas(S, node)   { return beatOf(node, S).paras.filter(p => condOk(S, p)); }
+  function visibleChoices(S, node) { return beatOf(node, S).choices.filter(c => condOk(S, c)); }
 
   // ---- apply a choice ----
   function applyChoice(S, choice) {
@@ -161,6 +172,7 @@
     TOTAL_DAYS, DAYS_PER_SEASON, SEASONS, SEASON_NAMES, EMPTY_WEATHER,
     newState, seasonOf, hasFlag, condOk, seededRand, weatherOf, dominantStat,
     pickToday, resolveNode, visibleParas, visibleChoices, applyChoice,
+    beatOf, beatCount, isFinalBeat,
     epilogueParas, yardLine, hudLine, statsLine,
     data: D,
   };

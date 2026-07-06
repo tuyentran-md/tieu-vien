@@ -1,7 +1,14 @@
 // ===== ARCS — nội dung chính, 3 arc viết tay =====
 // Node schema:
-// { title, paras:[{text, if?:flag, ifNot?:flag}], choices:[{label, if?, ifNot?, req?:{stat,min}, result, effects?, flags?, schedule?:{node,delay}, quote?, item?, kill?:arcId }] }
+// { title, paras:[{text, if?, ifNot?}], choices:[{label, if?, ifNot?, req?:{stat,min}, result, effects?, flags?, schedule?:{node,delay}, quote?, item?, kill?:arcId }] }
 // effects: {tam,duyen,danh,tinh} ; schedule.delay tính từ ngày hiện tại.
+//
+// NGÀY NHIỀU NHỊP (multi-beat): thay vì {paras,choices}, một node có thể có
+//   beats: [ {paras,choices}, {paras,choices}, ... ]
+// Mỗi nhịp là một lượt trong CÙNG một ngày (quan sát → trò chuyện → quyết định).
+// Nhịp giữa: chọn xong hiện result + nút "Rồi sao nữa…" để sang nhịp kế.
+// Nhịp CUỐI mới kết ngày (result + "Qua ngày"): đặt schedule/kill/item quan trọng ở đây.
+// Nhịp giữa nên chỉ effects nhỏ (dựng không khí), không schedule. Xem moc_1 làm mẫu.
 //
 // Giọng văn: hình ảnh đi trước, kết luận nhường cho người chơi.
 // Result để dư âm ở vật, thời tiết, nhịp tay, chỗ im lặng — không giải nghĩa.
@@ -20,40 +27,92 @@ const ARCS = {
 
   moc_1: {
     title: "Bóng nhỏ ngoài cổng",
-    paras: [
-      { text: "Sương còn nằm ngang lối đá. Ngoài cổng, một đứa trẻ đứng từ lúc bếp chưa đỏ lửa; áo vá ở vai, chân đất, hai tay giữ một nhánh trúc đã tước sạch lá." },
-      { text: "Bạn mở cổng. Nó lùi nửa bước, như sợ tiếng then cửa cũng có thể làm mình sai." },
-      { text: "Mãi một lúc sau, nó mới nhìn vào khoảng sân sau lưng bạn: “Học kiếm… có thể không bị bắt nạt nữa không?”" },
-    ],
-    choices: [
+    beats: [
+      // --- nhịp 1: nhận ra ---
       {
-        label: "Nhận nhánh trúc, bảo nó thử một đường trước sân.",
-        result: "Nhánh trúc đi qua tay nó một lần đã thành một vệt rất thẳng. Đứa trẻ mừng quá, quên cả vết đất ở gót chân. Lúc nó xuống dốc, sân vẫn còn tiếng áo quệt qua hàng trúc.",
-        effects: { danh: 1 },
-        flags: ["moc_som"],
-        schedule: { node: "moc_2a", delay: 9 },
+        paras: [
+          { text: "Sương còn nằm ngang lối đá, chưa buồn tan. Ngoài cổng có một đứa trẻ đứng từ lúc bếp trong nhà chưa nhen lửa — áo vá một miếng nơi vai, chân trần trên đá lạnh, hai tay ôm khư khư một nhánh trúc đã tuốt sạch lá." },
+          { text: "Nó không gọi cửa, cũng không bỏ đi. Chỉ đứng đó, như thể cái sân trước mặt là một mặt nước lặng mà nó sợ mình khuấy động." },
+        ],
+        choices: [
+          {
+            label: "Mở cổng, rồi lui vào nhóm bếp, để nó tự quen dần.",
+            result: "Bản lề kêu một tiếng khẽ, nó giật mình lùi nửa bước, nhưng chân vẫn ghim tại chỗ. Đến khi khói bếp bắt đầu vương ra ngoài sân, nó đã nhích lại gần thềm hơn — người thì còn ngoài cổng, mà mắt đã ở trong sân từ lâu.",
+            effects: { tinh: 1 },
+          },
+          {
+            label: "Đứng lại bên thềm, gật đầu một cái, chờ nó lên tiếng.",
+            result: "Nó bắt được cái gật đầu ấy. Miệng mấp máy đôi lần rồi lại thôi, như đang tập trước cho quen một câu khó mở lời. Sương đọng trên vai nó thành mấy hạt nhỏ, chẳng buồn phủi.",
+            effects: { tam: 1 },
+          },
+          {
+            label: "Ra tận cổng, ngồi thấp xuống cho ngang tầm mắt nó.",
+            result: "Bạn ngồi xuống, thấp hơn nó một chút. Đứa trẻ thoạt bối rối vì bị nhìn ngang hàng, nhưng đôi vai đang gồng của nó chùng dần. Nhánh trúc trong tay cũng lỏng ra được vài phần.",
+            effects: { duyen: 1 },
+          },
+        ],
       },
+      // --- nhịp 2: câu hỏi mắc ở cổ ---
       {
-        label: "Dẫn nó ra sau nhà, đặt cây rìu bên đống củi.",
-        result: "Nó nhìn cây rìu, rồi nhìn hai bàn tay mình. Một lát sau, tiếng củi tách ra trong sương sớm — khô, gọn, tiếng sau chắc hơn tiếng trước.",
-        effects: { tam: 1 },
-        flags: ["moc_cui"],
-        schedule: { node: "moc_2b", delay: 9 },
+        paras: [
+          { text: "Mãi một lúc, nó mới nhìn qua vai bạn, vào khoảng sân trống phía sau, rồi hỏi bằng cái giọng của người đã nhẩm sẵn câu này suốt dọc đường lên núi:" },
+          { text: "“Học kiếm… thì có thể không bị bắt nạt nữa, phải không ạ?”" },
+        ],
+        choices: [
+          {
+            label: "“Ai bắt nạt con?”",
+            result: "Nó kể, đầu đuôi lẫn vào nhau — mấy đứa lớn ngoài chợ, một lối tắt không dám đi, một lần bị giằng mất rổ khoai giữa đường. Kể xong nó im bặt, như vừa tự thấy chuyện của mình bé quá, không đáng mang lên tận đây.",
+            effects: { tam: 1 },
+          },
+          {
+            label: "“Con muốn thôi bị bắt nạt, hay muốn thắng lại chúng?”",
+            result: "Câu hỏi làm nó khựng. Nó mở miệng toan đáp ngay, rồi ngậm lại mà nghĩ cho thật. Xưa nay chưa ai bắt nó phân ra hai điều đó, mà hóa ra chúng khác nhau xa.",
+            effects: { duyen: 1 },
+          },
+          {
+            label: "Không hỏi gì. Nhìn xuống nhánh trúc nó đang ghì trong tay.",
+            result: "Bạn nhìn nhánh trúc, nó cũng cúi nhìn theo, như lần đầu thấy rõ vật mình vẫn cầm. Mấy ngón tay bấu vào thân trúc đến trắng cả đốt.",
+            effects: { tinh: 1 },
+          },
+        ],
       },
+      // --- nhịp 3: thứ đặt vào tay nó (quyết định của ngày) ---
       {
-        label: "Lấy thanh kiếm gỗ cũ trên hiên, trao mà không giảng giải.",
-        result: "Nó đỡ thanh kiếm bằng cả hai tay, nghiêm trang như nhận một thứ nặng hơn gỗ. Suốt quãng dốc xuống núi, nó không đổi tay lấy một lần. Sương trên lối đá tan lúc nào không hay.",
-        effects: { duyen: 1 },
-        flags: ["moc_go"],
-        item: "kiem_go_trao",
-        schedule: { node: "moc_2c", delay: 9 },
-      },
-      {
-        label: "Rót một chén nước, hỏi nó muốn cầm kiếm để làm gì.",
-        result: "Nó cúi đầu rất thấp. Câu trả lời mắc ở cổ, chưa ra được. Bạn để chén nước trên bậc đá; đến khi nó đi rồi, trong chén vẫn còn một vòng sương mỏng.",
-        effects: { tinh: 1 },
-        flags: ["moc_ve"],
-        schedule: { node: "moc_2d", delay: 11 },
+        paras: [
+          { text: "Nó vẫn đợi — cái đợi của một đứa trẻ đã trót tin rằng người lớn trước mặt đang giữ sẵn đâu đó một câu trả lời cho cả đời nó." },
+          { text: "Sáng nay, bạn có thể đặt vào hai bàn tay ấy nhiều thứ." },
+        ],
+        choices: [
+          {
+            label: "Nhận lấy nhánh trúc, bảo nó thử một đường ngay trước sân.",
+            result: "Nhánh trúc trong tay nó vung lên, ngọn đi liền một mạch không gợn. Thằng bé mừng đến quên cả vệt bùn nơi gót chân, chỉ đứng ngó cái đường mình vừa vạch trong không khí. Mãi đến khi nó khuất sau con dốc, hàng trúc bên sân vẫn còn khẽ động, như chưa quen có ai vừa ghé qua.",
+            effects: { danh: 1 },
+            flags: ["moc_som"],
+            schedule: { node: "moc_2a", delay: 9 },
+          },
+          {
+            label: "Dẫn nó ra sau nhà, đặt cây rìu bên đống củi.",
+            result: "Nó nhìn cây rìu, rồi nhìn hai bàn tay mình, đắn đo như đang cân xem tay có kham nổi không. Một lát sau, tiếng củi tách ra giòn trong sương sớm — nhát đầu còn ngập ngừng, mấy nhát sau đã chắc dần, đều dần.",
+            effects: { tam: 1 },
+            flags: ["moc_cui"],
+            schedule: { node: "moc_2b", delay: 9 },
+          },
+          {
+            label: "Lấy thanh kiếm gỗ cũ trên hiên xuống, trao mà không giảng một lời.",
+            result: "Nó đón thanh kiếm bằng cả hai tay, trịnh trọng như nhận một vật nặng hơn gỗ nhiều lần. Suốt quãng dốc xuống núi, nó không đổi tay lấy một bận. Sương trên lối đá tan dần theo bước chân nó, còn bạn thì đứng nhìn theo lâu hơn mình định.",
+            effects: { duyen: 1 },
+            flags: ["moc_go"],
+            item: "kiem_go_trao",
+            schedule: { node: "moc_2c", delay: 9 },
+          },
+          {
+            label: "Rót cho nó một chén nước, hỏi nó cầm kiếm để làm gì.",
+            result: "Nó cúi đầu thật thấp. Câu trả lời mắc đâu đó trong cổ, mãi không chịu ra. Bạn đặt chén nước xuống bậc đá, không giục. Đến khi nó đi rồi, trong lòng chén vẫn còn đọng một vòng sương mỏng chưa ai kịp uống.",
+            effects: { tinh: 1 },
+            flags: ["moc_ve"],
+            schedule: { node: "moc_2d", delay: 11 },
+          },
+        ],
       },
     ],
   },

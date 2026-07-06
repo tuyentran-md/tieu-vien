@@ -101,6 +101,7 @@
       S.current = C.pickToday(S);
       S.phase = "day";
       S.chosen = null;
+      S.beat = 0;
     }
     current = C.resolveNode(S, S.current);
     save();
@@ -114,7 +115,8 @@
     dialogOpen = false;
     advancing = false;
     document.body.dataset.season = season();
-    $("#scene").classList.toggle("story-open", S.phase === "result");
+    const showingStory = S.phase === "result" || S.phase === "beat";
+    $("#scene").classList.toggle("story-open", showingStory);
     renderHud();
     $("#yard-line").textContent = C.yardLine(S);
     $("#yard-line").classList.remove("hidden");
@@ -128,7 +130,7 @@
     $("#next-day").classList.add("hidden");
     $("#next-day").disabled = false;
 
-    if (S.phase === "result" && S.chosen) {
+    if ((S.phase === "result" || S.phase === "beat") && S.chosen) {
       renderCurrentText();
       showResult(S.chosen);
     }
@@ -219,10 +221,18 @@
     dayCtx = ctx;
     world.onTap(id => handleSceneTap(id, token));
 
-    if (S.phase === "result" && S.chosen) {
+    if ((S.phase === "result" || S.phase === "beat") && S.chosen) {
       setHint("");
       world.setHotspotsGlow(false);
-      world.setPhase("result");
+      if (S.phase === "beat" && current.kind !== "empty" && !ctx.letterDrop) {
+        // đang giữa ngày — người khách vẫn còn trong sân
+        ctx.npcReady = true;
+        ctx.dialogStarted = true;
+        world.npcArrive(role, () => {});
+        world.setPhase("day");
+      } else {
+        world.setPhase("result");
+      }
       return;
     }
 
@@ -410,18 +420,20 @@
   }
 
   function choose(choice, token) {
-    if (!activeToken(token) || S.phase === "result") return;
+    if (!activeToken(token) || S.phase === "result" || S.phase === "beat") return;
     if (typeof Ambient !== "undefined") Ambient.play("accept");
     cancelTypewriter();
     const itemId = choice.item || null;
+    const final = C.isFinalBeat(current.node, S);
     C.applyChoice(S, choice);
     S.chosen = {
       result: choice.result,
       quote: choice.quote || null,
       item: itemId,
       returning: !!choice.schedule,
+      mid: !final,
     };
-    S.phase = "result";
+    S.phase = final ? "result" : "beat";
     save();
 
     $("#choices").innerHTML = "";
@@ -430,13 +442,42 @@
     showResult(S.chosen, true);
 
     if (world) {
-      world.setPhase("result");
       if (world.setItems) world.setItems(S.items.slice());
       if (world.setFlags) world.setFlags(S.flags);
-      if (world.pulseFocus) world.pulseFocus(focusFor(current && current.id, current && current.kind));
       if (itemId && world.pulseItem) world.pulseItem(itemId);
-      if (current.kind !== "empty") world.npcLeave(!!MOUNTAIN_LEAVE[current.id]);
+      if (final) {
+        world.setPhase("result");
+        if (world.pulseFocus) world.pulseFocus(focusFor(current && current.id, current && current.kind));
+        if (current.kind !== "empty") world.npcLeave(!!MOUNTAIN_LEAVE[current.id]);
+      }
     }
+  }
+
+  // sang nhịp kế trong cùng một ngày — khách vẫn ở lại sân
+  function advanceBeat() {
+    if (advancing) return;
+    S.beat = (S.beat || 0) + 1;
+    S.phase = "day";
+    S.chosen = null;
+    save();
+    if (typeof Ambient !== "undefined") Ambient.play("menu");
+
+    $("#result").classList.add("hidden");
+    $("#notes").textContent = "";
+    $("#next-day").classList.add("hidden");
+    $("#event-text").innerHTML = "";
+    $("#choices").innerHTML = "";
+    $("#scene").classList.add("story-open");
+    dialogOpen = true;
+    renderHud();
+
+    const token = dayCtx ? dayCtx.token : dayToken;
+    typeDialog(C.visibleParas(S, current.node), token);
+  }
+
+  function onNextButton() {
+    if (S.phase === "beat") advanceBeat();
+    else nextDay();
   }
 
   function showResult(ch, playUnlock) {
@@ -449,10 +490,13 @@
     if (ch.quote) notes.push("✎ Một câu được chép vào Sổ Nhỏ.");
     if (ch.item && ITEMS[ch.item]) notes.push("◦ " + ITEMS[ch.item].name + " — giờ thuộc về tiểu viện.");
     if (ch.returning) notes.push("◦ Chuyện này còn hẹn một ngày quay lại.");
-    notes.push("Còn " + Math.max(0, C.TOTAL_DAYS - S.day) + " ngày trong năm.");
+    if (!ch.mid) notes.push("Còn " + Math.max(0, C.TOTAL_DAYS - S.day) + " ngày trong năm.");
     $("#notes").textContent = notes.join("   ");
     if (playUnlock && (ch.quote || ch.item) && typeof Ambient !== "undefined") Ambient.play("quote");
-    $("#next-day").classList.remove("hidden");
+    const nd = $("#next-day");
+    nd.textContent = ch.mid ? "Rồi sao nữa…" : "Qua ngày";
+    nd.classList.toggle("btn-continue", !!ch.mid);
+    nd.classList.remove("hidden");
     const sc = $("#story-scroll");
     if (sc) {
       const toEnd = () => { sc.scrollTop = sc.scrollHeight; };
@@ -473,6 +517,7 @@
       S.current = null;
       S.chosen = null;
       S.phase = "day";
+      S.beat = 0;
       if (ensureDay() && typeof Ambient !== "undefined" && Ambient.isOn()) Ambient.setScene(season(), weather());
     }, world ? 750 : 0);
   }
@@ -568,15 +613,22 @@
 
   function runAutoplay(days) {
     function chooseFirstVisible() {
-      if (!S.current) S.current = C.pickToday(S);
+      if (!S.current) { S.current = C.pickToday(S); S.beat = 0; }
       current = C.resolveNode(S, S.current);
 
       if (!(S.phase === "result" && S.chosen)) {
-        const choice = C.visibleChoices(S, current.node)[0];
-        if (!choice) return false;
-        C.applyChoice(S, choice);
-        S.chosen = { result: choice.result, quote: choice.quote || null, item: choice.item || null, returning: !!choice.schedule };
-        S.phase = "result";
+        let guard = 0;
+        while (guard++ < 16) {
+          const choice = C.visibleChoices(S, current.node)[0];
+          if (!choice) return false;
+          C.applyChoice(S, choice);
+          if (C.isFinalBeat(current.node, S)) {
+            S.chosen = { result: choice.result, quote: choice.quote || null, item: choice.item || null, returning: !!choice.schedule };
+            S.phase = "result";
+            break;
+          }
+          S.beat = (S.beat || 0) + 1;
+        }
       }
       return true;
     }
@@ -588,6 +640,7 @@
       S.current = null;
       S.chosen = null;
       S.phase = "day";
+      S.beat = 0;
     }
 
     save();
@@ -646,7 +699,7 @@
         $("#modal").classList.add("hidden");
       }
     };
-    $("#next-day").onclick = nextDay;
+    $("#next-day").onclick = onNextButton;
     $("#scene").onclick = handleTextTap;
     $("#btn-again").onclick = () => { localStorage.removeItem(SAVE_KEY); location.reload(); };
     $("#btn-sound").onclick = () => {

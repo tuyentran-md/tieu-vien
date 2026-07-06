@@ -39,29 +39,56 @@ async function main() {
   d().getElementById("scene").click(); // reveal typewriter
   await step(300);
   const nChoices = d().querySelectorAll(".choice").length;
-  put("Ngày 1 có 4 lựa chọn", nChoices === 4, "choices=" + nChoices);
-  if (nChoices) {
-    d().querySelector(".choice").click();
-    await step(300);
-    const resShown = !d().getElementById("result").classList.contains("hidden");
-    const nextShown = !d().getElementById("next-day").classList.contains("hidden");
-    const dusk = d().getElementById("ink-root").dataset.phase === "result";
-    put("Chọn xong: result + Qua ngày + dusk", resShown && nextShown && dusk,
-      "res=" + resShown + " next=" + nextShown + " phase=" + d().getElementById("ink-root").dataset.phase);
-    await loadFrame("/index.html?audit=t1-result");
-    await step(300);
-    d().getElementById("btn-begin").click();
-    await step(600);
-    const resumedResult = !d().getElementById("result").classList.contains("hidden");
-    const resumedTitle = d().getElementById("event-title").textContent;
-    const resumedText = d().getElementById("event-text").textContent.trim();
-    put("Reload giữa result giữ lại truyện", resumedResult && resumedTitle.length > 0 && resumedText.length > 0,
-      "title=" + resumedTitle + " text=" + resumedText.length);
-    d().getElementById("next-day").click();
-    await step(1300);
-    const day2 = d().getElementById("hud-day").textContent;
-    put("Qua ngày 2", /Ngày 2/.test(day2), day2);
+  put("Ngày 1 mở được, có lựa chọn (nhịp 1)", nChoices >= 2, "choices=" + nChoices);
+
+  // chọn nhịp 1 → ngày nhiều nhịp: nút 'Rồi sao nữa…', chưa dusk
+  d().querySelector(".choice").click();
+  await step(300);
+  const midBtn = d().getElementById("next-day").textContent;
+  const midPhase = d().getElementById("ink-root").dataset.phase;
+  put("Nhịp 1 tiếp diễn trong ngày (multi-beat)", /Rồi sao nữa/.test(midBtn) && midPhase !== "result",
+    "btn=" + midBtn + " phase=" + midPhase);
+
+  // reload giữa nhịp → resume được truyện
+  await loadFrame("/index.html?audit=t1-mid");
+  await step(300);
+  d().getElementById("btn-begin").click();
+  await step(700);
+  const midResume = !d().getElementById("result").classList.contains("hidden");
+  put("Reload giữa nhịp giữ lại truyện", midResume, "result shown=" + midResume);
+
+  // đi hết các nhịp còn lại trong ngày
+  let guard = 0;
+  while (guard++ < 8) {
+    const btn = d().getElementById("next-day");
+    if (!/Rồi sao nữa/.test(btn.textContent)) break;
+    btn.click();
+    await step(320);
+    d().getElementById("scene").click(); // reveal typewriter
+    await step(240);
+    const cs = d().querySelectorAll(".choice");
+    if (!cs.length) break;
+    cs[0].click();
+    await step(320);
   }
+  const resShown = !d().getElementById("result").classList.contains("hidden");
+  const nextShown = !d().getElementById("next-day").classList.contains("hidden");
+  const finalBtn = d().getElementById("next-day").textContent;
+  const dusk = d().getElementById("ink-root").dataset.phase === "result";
+  put("Nhịp cuối: result + Qua ngày + dusk", resShown && nextShown && dusk && /Qua ngày/.test(finalBtn),
+    "res=" + resShown + " btn=" + finalBtn + " phase=" + d().getElementById("ink-root").dataset.phase);
+
+  await loadFrame("/index.html?audit=t1-result");
+  await step(300);
+  d().getElementById("btn-begin").click();
+  await step(600);
+  const resumedResult = !d().getElementById("result").classList.contains("hidden");
+  const resumedText = d().getElementById("event-text").textContent.trim();
+  put("Reload giữa result giữ lại truyện", resumedResult && resumedText.length > 0, "text=" + resumedText.length);
+  d().getElementById("next-day").click();
+  await step(1300);
+  const day2 = d().getElementById("hud-day").textContent;
+  put("Qua ngày 2", /Ngày 2/.test(day2), day2);
 
   // ---- Test 2: reload resumes saved day ----
   await loadFrame("/index.html?audit=t2");

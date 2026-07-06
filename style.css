@@ -357,6 +357,15 @@ header nav button:hover { color: var(--wash); border-color: rgba(255,248,232,.42
   backdrop-filter: blur(5px);
 }
 #next-day:hover { background: rgba(255,248,232,.9); color: #28231d; }
+/* nút 'Rồi sao nữa…' — nhạt hơn, gợi tiếp diễn chứ không kết ngày */
+#next-day.btn-continue {
+  border-color: rgba(255,248,232,.34);
+  background: rgba(255,248,232,.03);
+  color: rgba(255,248,232,.82);
+  font-style: italic;
+  letter-spacing: .02em;
+}
+#next-day.btn-continue:hover { background: rgba(255,248,232,.16); color: var(--wash); }
 
 /* ---- onboarding ---- */
 #coach {

@@ -20,12 +20,29 @@ let failures = [];
 const fail = m => failures.push(m);
 
 // ---------- static checks ----------
+function nodeChoices(n) {
+  // node nhiều nhịp: gom choices của mọi beat
+  if (n.beats) return n.beats.flatMap(b => b.choices || []);
+  return n.choices || [];
+}
+function nodeParas(n) {
+  if (n.beats) return n.beats.flatMap(b => b.paras || []);
+  return n.paras || [];
+}
 function collectChoices() {
   const all = [];
-  for (const [id, n] of Object.entries(ARCS)) n.choices.forEach(c => all.push([id, c]));
-  for (const s of SEASONS) (SEASON_EVENTS[s] || []).forEach(e => e.choices.forEach(c => all.push([e.id, c])));
+  for (const [id, n] of Object.entries(ARCS)) nodeChoices(n).forEach(c => all.push([id, c]));
+  for (const s of SEASONS) (SEASON_EVENTS[s] || []).forEach(e => nodeChoices(e).forEach(c => all.push([e.id, c])));
   EMPTY_DAY.choices.forEach(c => all.push(["empty", c]));
   return all;
+}
+// sanity: mỗi beat phải có paras + ít nhất 1 choice
+for (const [id, n] of Object.entries(ARCS)) {
+  const beats = n.beats || [n];
+  beats.forEach((b, i) => {
+    if (!b.paras || !b.paras.length) failures.push(`${id} beat ${i}: thiếu paras`);
+    if (!b.choices || !b.choices.length) failures.push(`${id} beat ${i}: thiếu choices`);
+  });
 }
 for (const [src, c] of collectChoices()) {
   if (c.schedule && !ARCS[c.schedule.node]) fail(`${src}: schedule tới node không tồn tại '${c.schedule.node}'`);
@@ -54,13 +71,21 @@ function playthrough(pickFn, seed, label) {
   const rng = seed === null ? undefined : mulberry(seed); // undefined → core dùng seededRand(day) như browser thật
   for (; S.day <= C.TOTAL_DAYS; S.day++) {
     const cur = C.pickToday(S, rng);
+    S.beat = 0;
     const t = C.resolveNode(S, cur);
     if (!t.node) { fail(`[${label}] ngày ${S.day}: resolveNode('${cur.id}') không có node`); continue; }
-    const paras = C.visibleParas(S, t.node);
-    if (!paras.length) fail(`[${label}] ngày ${S.day} node '${t.id}': 0 đoạn văn hiển thị (flags=${Object.keys(S.flags)})`);
-    const vis = C.visibleChoices(S, t.node);
-    if (!vis.length) { fail(`[${label}] ngày ${S.day} node '${t.id}': 0 choice hiển thị (flags=${Object.keys(S.flags).join(",")})`); continue; }
-    C.applyChoice(S, pickFn(vis, rng || (() => C.seededRand(S.day))));
+    // đi hết các nhịp trong ngày
+    let guard = 0, dead = false;
+    while (guard++ < 20) {
+      const paras = C.visibleParas(S, t.node);
+      if (!paras.length) fail(`[${label}] ngày ${S.day} node '${t.id}' beat ${S.beat}: 0 đoạn văn (flags=${Object.keys(S.flags)})`);
+      const vis = C.visibleChoices(S, t.node);
+      if (!vis.length) { fail(`[${label}] ngày ${S.day} node '${t.id}' beat ${S.beat}: 0 choice (flags=${Object.keys(S.flags).join(",")})`); dead = true; break; }
+      C.applyChoice(S, pickFn(vis, rng || (() => C.seededRand(S.day))));
+      if (C.isFinalBeat(t.node, S)) break;
+      S.beat += 1;
+    }
+    if (dead) continue;
   }
   if (S.scheduled.length) fail(`[${label}] hết năm còn node chưa nổ: ${S.scheduled.map(s => s.node + "@" + s.day).join(", ")}`);
   const arcBlocks = EPILOGUE.arcs.filter(b => C.condOk(S, b));
