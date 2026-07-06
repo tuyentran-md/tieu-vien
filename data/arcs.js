@@ -380,39 +380,91 @@ const ARCS = {
 
   thu_1: {
     title: "Khách đêm mưa",
-    paras: [
-      { text: "Mưa từ chập tối. Có tiếng gõ cửa — một thư sinh, tay ôm tráp sách bọc vải dầu, áo ướt sũng." },
-      { text: "Lời lẽ rất lễ độ: xin ngủ nhờ một đêm, sáng mai đi sớm, có ba đồng tiền xin gửi lại." },
-      { text: "Khi hắn chắp tay, ống tay áo trễ xuống. Có một vệt máu khô, không phải của vết thương nào trên người hắn." },
-    ],
-    choices: [
+    beats: [
+      // --- nhịp 1: tiếng gõ cửa trong mưa ---
       {
-        label: "Mời vào phòng khách, đưa áo khô.",
-        result: "Hắn cảm tạ ba lần. Nửa đêm bạn dậy châm đèn, thấy phòng khách vẫn sáng — hắn ngồi nhìn ngọn đèn, tráp sách chưa mở.",
-        effects: { duyen: 1 },
-        flags: ["thu_phongkhach"],
-        schedule: { node: "thu_2", delay: 1 },
+        paras: [
+          { text: "Mưa từ chập tối, gõ trên mái ngói thành một thứ tiếng đều đến mức nghe lâu tưởng là im lặng. Đèn trong nhà đã vặn nhỏ, ấm trà nguội quá nửa." },
+          { text: "Rồi giữa tiếng mưa có tiếng gõ cửa — ba tiếng, nhẹ mà gọn, cách nhau đủ để người gõ kịp phân vân giữa mỗi lần đưa tay." },
+        ],
+        choices: [
+          {
+            label: "Khoác áo, cầm đèn ra tận cổng.",
+            result: "Ánh đèn soi ra một thư sinh ướt sũng, tay ôm tráp sách bọc kỹ trong vải dầu — sách được che chắn kỹ hơn người. Thấy đèn, hắn lùi lại một bước và cúi chào trước cả khi kịp nói xin.",
+            effects: { duyen: 1 },
+          },
+          {
+            label: "Hé cửa một khe, nhìn ra trước đã.",
+            result: "Qua khe cửa, dưới màn mưa là một dáng gầy chắp tay đứng thẳng, không nhìn quanh quất, không thúc giục. Người có tật thường không đứng yên được như thế — mà kẻ đứng yên được như thế, đêm nay lại ở đây.",
+            effects: { tam: 1 },
+          },
+          {
+            label: "Đứng trong nhà, hỏi vọng ra: “Ai đó?”",
+            result: "“Thưa, một người đọc sách lỡ đường.” Giọng đáp lễ độ, chữ tròn vành, mà ở cuối câu có chỗ hơi chùng xuống — như người đã hỏi xin nhiều cánh cửa trên một quãng đường không muốn nhớ.",
+            effects: { tinh: 1 },
+          },
+        ],
       },
+      // --- nhịp 2: vệt máu trên tay áo ---
       {
-        label: "Chỉ mái hiên: “Đêm nay ngủ tạm ngoài này.”",
-        result: "Hắn không một lời trách, trải áo ngoài hiên. Tiếng mưa trên mái đều đều, không biết hắn có ngủ được không.",
-        effects: { tinh: 1 },
-        flags: ["thu_hien"],
-        schedule: { node: "thu_2", delay: 1 },
+        paras: [
+          { text: "Hắn xin ngủ nhờ một đêm, sáng mai đi sớm, lại lấy ra ba đồng tiền hai tay dâng lên, nói xin gửi lại tiền củi lửa. Lời lẽ mực thước, không thừa một chữ." },
+          { text: "Chỉ có điều, lúc hắn chắp tay, ống tay áo ướt trễ xuống — bên trong lộ một vệt máu đã khô sẫm. Trên người hắn không thấy vết thương nào." },
+        ],
+        choices: [
+          {
+            label: "Nhìn vệt máu ấy lâu hơn một chút, đủ để hắn biết mình đã thấy.",
+            result: "Hắn theo ánh mắt bạn nhìn xuống ống tay áo của chính mình, và bàn tay kia khép lại tự lúc nào. Không ai nói gì. Mưa ngoài hiên bỗng nghe to hơn.",
+            effects: { tam: 1 },
+          },
+          {
+            label: "Rót một chén nước nóng đưa hắn ấm tay, chưa hỏi han gì.",
+            result: "Hắn đón chén nước bằng cả hai tay, cúi đầu thấp hơn cả lúc chào. Hơi nóng bốc lên làm khuôn mặt trẻ ấy mềm đi một thoáng — cái mềm của người sắp khóc mà quyết không khóc.",
+            effects: { duyen: 1 },
+          },
+          {
+            label: "Lùi lại nửa bước, giữ khoảng cách của kẻ trông nhà.",
+            result: "Hắn nhận ra nửa bước ấy, và không trách. Kẻ đọc sách hiểu phép của cửa người: hắn tự đứng lui ra mép hiên, nước từ vạt áo nhỏ xuống thềm đá thành một vũng con.",
+            effects: { tinh: 1 },
+          },
+        ],
       },
+      // --- nhịp 3: cửa này mở tới đâu (quyết định của đêm) ---
       {
-        label: "Nhìn thẳng vệt máu trên tay áo, hỏi: “Máu này của ai?”",
-        result: "Hắn khựng nửa nhịp — rất ngắn, nhưng có. “Máu thỏ rừng. Tiểu sinh vụng, làm bếp bị dây.” Người vụng làm bếp không có kiểu khựng đó.",
-        effects: { tam: 1 },
-        flags: ["thu_hoimau", "thu_phongkhach"],
-        schedule: { node: "thu_2", delay: 1 },
-      },
-      {
-        label: "“Tiểu viện không chứa chuyện không rõ ràng.” — từ chối.",
-        result: "Hắn đứng dưới mưa thêm một lúc, chắp tay, rồi đi. Ánh đèn lồng của hắn nhỏ dần về phía bến đò.",
-        effects: { tinh: 1, duyen: -1 },
-        flags: ["thu_tuchoi"],
-        schedule: { node: "thu_2x", delay: 23 },
+        paras: [
+          { text: "Mưa chưa có ý ngớt. Người trước cổng đợi, không giục — chỉ có ngọn đèn trong tay bạn là chập chờn theo gió." },
+          { text: "Đêm nay, cánh cửa này mở tới đâu là tùy bạn." },
+        ],
+        choices: [
+          {
+            label: "Mời vào phòng khách, tìm cho hắn một bộ áo khô.",
+            result: "Hắn cảm tạ ba lần, mỗi lần một thấp hơn. Nửa đêm bạn dậy châm đèn, thấy phòng khách vẫn sáng — hắn ngồi đó nhìn ngọn đèn, lưng thẳng, còn tráp sách nâng niu cả tối thì chưa hề mở.",
+            effects: { duyen: 1 },
+            flags: ["thu_phongkhach"],
+            schedule: { node: "thu_2", delay: 1 },
+          },
+          {
+            label: "Chỉ mái hiên: “Đêm nay ngủ tạm ngoài này.”",
+            result: "Hắn không một lời trách, trải áo ngoài hiên, gối đầu lên tráp sách. Tiếng mưa trên mái đều đều suốt đêm; có ngủ được hay không, chỉ mình hắn với cái hiên ấy biết.",
+            effects: { tinh: 1 },
+            flags: ["thu_hien"],
+            schedule: { node: "thu_2", delay: 1 },
+          },
+          {
+            label: "Nhìn thẳng vào ống tay áo, hỏi: “Máu này của ai?”",
+            result: "Hắn khựng lại nửa nhịp — ngắn thôi, nhưng có. “Máu thỏ rừng. Tiểu sinh vụng, làm bếp bị dây.” Người vụng chuyện bếp núc không có kiểu khựng như thế. Bạn vẫn mở cửa cho hắn vào; câu trả lời thật thì để dành cho hắn nợ.",
+            effects: { tam: 1 },
+            flags: ["thu_hoimau", "thu_phongkhach"],
+            schedule: { node: "thu_2", delay: 1 },
+          },
+          {
+            label: "“Tiểu viện không chứa chuyện không rõ ràng.” — từ chối.",
+            result: "Hắn đứng dưới mưa thêm một lúc, như chờ câu ấy được rút lại. Rồi hắn chắp tay, xoay người xuống núi. Ánh đèn lồng nhỏ dần về phía bến đò, cuối cùng chỉ còn mưa.",
+            effects: { tinh: 1, duyen: -1 },
+            flags: ["thu_tuchoi"],
+            schedule: { node: "thu_2x", delay: 23 },
+          },
+        ],
       },
     ],
   },
@@ -575,35 +627,87 @@ const ARCS = {
 
   co_1: {
     title: "Ván cờ dưới gốc cây",
-    paras: [
-      { text: "Sáng ra đã thấy một ông lão ngồi dưới gốc cây trước sân, bên bàn cờ đá — bàn cờ mà bạn không nhớ tiểu viện từng có." },
-      { text: "Thế cờ trên bàn đang dở dang, đen trắng quấn nhau đã sâu. Ông lão ngồi bên phần quân trắng, không giục, không gọi, chỉ chờ." },
-      { text: "Thấy bạn ra, ông nói, như tiếp một câu chuyện đã bắt đầu từ lâu lắm: “Một ván thôi. Ta còn nợ một người một ván chưa tàn.”" },
-    ],
-    choices: [
+    beats: [
+      // --- nhịp 1: vật lạ trong sân quen ---
       {
-        label: "Ngồi xuống bên phần quân đen, đi một nước.",
-        result: "Bạn đặt một quân. Ông lão nhìn nước cờ rất lâu, rồi gật đầu: “Ừ. Hắn cũng sẽ đi nước này.” Rồi ông đứng dậy, đi. Ván cờ ở lại.",
-        effects: { duyen: 1 },
-        flags: ["co_danhco"],
-        item: "ban_co",
-        schedule: { node: "co_2", delay: 13 },
+        paras: [
+          { text: "Sáng ra quét sân, chổi đưa được mấy đường thì bạn dừng tay: dưới gốc cây trước sân có một ông lão đang ngồi, áo trắng ngả màu sương, bên một bàn cờ bằng đá." },
+          { text: "Cái sân này bạn thuộc từng viên đá lát. Tiểu viện chưa từng có bàn cờ nào như thế." },
+        ],
+        choices: [
+          {
+            label: "Cứ quét nốt lối đi, như mọi sáng.",
+            result: "Bạn quét tiếp, tiếng chổi trên đá đều như cũ. Ông lão không quay đầu, mà ở dáng ngồi ấy có cái gì đó giãn ra — như thể tiếng chổi ấy đúng là thứ ông đã ngồi chờ từ sớm.",
+            effects: { tinh: 1 },
+          },
+          {
+            label: "Dừng chổi, đứng nhìn từ hiên một lúc.",
+            result: "Nhìn từ hiên, ông lão ngồi im như một nét mực ai chấm sẵn vào bức tranh sân. Sương quanh gốc cây tan chậm hơn chỗ khác, hoặc là bạn nhìn lâu quá nên tưởng vậy.",
+            effects: { tam: 1 },
+          },
+          {
+            label: "Bước tới, chắp tay chào một tiếng.",
+            result: "Ông lão nghiêng đầu đáp lễ, thong thả như đáp một người quen cũ. Đến gần mới thấy áo ông khô ráo giữa buổi sớm đầy sương — như sương biết đường mà tránh.",
+            effects: { duyen: 1 },
+          },
+        ],
       },
+      // --- nhịp 2: thế cờ dở dang ---
       {
-        label: "Pha một ấm trà, đặt bên bàn cờ, đứng xem.",
-        result: "Ông lão uống trà, không đi nước nào. “Cờ chưa tới lúc,” ông nói. “Trà thì vừa đúng lúc.” Ông đi khi chén còn ấm.",
-        effects: { tinh: 1 },
-        flags: ["co_xemco"],
-        item: "ban_co",
-        schedule: { node: "co_2", delay: 13 },
+        paras: [
+          { text: "Trên bàn đá, thế cờ đang dở dang — đen trắng quấn nhau đã sâu lắm, không phải thế cờ của người mới bày ra sáng nay. Ông lão ngồi bên phần quân trắng, không giục, không gọi, chỉ chờ." },
+          { text: "Thấy bạn nhìn bàn cờ, ông nói, như tiếp một câu chuyện đã bắt đầu từ lâu lắm: “Một ván thôi. Ta còn nợ một người một ván chưa tàn.”" },
+        ],
+        choices: [
+          {
+            label: "Cúi xuống nhìn thế cờ cho kỹ.",
+            result: "Càng nhìn càng thấy thế cờ này đánh chậm mà nặng, từng nước như người ta đặt đá xây nhà. Hai người đánh ván này hẳn đã quen tay nhau lắm — quen đến mức nhường nhau từng khoảng trống.",
+            effects: { tam: 1 },
+          },
+          {
+            label: "“Ván này… hai vị đánh đã bao lâu rồi?”",
+            result: "Ông lão nhìn bàn cờ một hồi, như đếm. “Lâu hơn cái cây này,” ông nói, tay chạm nhẹ lên rễ cây nổi u bên chân bàn. Cái cây ấy, bạn nhớ, đã già từ trước khi bạn về đây.",
+            effects: { duyen: 1 },
+          },
+          {
+            label: "Im lặng, ngồi xuống phía bên kia bàn.",
+            result: "Bạn ngồi xuống bên phần quân đen — chỗ ngồi ấy lõm sẵn một vệt nhẵn trên mặt đá, như đã có người ngồi mòn từ bao năm. Ông lão nhìn bạn ngồi vào đó, mắt thoáng một điều gì không gọi được tên.",
+            effects: { tinh: 1 },
+          },
+        ],
       },
+      // --- nhịp 3: đáp lại lời mời (quyết định của ngày) ---
       {
-        label: "“Nợ ai? Người đó đâu rồi?”",
-        result: "Ông lão nhìn lên đường núi, chỗ khúc quành khuất sau rặng trúc. “Đi trước rồi. Đi trước lâu rồi.” — ông chỉ nói vậy, rồi chống gối đứng dậy, xuống núi.",
-        effects: { tam: 1 },
-        flags: ["co_hoi"],
-        item: "ban_co",
-        schedule: { node: "co_2", delay: 13 },
+        paras: [
+          { text: "Gió sớm lật một chiếc lá rơi xuống mặt bàn đá, sát bên thế cờ. Ông lão vẫn chờ, kiên nhẫn như người đã chờ quen." },
+          { text: "Một ván cờ nợ ai đó — và không hiểu sao nó lại tìm đến cái sân này." },
+        ],
+        choices: [
+          {
+            label: "Nhặt một quân đen, đi một nước.",
+            result: "Bạn đặt quân xuống. Ông lão nhìn nước cờ ấy lâu lắm, lâu như đọc một lá thư cũ, rồi gật đầu: “Ừ. Hắn cũng sẽ đi nước này.” Nói rồi ông chống gối đứng dậy, xuống núi. Ván cờ ở lại giữa sân.",
+            effects: { duyen: 1 },
+            flags: ["co_danhco"],
+            item: "ban_co",
+            schedule: { node: "co_2", delay: 13 },
+          },
+          {
+            label: "Vào pha một ấm trà, đặt bên bàn cờ, đứng hầu.",
+            result: "Ông lão uống trà, không đi nước nào. “Cờ chưa tới lúc,” ông nói, đặt chén xuống cạnh bàn đá. “Trà thì vừa đúng lúc.” Ông đi khi chén còn ấm, để lại thế cờ và một vòng nước mờ trên mặt đá.",
+            effects: { tinh: 1 },
+            flags: ["co_xemco"],
+            item: "ban_co",
+            schedule: { node: "co_2", delay: 13 },
+          },
+          {
+            label: "“Nợ ai? Người đó đâu rồi?”",
+            result: "Ông lão nhìn lên đường núi, chỗ khúc quành khuất sau rặng trúc, nhìn như thể bên kia khúc quành có người đứng đợi. “Đi trước rồi. Đi trước lâu rồi.” — ông chỉ nói vậy, rồi chống gối đứng dậy, xuống núi. Bàn cờ đá ở lại, không ai dọn.",
+            effects: { tam: 1 },
+            flags: ["co_hoi"],
+            item: "ban_co",
+            schedule: { node: "co_2", delay: 13 },
+          },
+        ],
       },
     ],
   },
