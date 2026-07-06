@@ -561,8 +561,16 @@
     list.innerHTML = "";
     $("#modal-title").textContent = "Sổ Nhỏ Dưới Núi";
 
+    const sub = document.createElement("p");
+    sub.className = "modal-sub";
+    sub.textContent = "Những câu bạn ngộ ra trong năm. Mỗi người ghé qua thường để lại một câu — chúng được chép vào đây.";
+    list.appendChild(sub);
+
     if (!S.journal.length) {
-      list.innerHTML = "<p class='dim'>Sổ còn trắng. Chuyện chưa tới, hoặc mình chưa nhận ra.</p>";
+      const e = document.createElement("p");
+      e.className = "dim";
+      e.textContent = "Sổ còn trắng. Cứ sống với cái sân này thêm ít ngày, rồi sẽ có câu để ghi.";
+      list.appendChild(e);
     } else {
       S.journal.forEach(q => {
         const p = document.createElement("p");
@@ -580,8 +588,16 @@
     list.innerHTML = "";
     $("#modal-title").textContent = "Trong sân";
 
+    const sub = document.createElement("p");
+    sub.className = "modal-sub";
+    sub.textContent = "Những vật khách để lại trong sân. Mỗi vật giữ một câu chuyện của người đã ghé qua.";
+    list.appendChild(sub);
+
     if (!S.items.length) {
-      list.innerHTML = "<p class='dim'>Sân còn trống. Một mái hiên, một gốc cây, một ấm trà cũ.</p>";
+      const e = document.createElement("p");
+      e.className = "dim";
+      e.textContent = "Sân còn trống — mới chỉ một mái hiên, một gốc cây, một ấm trà cũ. Vật sẽ đến cùng người.";
+      list.appendChild(e);
     } else {
       S.items.forEach(id => {
         const it = ITEMS[id];

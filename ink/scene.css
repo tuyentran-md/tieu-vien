@@ -189,11 +189,12 @@ svg .ground-far, svg .ground-near, svg .fol-a, svg .fol-b { transition: fill 1.6
 @keyframes ink-stride { from { transform: translateY(0) rotate(.4deg); } to { transform: translateY(-2.4px) rotate(-.4deg); } }
 
 /* ---- NPC ảnh painted (thay figure SVG khi có) ---- */
+/* cỡ theo CHIỀU CAO khung (không để ảnh cao ~ nửa cái sân) */
 .npc-img { display: none; }
-#ink-npc.has-img { width: clamp(74px, 9.2vw, 148px); aspect-ratio: auto; height: auto; }
+#ink-npc.has-img { width: auto; height: auto; aspect-ratio: auto; }
 #ink-npc.has-img svg { display: none; }
 #ink-npc.has-img .npc-img {
-  display: block; width: 100%; height: auto;
+  display: block; width: auto; height: clamp(84px, 23vh, 210px);
   filter: drop-shadow(0 3px 4px rgba(45,39,28,.3));
 }
 #ink-npc.has-img.walking .npc-img { animation: ink-stride .55s ease-in-out infinite alternate; }
