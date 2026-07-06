@@ -418,7 +418,8 @@
 
     // vai đã có ảnh painted (grow dần khi Codex xuất thêm); còn lại fallback SVG
     const FIG_BASE = "assets/art/fig/";
-    const FIG_IMG = { boy: 1, scholar: 1, oldman: 1, oldman2: 1, child: 1, monk: 1, swordsman: 1, woman: 1 };
+    const FIG_IMG = { boy: 1, scholar: 1, oldman: 1, oldman2: 1, child: 1, monk: 1,
+      swordsman: 1, woman: 1, oldwoman: 1, trader: 1, villager: 1, master: 1 };
     function setFigure(role) {
       const imgRole = role === "traveler" ? "master" : role;
       if (FIG_IMG[imgRole]) {
