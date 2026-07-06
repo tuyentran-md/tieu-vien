@@ -7,7 +7,9 @@
 A cozy Vietnamese narrative game about running a small courtyard at the foot of a mountain. Serve tea, listen to travelers, teach when needed, stay silent when words would do harm — and watch how small choices return across four seasons.
 
 ## Play
-Static site, no build step, no backend. Open `index.html` or serve the folder:
+**▶ Chơi ngay: https://tuyentran-md.github.io/tieu-vien/**
+
+Static site, no build step, no backend. Local: open `index.html` or serve the folder:
 
 ```
 python3 -m http.server 8000
