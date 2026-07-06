@@ -394,7 +394,7 @@
     el.innerHTML = '<div id="ink-root" class="painted-mode" data-season="xuan" data-phase="day" data-focus="center">'
       + '<div class="painted-bg" aria-hidden="true"></div>'
       + SVG
-      + '<div id="ink-npc"><svg viewBox="-28 -84 56 90" aria-hidden="true"><g class="walker"></g></svg></div>'
+      + '<div id="ink-npc"><svg viewBox="-28 -84 56 90" aria-hidden="true"><g class="walker"></g></svg><img class="npc-img" alt="" aria-hidden="true"></div>'
       + '<div class="ink-mist m1"></div><div class="ink-mist m2"></div><div class="ink-mist m3"></div>'
       + '<div class="ink-fx"></div><div class="ink-memory"></div><div class="ink-steam"></div>'
       + '<div class="ink-dusk"></div>'
@@ -414,6 +414,21 @@
     const fx = el.querySelector(".ink-fx");
     const npcG = el.querySelector("#ink-npc");
     const walker = npcG.querySelector(".walker");
+    const npcImg = npcG.querySelector(".npc-img");
+
+    // vai đã có ảnh painted (grow dần khi Codex xuất thêm); còn lại fallback SVG
+    const FIG_BASE = "assets/art/fig/";
+    const FIG_IMG = { boy: 1, scholar: 1, oldman: 1, oldman2: 1, child: 1, monk: 1, swordsman: 1, woman: 1 };
+    function setFigure(role) {
+      const imgRole = role === "traveler" ? "master" : role;
+      if (FIG_IMG[imgRole]) {
+        npcImg.src = FIG_BASE + imgRole + ".png";
+        npcG.classList.add("has-img");
+      } else {
+        walker.innerHTML = '<g class="stride">' + (FIGS[role] || FIGS.villager) + '</g>';
+        npcG.classList.remove("has-img");
+      }
+    }
     const tip = el.querySelector(".ink-tip");
     let tapCb = null, tipTimer = null;
     let dayItems = [];
@@ -551,7 +566,7 @@
           if (cb) cb();
         }
         pendingArrive = { run: run, settle: settle };
-        walker.innerHTML = '<g class="stride">' + (FIGS[role] || FIGS.villager) + '</g>';
+        setFigure(role);
         npcG.style.transition = "none";
         place(POS.gate, 1);
         void npcG.getBoundingClientRect();

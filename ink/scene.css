@@ -187,6 +187,17 @@ svg .ground-far, svg .ground-near, svg .fol-a, svg .fol-b { transition: fill 1.6
 #ink-npc.walking .stride { animation: ink-stride .52s ease-in-out infinite alternate; }
 #ink-npc.on:not(.walking) .stride { animation: ink-idle 5.6s ease-in-out infinite; }
 @keyframes ink-stride { from { transform: translateY(0) rotate(.4deg); } to { transform: translateY(-2.4px) rotate(-.4deg); } }
+
+/* ---- NPC ảnh painted (thay figure SVG khi có) ---- */
+.npc-img { display: none; }
+#ink-npc.has-img { width: clamp(74px, 9.2vw, 148px); aspect-ratio: auto; height: auto; }
+#ink-npc.has-img svg { display: none; }
+#ink-npc.has-img .npc-img {
+  display: block; width: 100%; height: auto;
+  filter: drop-shadow(0 3px 4px rgba(45,39,28,.3));
+}
+#ink-npc.has-img.walking .npc-img { animation: ink-stride .55s ease-in-out infinite alternate; }
+#ink-npc.has-img.on:not(.walking) .npc-img { animation: ink-idle 5.8s ease-in-out infinite; }
 @keyframes ink-idle { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-1.1px); } }
 
 /* player on porch breathes, very softly */
