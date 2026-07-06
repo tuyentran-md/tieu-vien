@@ -60,6 +60,37 @@
     return current.kind === "empty" ? C.EMPTY_WEATHER[season()] : C.weatherOf(S.day);
   }
 
+  function dayKindLabel() {
+    if (!current) return "";
+    if (current.kind === "empty") return "Ngày vắng";
+    if (current.kind === "event") return "Chuyện mùa";
+    if (/^moc_/.test(current.id)) return "Mạch Mộc";
+    if (/^thu_/.test(current.id)) return "Mạch Trần Thức";
+    if (/^co_/.test(current.id)) return "Mạch ván cờ";
+    return "Mạch chuyện";
+  }
+
+  function traceLine() {
+    const parts = [
+      "Sổ Nhỏ " + S.journal.length + " câu",
+      "Trong sân " + S.items.length + " vật",
+    ];
+    return parts.join(" · ");
+  }
+
+  function renderHud() {
+    $("#hud-day").textContent = C.hudLine(S);
+    $("#hud-kind").textContent = dayKindLabel();
+    const pct = Math.max(2, Math.min(100, (S.day / C.TOTAL_DAYS) * 100));
+    const bar = $("#hud-progress span");
+    if (bar) bar.style.width = pct + "%";
+    const left = Math.max(0, C.TOTAL_DAYS - S.day);
+    const seasonDay = ((S.day - 1) % C.DAYS_PER_SEASON) + 1;
+    $("#hud-meta").textContent = "Ngày " + S.day + "/" + C.TOTAL_DAYS + " · Mùa " + seasonDay + "/" + C.DAYS_PER_SEASON + " · Còn " + left + " ngày";
+    $("#event-kind").textContent = dayKindLabel();
+    $("#trace-line").textContent = traceLine();
+  }
+
   function ensureDay() {
     if (S.day > C.TOTAL_DAYS) {
       showEpilogue();
@@ -83,12 +114,13 @@
     dialogOpen = false;
     advancing = false;
     document.body.dataset.season = season();
-    $("#hud-day").textContent = C.hudLine(S);
+    $("#scene").classList.toggle("story-open", S.phase === "result");
+    renderHud();
     $("#yard-line").textContent = C.yardLine(S);
     $("#yard-line").classList.remove("hidden");
     setHint("");
 
-    $("#event-title").textContent = "";
+    $("#event-title").textContent = current && current.node ? current.node.title : "";
     $("#event-text").innerHTML = "";
     $("#choices").innerHTML = "";
     $("#result").classList.add("hidden");
@@ -107,6 +139,7 @@
         weather: weather(),
         phase: S.phase,
         items: S.items.slice(),
+        flags: S.flags,
         kind: current && current.kind,
         focus: focusFor(current && current.id, current && current.kind),
       });
@@ -215,9 +248,28 @@
         }, 2000);
       } else {
         $("#event-title").textContent = current.node.title;
-        setHint("Ngoài sân có người đợi. Chạm vào bóng người ấy để mở lời.");
+        setHint("Ngoài sân có người đợi. Chạm để mở lời.");
       }
     });
+  }
+
+  function handleTextTap() {
+    if (dialogOpen) {
+      revealTypewriter();
+      return;
+    }
+    if (!dayCtx || !activeToken(dayCtx.token) || S.phase !== "day") return;
+    if (current.kind === "empty") {
+      openDialog(dayCtx.token);
+      return;
+    }
+    if (current.kind !== "empty" && dayCtx.letterDrop && dayCtx.masterReady) {
+      openDialog(dayCtx.token);
+      return;
+    }
+    if (current.kind !== "empty" && dayCtx.npcReady && !dayCtx.letterDrop) {
+      openDialog(dayCtx.token);
+    }
   }
 
   function handleSceneTap(id, token) {
@@ -277,8 +329,10 @@
 
     dayCtx.dialogStarted = true;
     dialogOpen = true;
+    $("#scene").classList.add("story-open");
     setHint("");
     if (world) world.setHotspotsGlow(false);
+    if (world && world.npcFocus && current.kind !== "empty" && !dayCtx.letterDrop) world.npcFocus(true);
 
     $("#event-title").textContent = current.node.title;
     $("#event-text").innerHTML = "";
@@ -359,17 +413,28 @@
     if (!activeToken(token) || S.phase === "result") return;
     if (typeof Ambient !== "undefined") Ambient.play("accept");
     cancelTypewriter();
+    const itemId = choice.item || null;
     C.applyChoice(S, choice);
-    S.chosen = { result: choice.result, quote: choice.quote || null, item: choice.item || null };
+    S.chosen = {
+      result: choice.result,
+      quote: choice.quote || null,
+      item: itemId,
+      returning: !!choice.schedule,
+    };
     S.phase = "result";
     save();
 
     $("#choices").innerHTML = "";
     dialogOpen = false;
+    renderHud();
     showResult(S.chosen, true);
 
     if (world) {
       world.setPhase("result");
+      if (world.setItems) world.setItems(S.items.slice());
+      if (world.setFlags) world.setFlags(S.flags);
+      if (world.pulseFocus) world.pulseFocus(focusFor(current && current.id, current && current.kind));
+      if (itemId && world.pulseItem) world.pulseItem(itemId);
       if (current.kind !== "empty") world.npcLeave(!!MOUNTAIN_LEAVE[current.id]);
     }
   }
@@ -383,9 +448,18 @@
     const notes = [];
     if (ch.quote) notes.push("✎ Một câu được chép vào Sổ Nhỏ.");
     if (ch.item && ITEMS[ch.item]) notes.push("◦ " + ITEMS[ch.item].name + " — giờ thuộc về tiểu viện.");
+    if (ch.returning) notes.push("◦ Chuyện này còn hẹn một ngày quay lại.");
+    notes.push("Còn " + Math.max(0, C.TOTAL_DAYS - S.day) + " ngày trong năm.");
     $("#notes").textContent = notes.join("   ");
     if (playUnlock && (ch.quote || ch.item) && typeof Ambient !== "undefined") Ambient.play("quote");
     $("#next-day").classList.remove("hidden");
+    const sc = $("#story-scroll");
+    if (sc) {
+      const toEnd = () => { sc.scrollTop = sc.scrollHeight; };
+      requestAnimationFrame(() => requestAnimationFrame(toEnd));
+      setTimeout(toEnd, 90);
+      setTimeout(toEnd, 320);
+    }
   }
 
   function nextDay() {
@@ -501,7 +575,7 @@
         const choice = C.visibleChoices(S, current.node)[0];
         if (!choice) return false;
         C.applyChoice(S, choice);
-        S.chosen = { result: choice.result, quote: choice.quote || null, item: choice.item || null };
+        S.chosen = { result: choice.result, quote: choice.quote || null, item: choice.item || null, returning: !!choice.schedule };
         S.phase = "result";
       }
       return true;
@@ -539,6 +613,24 @@
 
     if (unlockAudio && Ambient) Ambient.boot(season(), weather());
     syncSoundButton();
+    maybeCoach();
+  }
+
+  function maybeCoach() {
+    let seen = false;
+    try { seen = localStorage.getItem("tieuvien_coached") === "1"; } catch (e) {}
+    if (seen) return;
+    const coach = $("#coach");
+    if (!coach) return;
+    coach.classList.remove("hidden");
+    function dismiss() {
+      coach.classList.add("hidden");
+      try { localStorage.setItem("tieuvien_coached", "1"); } catch (e) {}
+      if (typeof Ambient !== "undefined") Ambient.play("menu");
+    }
+    const ok = $("#coach-ok");
+    if (ok) ok.onclick = dismiss;
+    coach.onclick = e => { if (e.target === coach) dismiss(); };
   }
 
   window.addEventListener("DOMContentLoaded", () => {
@@ -555,7 +647,7 @@
       }
     };
     $("#next-day").onclick = nextDay;
-    $("#scene").onclick = () => { if (dialogOpen) revealTypewriter(); };
+    $("#scene").onclick = handleTextTap;
     $("#btn-again").onclick = () => { localStorage.removeItem(SAVE_KEY); location.reload(); };
     $("#btn-sound").onclick = () => {
       Ambient.toggle();

@@ -236,7 +236,7 @@
   // khách lỡ đường đội nón như người đưa thư — cùng một dáng
   FIGS.traveler = FIGS.master;
 
-  const POS = { gate: [150, 438], yard: [340, 416], mountain: [58, 310] };
+  const POS = { gate: [150, 438], yard: [340, 416], talk: [582, 360], mountain: [58, 310] };
 
   const SVG = ''
   + '<svg class="ink-svg" viewBox="0 0 800 520" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">'
@@ -330,6 +330,16 @@
   + '<circle cx="600" cy="364" r="4" fill="#e8e2cf"/>'
   + '<g transform="translate(576,382)"><g class="breathe">' + FIGS.villager.split('#57503f').join('#7a6248') + '</g></g></g>'
 
+  // quiet-day traces (flags, not inventory items)
+  + '<g id="fx-va_maihien" class="yf"><path d="M556,278 q38,-12 84,-9 l-8,18 q-42,-5 -78,8 Z" fill="#6d6655" opacity=".9"/>'
+  + '<path d="M564,282 q30,-8 62,-7 M558,290 q34,-9 70,-6" stroke="#a99061" stroke-width="1.4" opacity=".75"/></g>'
+  + '<g id="fx-doc_sach" class="yf"><path d="M686,371 q10,-7 21,0 l0,12 q-10,-5 -21,0 Z" fill="#e8dec4" stroke="#a89b7d" stroke-width="1"/>'
+  + '<path d="M707,371 q10,-7 21,0 l0,12 q-10,-5 -21,0 Z" fill="#f1e8d2" stroke="#a89b7d" stroke-width="1"/>'
+  + '<path d="M707,371 l0,12 M691,376 q6,-2 12,0 M712,376 q6,-2 12,0" stroke="#9a8b6b" stroke-width=".8"/></g>'
+  + '<g id="fx-danh_co_mot_minh" class="yf"><circle cx="294" cy="382" r="2.8" fill="#ede8d6" stroke="#8a8270" stroke-width=".7"/>'
+  + '<circle cx="324" cy="378" r="2.8" fill="#3f3a30" stroke="#8a8270" stroke-width=".7"/>'
+  + '<circle cx="306" cy="389" r="2.4" fill="#3f3a30" opacity=".9"/></g>'
+
   // porch items: sword / letter / leaf-book / cat
   + '<g id="it-kiem_go_hien" class="yi"><line x1="533" y1="388" x2="524" y2="330" stroke="#7a6248" stroke-width="4" stroke-linecap="round"/>'
   + '<line x1="522" y1="342" x2="533" y2="346" stroke="#5d4a34" stroke-width="3" stroke-linecap="round"/></g>'
@@ -378,6 +388,7 @@
   ];
 
   const ITEM_IDS = ["kiem_go_hien", "ban_co", "quan_co_khuyet", "buc_thu", "cay_mai", "la_de", "con_meo"];
+  const FLAG_IDS = ["va_maihien", "doc_sach", "danh_co_mot_minh"];
 
   function boot(el) {
     el.innerHTML = '<div id="ink-root" class="painted-mode" data-season="xuan" data-phase="day" data-focus="center">'
@@ -385,7 +396,7 @@
       + SVG
       + '<div id="ink-npc"><svg viewBox="-28 -84 56 90" aria-hidden="true"><g class="walker"></g></svg></div>'
       + '<div class="ink-mist m1"></div><div class="ink-mist m2"></div><div class="ink-mist m3"></div>'
-      + '<div class="ink-fx"></div><div class="ink-steam"></div>'
+      + '<div class="ink-fx"></div><div class="ink-memory"></div><div class="ink-steam"></div>'
       + '<div class="ink-dusk"></div>'
       + '<div class="ink-hots">' + HOTS.map(function (h) {
           return '<button class="ink-hot" data-hot="' + h[0] + '" style="left:' + h[1] + '%;top:' + h[2]
@@ -418,6 +429,36 @@
       }
       return id;
     }
+    function syncItems(items) {
+      dayItems = (items || []).slice();
+      ITEM_IDS.forEach(function (id) {
+        const g = el.querySelector("#it-" + id);
+        if (g) g.classList.toggle("on", dayItems.indexOf(id) >= 0
+          || (id === "buc_thu" && dayItems.indexOf("buc_thu_vodanh") >= 0));
+      });
+    }
+    function syncFlags(flags) {
+      const f = flags || {};
+      FLAG_IDS.forEach(function (id) {
+        const g = el.querySelector("#fx-" + id);
+        if (g) g.classList.toggle("on", !!f[id]);
+      });
+    }
+    function pulseItem(id) {
+      const g = el.querySelector("#it-" + itemDomId(id));
+      if (!g) return;
+      g.classList.remove("pop");
+      void g.getBoundingClientRect();
+      g.classList.add("pop");
+      setTimeout(function () { g.classList.remove("pop"); }, 1900);
+    }
+    function pulseFocus(focus) {
+      rootEl.dataset.memoryFocus = focus || "center";
+      rootEl.classList.remove("memory-on");
+      void rootEl.getBoundingClientRect();
+      rootEl.classList.add("memory-on");
+      setTimeout(function () { rootEl.classList.remove("memory-on"); }, 2400);
+    }
 
     el.querySelectorAll(".ink-hot").forEach(function (b) {
       b.addEventListener("click", function (e) { e.stopPropagation(); emit(b.dataset.hot); });
@@ -449,8 +490,8 @@
     function weatherFx(season, weather, phase) {
       fx.innerHTML = "";
       const w = weather || "";
-      if (/mưa/.test(w)) { spawn("fx-rain", 14, 1.1, 1.9); return; }
-      if (/tuyết/.test(w) || season === "dong") { spawn("fx-snow", 14, 9, 16); return; }
+      if (w === "rain" || /mưa/.test(w)) { spawn("fx-rain", 14, 1.1, 1.9); return; }
+      if (w === "snow" || /tuyết/.test(w) || season === "dong") { spawn("fx-snow", 14, 9, 16); return; }
       if (season === "ha" && phase === "result") { spawn("fx-firefly", 10, 5, 8); return; }
       if (season === "xuan") spawn("fx-petal", 8, 10, 15);
       if (season === "thu") spawn("fx-leaf", 9, 8, 14);
@@ -488,15 +529,10 @@
         rootEl.dataset.phase = o.phase || "day";
         rootEl.dataset.focus = o.focus || "center";
         weatherFx(curSeason, curWeather, o.phase || "day");
-        const items = o.items || [];
-        dayItems = items.slice();
-        ITEM_IDS.forEach(function (id) {
-          const g = el.querySelector("#it-" + id);
-          if (g) g.classList.toggle("on", items.indexOf(id) >= 0
-            || (id === "buc_thu" && items.indexOf("buc_thu_vodanh") >= 0));
-        });
+        syncItems(o.items || []);
+        syncFlags(o.flags || {});
         npcG.classList.remove("on", "glow");
-        rootEl.classList.remove("glowing", "npc-ready");
+        rootEl.classList.remove("glowing", "npc-ready", "memory-on");
         hideTip();
       },
       npcArrive: function (role, cb) {
@@ -556,8 +592,22 @@
         weatherFx(curSeason, curWeather, p);
       },
       onTap: function (cb) { tapCb = cb; },
+      // n\u00e2ng kh\u00e1ch l\u00ean ti\u00eau \u0111i\u1ec3m khi m\u1edf tho\u1ea1i, \u0111\u1ec3 \u0111\u1ea7u/th\u00e2n v\u01b0\u1ee3t kh\u1ecfi khung tho\u1ea1i
+      npcFocus: function (on) {
+        if (!npcG.classList.contains("on")) return;
+        clearTimeout(arriveTimer); clearTimeout(walkTimer);
+        npcG.classList.remove("walking");
+        npcG.style.transition = "left 1.1s ease, top 1.1s ease, transform 1.1s ease, opacity .9s";
+        if (on) { place(POS.talk, 1.14); npcG.classList.add("glow"); }
+        else { place(POS.yard, .95); }
+        setTimeout(function () { npcG.style.transition = ""; }, 1150);
+      },
       setFocus: function (focus) { rootEl.dataset.focus = focus || "center"; },
       setHotspotsGlow: function (on) { rootEl.classList.toggle("glowing", !!on); },
+      setItems: syncItems,
+      setFlags: syncFlags,
+      pulseItem: pulseItem,
+      pulseFocus: pulseFocus,
       tipAt: tipAt,
       destroy: function () { el.innerHTML = ""; },
     };

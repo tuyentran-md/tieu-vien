@@ -6,10 +6,10 @@
 <title>Dưới Núi Có Một Tiểu Viện</title>
 <meta name="description" content="Một tiểu viện dưới chân núi. Một ấm trà cũ. Những người ghé qua, rồi đi tiếp. Bạn không cứu cả thiên hạ — bạn chỉ chọn hôm nay nên nói gì, giữ gì, buông gì.">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Noto+Serif:ital,wght@0,400;0,500;0,600;1,400&family=Noto+Serif+Display:wght@500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600&family=Noto+Serif:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
 <link rel="preload" href="assets/art/courtyard-master-clean-xuan.png" as="image">
-<link rel="stylesheet" href="style.css?v=5">
-<link rel="stylesheet" href="ink/scene.css?v=5">
+<link rel="stylesheet" href="style.css?v=6">
+<link rel="stylesheet" href="ink/scene.css?v=6">
 </head>
 <body data-season="xuan">
 
@@ -20,7 +20,8 @@
       <h1>Dưới Núi<br>Có Một Tiểu Viện</h1>
       <p class="title-sub">Một mái hiên, một gốc cây, một ấm trà cũ.<br>
       Người ghé qua, rồi đi tiếp.<br>
-      Bạn chỉ chọn hôm nay nên nói gì, giữ gì, buông gì.</p>
+      Một năm bốn mùa, bốn mươi tám ngày.<br>
+      Mỗi lựa chọn để lại một dấu trong sân.</p>
       <button id="btn-begin" class="btn-main">Bắt đầu một năm</button>
     </div>
   </div>
@@ -30,7 +31,14 @@
     <div id="stage"></div>
     <div id="game-col">
     <header>
-      <span id="hud-day"></span>
+      <div id="hud">
+        <div class="hud-row">
+          <span id="hud-day"></span>
+          <span id="hud-kind"></span>
+        </div>
+        <div id="hud-progress" aria-hidden="true"><span></span></div>
+        <span id="hud-meta"></span>
+      </div>
       <nav>
         <button id="btn-journal" title="Sổ Nhỏ Dưới Núi">Sổ Nhỏ</button>
         <button id="btn-courtyard" title="Vật trong sân">Trong sân</button>
@@ -40,15 +48,33 @@
     </header>
 
     <main id="scene">
-      <p id="yard-line" class="yard"></p>
-      <p id="action-hint" class="action-hint" aria-live="polite"></p>
-      <h2 id="event-title"></h2>
-      <div id="event-text"></div>
-      <div id="choices"></div>
-      <p id="result" class="hidden"></p>
-      <p id="notes"></p>
-      <button id="next-day" class="btn-main hidden">Qua ngày</button>
+      <div id="ambient">
+        <p id="event-kind" class="event-kind"></p>
+        <p id="yard-line" class="yard"></p>
+        <p id="trace-line" class="trace-line"></p>
+        <p id="action-hint" class="action-hint" aria-live="polite"></p>
+      </div>
+      <section id="story-panel" aria-live="polite">
+        <div id="story-scroll">
+          <h2 id="event-title"></h2>
+          <div id="event-text"></div>
+          <p id="result" class="hidden"></p>
+          <p id="notes"></p>
+        </div>
+        <div id="choices"></div>
+        <button id="next-day" class="btn-main hidden">Qua ngày</button>
+      </section>
     </main>
+    </div>
+
+    <!-- Onboarding (lần đầu) -->
+    <div id="coach" class="hidden" aria-hidden="true">
+      <div class="coach-card">
+        <div class="coach-mark">庭</div>
+        <p class="coach-line">Một tiểu viện dưới chân núi. Người ghé qua sân, kể một chuyện, rồi đi tiếp.</p>
+        <p class="coach-line dim-line">Chạm vào người trong sân để nghe họ. Mỗi lựa chọn để lại một dấu — trong Sổ Nhỏ, trong sân, và trong bạn.</p>
+        <button id="coach-ok" class="btn-ghost">Bắt đầu lặng lẽ</button>
+      </div>
     </div>
   </div>
 
@@ -71,13 +97,13 @@
     </div>
   </div>
 
-<script src="audio.js?v=5"></script>
+<script src="audio.js?v=6"></script>
 <script src="data/arcs.js?v=5"></script>
 <script src="data/events.js?v=5"></script>
 <script src="data/quotes.js?v=5"></script>
 <script src="data/epilogue.js?v=5"></script>
 <script src="core.js?v=5"></script>
-<script src="ink/scene.js?v=5"></script>
-<script src="boot.js?v=5"></script>
+<script src="ink/scene.js?v=6"></script>
+<script src="boot.js?v=6"></script>
 </body>
 </html>

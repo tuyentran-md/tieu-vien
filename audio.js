@@ -2,7 +2,7 @@
 
 const Ambient = (() => {
   let ac = null, master = null, on = false;
-  let windGain, rainGain, chimeTimer = null, birdTimer = null;
+  let windGain, rainGain, waterGain, chimeTimer = null, birdTimer = null, musicTimer = null;
   const PREF_KEY = "tieuvien_sound";
 
   function noiseBuffer(seconds, brown) {
@@ -39,6 +39,13 @@ const Ambient = (() => {
     rainGain = ac.createGain(); rainGain.gain.value = 0;
     rain.connect(bp); bp.connect(rainGain); rainGain.connect(master);
     rain.start();
+
+    // nước chảy rất nhỏ — noise hẹp, lăn chậm dưới nền
+    const water = ac.createBufferSource(); water.buffer = noiseBuffer(5, false); water.loop = true;
+    const wp = ac.createBiquadFilter(); wp.type = "bandpass"; wp.frequency.value = 680; wp.Q.value = .75;
+    waterGain = ac.createGain(); waterGain.gain.value = .025;
+    water.connect(wp); wp.connect(waterGain); waterGain.connect(master);
+    water.start();
   }
 
   // chuông gió — ngũ cung, thưa
@@ -55,6 +62,33 @@ const Ambient = (() => {
     });
   }
   const PENTA = [440, 523.25, 587.33, 659.25, 783.99];
+  const PENTA_LOW = {
+    xuan: [196, 220, 261.63, 293.66, 329.63],
+    ha: [174.61, 220, 246.94, 293.66, 329.63],
+    thu: [196, 246.94, 293.66, 329.63, 392],
+    dong: [164.81, 196, 246.94, 293.66, 329.63],
+  };
+
+  function softNote(freq, vol, dur) {
+    if (!ac || !on) return;
+    const t = ac.currentTime;
+    const g = ac.createGain();
+    g.gain.setValueAtTime(0, t);
+    g.gain.linearRampToValueAtTime(vol, t + .9);
+    g.gain.setTargetAtTime(.0001, t + dur * .62, dur * .22);
+    const lp = ac.createBiquadFilter(); lp.type = "lowpass"; lp.frequency.value = 1200; lp.Q.value = .45;
+    g.connect(lp); lp.connect(master);
+    [1, 1.5].forEach((mul, i) => {
+      const o = ac.createOscillator();
+      o.type = i ? "triangle" : "sine";
+      o.frequency.value = freq * mul;
+      const og = ac.createGain();
+      og.gain.value = i ? .28 : 1;
+      o.connect(og); og.connect(g);
+      o.start(t);
+      o.stop(t + dur + 1.2);
+    });
+  }
 
   // mõ gỗ — thân sine trầm rơi nhanh + tiếng gõ nhỏ
   function knock(f0, vol) {
@@ -106,7 +140,7 @@ const Ambient = (() => {
   }
 
   function schedule(season, weather) {
-    clearInterval(chimeTimer); clearInterval(birdTimer);
+    clearInterval(chimeTimer); clearInterval(birdTimer); clearInterval(musicTimer);
     chimeTimer = setInterval(() => {
       if (Math.random() < (season==="dong" ? .25 : .5)) {
         const n = 1+Math.floor(Math.random()*2);
@@ -115,6 +149,15 @@ const Ambient = (() => {
     }, 11000);
     if (season==="xuan" && weather!=="rain")
       birdTimer = setInterval(() => { if (Math.random()<.55) chirp(); }, 6500);
+    const scale = PENTA_LOW[season] || PENTA_LOW.xuan;
+    const playDrift = () => {
+      if (!on || !ac) return;
+      const i = Math.floor(Math.random() * scale.length);
+      softNote(scale[i], season === "dong" ? .012 : .015, 7.5 + Math.random() * 3.5);
+      if (Math.random() < .45) setTimeout(() => softNote(scale[(i + 2) % scale.length], .009, 6.5), 1300);
+    };
+    setTimeout(playDrift, 700);
+    musicTimer = setInterval(playDrift, season === "ha" ? 9500 : 11500);
   }
 
   function setScene(season, weather) {
@@ -122,15 +165,18 @@ const Ambient = (() => {
     const t = ac.currentTime;
     rainGain.gain.linearRampToValueAtTime(weather==="rain" ? .16 : 0, t+1.5);
     windGain.gain.linearRampToValueAtTime(season==="dong" ? .34 : season==="ha" ? .16 : .25, t+1.5);
+    waterGain.gain.linearRampToValueAtTime(weather==="rain" ? .045 : season==="xuan" ? .034 : season==="dong" ? .018 : .027, t+1.5);
     schedule(season, weather);
   }
 
   function setEpilogue() {
     if (!ac || !on) return;
-    clearInterval(chimeTimer); clearInterval(birdTimer);
+    clearInterval(chimeTimer); clearInterval(birdTimer); clearInterval(musicTimer);
     const t = ac.currentTime;
     rainGain.gain.linearRampToValueAtTime(0, t+1.5);
     windGain.gain.linearRampToValueAtTime(.15, t+2);
+    waterGain.gain.linearRampToValueAtTime(.018, t+2);
+    musicTimer = setInterval(() => softNote(PENTA_LOW.dong[Math.floor(Math.random()*3)], .01, 9), 16000);
     // đêm cuối năm: chuông rất thưa, rất khẽ
     chimeTimer = setInterval(() => {
       if (Math.random() < .35) bell(PENTA[Math.floor(Math.random()*3)], .06, 4.5);
@@ -157,6 +203,7 @@ const Ambient = (() => {
       ac.suspend();
       clearInterval(chimeTimer);
       clearInterval(birdTimer);
+      clearInterval(musicTimer);
     }
     return on;
   }
