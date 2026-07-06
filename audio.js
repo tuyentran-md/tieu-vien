@@ -21,7 +21,7 @@ const Ambient = (() => {
   function start() {
     if (ac) { ac.resume(); return; }
     ac = new (window.AudioContext || window.webkitAudioContext)();
-    master = ac.createGain(); master.gain.value = .085; master.connect(ac.destination);
+    master = ac.createGain(); master.gain.value = .16; master.connect(ac.destination);
 
     // gió — brown noise + lowpass, phập phồng chậm
     const wind = ac.createBufferSource(); wind.buffer = noiseBuffer(4, true); wind.loop = true;

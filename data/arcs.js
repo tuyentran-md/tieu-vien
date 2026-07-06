@@ -6,7 +6,7 @@
 // NGÀY NHIỀU NHỊP (multi-beat): thay vì {paras,choices}, một node có thể có
 //   beats: [ {paras,choices}, {paras,choices}, ... ]
 // Mỗi nhịp là một lượt trong CÙNG một ngày (quan sát → trò chuyện → quyết định).
-// Nhịp giữa: chọn xong hiện result + nút "Rồi sao nữa…" để sang nhịp kế.
+// Nhịp giữa: chọn xong hiện result + nút "Lặng nghe tiếp…" để sang nhịp kế.
 // Nhịp CUỐI mới kết ngày (result + "Qua ngày"): đặt schedule/kill/item quan trọng ở đây.
 // Nhịp giữa nên chỉ effects nhỏ (dựng không khí), không schedule. Xem moc_1 làm mẫu.
 //
@@ -128,7 +128,7 @@ const ARCS = {
     ],
     choices: [
       {
-        label: "“Rồi sao nữa?” — hỏi, và chỉ hỏi vậy.",
+        label: "“Sau đó thì sao?” — hỏi khẽ, rồi để nó nghĩ.",
         result: "Nó khựng giữa câu kể, tay còn vung dở trên không. Hình như chưa ai hỏi nó câu đó bao giờ. Nó ngồi xuống bậc thềm, cầm chén nước lên, quên cả uống.",
         effects: { tam: 1 },
         flags: ["moc_khung"],

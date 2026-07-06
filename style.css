@@ -89,13 +89,13 @@ body {
 #game::before {
   top: 0;
   height: 22vh;
-  background: linear-gradient(180deg, rgba(14, 17, 16, .52), rgba(14, 17, 16, 0));
+  background: linear-gradient(180deg, rgba(14, 17, 16, .30), rgba(14, 17, 16, 0));
 }
 #game::after {
   bottom: 0;
-  height: 40vh;
+  height: 36vh;
   background:
-    linear-gradient(0deg, rgba(14, 15, 13, .55) 0%, rgba(14, 15, 13, .26) 48%, rgba(14, 15, 13, 0) 100%);
+    linear-gradient(0deg, rgba(14, 15, 13, .36) 0%, rgba(14, 15, 13, .14) 48%, rgba(14, 15, 13, 0) 100%);
 }
 #game-col {
   position: relative;
@@ -191,6 +191,7 @@ header nav {
 }
 header nav button {
   display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: .08rem;
   line-height: 1.12;
   font-family: var(--font-ui); font-size: .85rem; font-weight: 600;
   background: rgba(18, 18, 15, .22);
@@ -204,7 +205,7 @@ header nav button {
 }
 header nav button.btn-icon { border-radius: 999px; font-size: 1rem; padding: .3rem .55rem; }
 .nav-cap { display: block; font-size: .62rem; font-weight: 400; letter-spacing: .01em;
-  color: rgba(255,248,232,.55); margin-top: .06rem; }
+  color: rgba(255,248,232,.55); margin-top: 0; }
 header nav button:hover { color: var(--wash); border-color: rgba(255,248,232,.42); }
 header nav button:hover .nav-cap { color: rgba(255,248,232,.72); }
 
@@ -231,9 +232,9 @@ header nav button:hover .nav-cap { color: rgba(255,248,232,.72); }
   position: relative;
   border-radius: 15px 15px 0 0;
   padding: clamp(1.7rem, 3.4vh, 2.3rem) clamp(1.05rem, 2.6vw, 1.7rem) clamp(.85rem, 2vh, 1.25rem);
-  background: linear-gradient(180deg, rgba(24,22,18,.10) 0%, rgba(22,20,15,.60) 30%, rgba(19,17,13,.74) 100%);
-  backdrop-filter: blur(13px) saturate(1.06);
-  -webkit-backdrop-filter: blur(13px) saturate(1.06);
+  background: linear-gradient(180deg, rgba(24,22,18,.06) 0%, rgba(22,20,15,.44) 30%, rgba(19,17,13,.58) 100%);
+  backdrop-filter: blur(10px) saturate(1.08);
+  -webkit-backdrop-filter: blur(10px) saturate(1.08);
   border-top: 1px solid rgba(255,248,232,.13);
   -webkit-mask-image: linear-gradient(180deg, transparent 0, #000 40px);
   mask-image: linear-gradient(180deg, transparent 0, #000 40px);
@@ -308,7 +309,7 @@ header nav button:hover .nav-cap { color: rgba(255,248,232,.72); }
   min-width: 0;
   font-family: var(--font-ui); font-size: .9rem; text-align: left;
   color: #f1ebdc;
-  background: rgba(28,26,21,.44);
+  background: rgba(28,26,21,.34);
   border: 1px solid rgba(255,248,232,.16);
   border-left: 2px solid rgba(255,248,232,.16);
   border-radius: 7px;
@@ -325,7 +326,7 @@ header nav button:hover .nav-cap { color: rgba(255,248,232,.72); }
 .choice:nth-child(3) { animation-delay: .22s; }
 .choice:nth-child(4) { animation-delay: .30s; }
 .choice:hover, .choice:focus-visible {
-  background: rgba(46,42,33,.66);
+  background: rgba(46,42,33,.52);
   border-color: rgba(255,248,232,.32);
   border-left-color: #e2bc6f;
   padding-left: 1.06rem;
@@ -340,7 +341,7 @@ header nav button:hover .nav-cap { color: rgba(255,248,232,.72); }
   margin-top: 1.05rem; padding: .8rem .95rem;
   border-left: 2px solid #e2bc6f;
   border-radius: 0 6px 6px 0;
-  background: rgba(20, 18, 14, .42);
+  background: rgba(20, 18, 14, .34);
   color: #f3edde;
   font-style: italic;
   font-size: clamp(.95rem, 1.1vw, 1.02rem);
@@ -363,7 +364,7 @@ header nav button:hover .nav-cap { color: rgba(255,248,232,.72); }
   backdrop-filter: blur(5px);
 }
 #next-day:hover { background: rgba(255,248,232,.9); color: #28231d; }
-/* nút 'Rồi sao nữa…' — nhạt hơn, gợi tiếp diễn chứ không kết ngày */
+/* nút nối nhịp — nhạt hơn, gợi tiếp diễn chứ không kết ngày */
 #next-day.btn-continue {
   border-color: rgba(255,248,232,.34);
   background: rgba(255,248,232,.03);
@@ -378,27 +379,71 @@ header nav button:hover .nav-cap { color: rgba(255,248,232,.72); }
   position: absolute; inset: 0; z-index: 12;
   display: flex; align-items: center; justify-content: center;
   padding: 1.5rem;
-  background: rgba(13, 14, 12, .5);
+  background: rgba(13, 14, 12, .38);
   backdrop-filter: blur(3px);
   animation: fade .9s ease both;
 }
 .coach-card {
-  max-width: 30rem; width: 100%; text-align: center; color: var(--wash);
-  background: rgba(24, 22, 18, .72);
+  max-width: 31rem; width: 100%; text-align: center; color: var(--wash);
+  background: rgba(24, 22, 18, .62);
   border: 1px solid rgba(255,248,232,.16);
   border-radius: 15px;
-  padding: 2.1rem 1.8rem 1.7rem;
+  padding: 1.75rem 1.55rem 1.45rem;
   backdrop-filter: blur(10px);
   box-shadow: 0 24px 60px rgba(0,0,0,.4);
 }
 .coach-mark {
   font-family: var(--font-display); font-size: 2rem; color: #e2bc6f;
-  margin-bottom: 1.1rem; letter-spacing: .1em;
+  margin-bottom: .6rem; letter-spacing: .1em;
+}
+.coach-kicker {
+  font-family: var(--font-ui);
+  color: rgba(255,248,232,.58);
+  font-size: .72rem;
+  font-weight: 600;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  margin-bottom: .35rem;
+}
+.coach-card h2 {
+  font-family: var(--font-display);
+  font-size: clamp(1.12rem, 3.8vw, 1.45rem);
+  line-height: 1.32;
+  font-weight: 600;
+  margin-bottom: 1rem;
 }
 .coach-line { font-size: 1rem; line-height: 1.72; margin: 0 auto .8rem; max-width: 26rem; }
 .coach-line.dim-line { color: rgba(247,241,228,.68); font-size: .92rem; }
+.coach-steps {
+  display: grid;
+  gap: .58rem;
+  margin: 0 auto;
+  max-width: 25rem;
+  text-align: left;
+}
+.coach-steps p {
+  margin: 0;
+  padding: .68rem .78rem;
+  border: 1px solid rgba(255,248,232,.12);
+  border-radius: 10px;
+  background: rgba(255,248,232,.045);
+}
+.coach-steps strong {
+  display: block;
+  font-size: .96rem;
+  line-height: 1.35;
+  color: #f8f0dd;
+  font-weight: 600;
+}
+.coach-steps span {
+  display: block;
+  margin-top: .18rem;
+  color: rgba(247,241,228,.68);
+  font-size: .86rem;
+  line-height: 1.5;
+}
 .btn-ghost {
-  margin-top: 1.1rem; font-family: var(--font-ui); font-size: .9rem; font-weight: 600;
+  margin-top: 1.05rem; font-family: var(--font-ui); font-size: .9rem; font-weight: 600;
   color: var(--wash); background: rgba(255,248,232,.06);
   border: 1px solid rgba(255,248,232,.34); border-radius: 999px;
   padding: .52rem 1.5rem; cursor: pointer; transition: background .3s, color .3s;
@@ -475,7 +520,7 @@ header nav button:hover .nav-cap { color: rgba(255,248,232,.72); }
     min-height: 40px;
     font-size: .82rem;
   }
-  #game::after { height: 52vh; }
+  #game::after { height: 46vh; }
   #scene {
     width: 100%;
     max-width: none;
@@ -507,8 +552,14 @@ header nav button:hover .nav-cap { color: rgba(255,248,232,.72); }
   .coach-card {
     width: 100%;
     max-width: 342px;
-    padding: 1.65rem 1.1rem 1.35rem;
+    padding: 1.25rem .95rem 1.15rem;
   }
+  .coach-mark { font-size: 1.7rem; margin-bottom: .4rem; }
+  .coach-card h2 { margin-bottom: .75rem; }
+  .coach-steps { gap: .45rem; }
+  .coach-steps p { padding: .58rem .65rem; }
+  .coach-steps strong { font-size: .9rem; }
+  .coach-steps span { font-size: .8rem; line-height: 1.42; }
   .coach-line {
     font-size: .96rem;
     max-width: 100%;

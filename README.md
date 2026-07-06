@@ -1,31 +1,52 @@
-# Dưới Núi Có Một Tiểu Viện
-*The Courtyard Below the Mountain*
+# The Courtyard Below the Mountain
 
-> Một mái hiên, một gốc cây, một ấm trà cũ. Người ghé qua, rồi đi tiếp.
-> Bạn không cứu cả thiên hạ — bạn chỉ chọn hôm nay nên nói gì, giữ gì, buông gì.
+*Vietnamese title: Dưới Núi Có Một Tiểu Viện*
 
-A cozy Vietnamese narrative game about running a small courtyard at the foot of a mountain. Serve tea, listen to travelers, teach when needed, stay silent when words would do harm — and watch how small choices return across four seasons.
+## English
 
-## Play
-**▶ Chơi ngay: https://tuyentran-md.github.io/tieu-vien/**
+**Play:** https://tuyentran-md.github.io/tieu-vien/
 
-Static site, no build step, no backend. Local: open `index.html` or serve the folder:
+*The Courtyard Below the Mountain* is a quiet Vietnamese narrative game about keeping a small courtyard at the foot of a mountain. Travelers come by, leave a story behind, and continue on their way. You listen, answer, keep, or let go. Small choices return across four seasons.
 
-```
+One year lasts 48 days. Progress is saved in the browser with `localStorage`.
+
+Run locally:
+
+```bash
 python3 -m http.server 8000
 ```
 
-One year = 48 days across four seasons. Progress autosaves to localStorage.
+Then open `http://localhost:8000/`.
 
-## Structure
-- `core.js` — pure game logic (day picker, hidden stats, delayed-consequence scheduler)
-- `boot.js` — DOM shell, save/resume, day loop, dialog, epilogue, autoplay audit
-- `ink/scene.js` / `ink/scene.css` — living ink-wash courtyard scene
-- `data/arcs.js` — three hand-written character arcs
-- `data/events.js` — seasonal one-shot events + quiet days
-- `data/quotes.js` — the unlockable notebook, courtyard items, yard descriptions
-- `data/epilogue.js` — year-end epilogue blocks
-- `test/sim.js` — headless playtest (`node test/sim.js`): validates every reference and runs 300+ full random playthroughs
+## Tiếng Việt
 
-## Design
-See `DESIGN.md`. Core idea: dopamine from **people coming back**, not numbers going up. Four hidden stats (Tâm, Duyên, Danh, Tĩnh) surface only through the world — and none of them is purely good.
+**Chơi ngay:** https://tuyentran-md.github.io/tieu-vien/
+
+*Dưới Núi Có Một Tiểu Viện* là một game kể chuyện tĩnh lặng bằng tiếng Việt. Bạn giữ một tiểu viện dưới chân núi. Người qua đường ghé vào, kể một đoạn đời, rồi đi tiếp. Bạn nghe, đáp lại, giữ lại, hoặc buông xuống. Những lựa chọn nhỏ sẽ quay về qua bốn mùa.
+
+Một năm trong game có 48 ngày. Tiến trình được lưu trong trình duyệt bằng `localStorage`.
+
+Chạy trên máy:
+
+```bash
+python3 -m http.server 8000
+```
+
+Sau đó mở `http://localhost:8000/`.
+
+## Project Structure
+
+- `core.js` — pure game logic: day picker, hidden stats, delayed consequences.
+- `boot.js` — browser shell: save/resume, day loop, dialog, epilogue, audit hooks.
+- `audio.js` — generated ambient sound and UI sound effects, built with WebAudio.
+- `ink/scene.js` / `ink/scene.css` — painted courtyard scene, NPC placement, weather, effects.
+- `data/arcs.js` — hand-written character arcs.
+- `data/events.js` — seasonal events and quiet days.
+- `data/quotes.js` — unlockable remembered lines, courtyard items, yard descriptions.
+- `data/epilogue.js` — year-end epilogue blocks.
+- `test/sim.js` — headless playtest for references and full random playthroughs.
+- `test/audit-n2.html` — browser audit for the main interaction flow.
+
+## Design Note
+
+The game is built around return, memory, and consequence rather than visible score. The four hidden tendencies, `Tâm`, `Duyên`, `Danh`, and `Tĩnh`, surface through later scenes instead of a stats panel.

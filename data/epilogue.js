@@ -2,7 +2,7 @@
 // Mỗi block: {if: flag} hoặc {ifNot} hoặc {stat: "..."} (chỉ số trội). Engine ghép theo thứ tự.
 
 const EPILOGUE = {
-  opening: "Đêm cuối năm, tuyết ngừng. Bạn châm đèn, mở Sổ Nhỏ Dưới Núi, ngồi nhớ lại một năm người qua kẻ lại.",
+  opening: "Đêm cuối năm, tuyết ngừng. Bạn châm đèn, mở những câu đã ghi trong năm, ngồi nhớ lại một năm người qua kẻ lại.",
 
   arcs: [
     // --- Mộc ---

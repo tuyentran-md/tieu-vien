@@ -43,7 +43,7 @@
   background-image: url("../assets/art/courtyard-master-clean-xuan.png");
   background-size: cover;
   background-position: 50% 100%;
-  filter: saturate(.96) contrast(.98) brightness(1.02);
+  filter: saturate(1.08) contrast(.99) brightness(1.12);
   transform: scale(1.002);
   transition: background-position 1.1s ease, filter 1.6s ease, opacity 1.2s ease;
 }
@@ -51,10 +51,10 @@
 #ink-root[data-focus="tree"] .painted-bg { background-position: 12% 100%; }
 #ink-root[data-focus="porch"] .painted-bg { background-position: 76% 100%; }
 #ink-root[data-focus="center"] .painted-bg { background-position: 50% 100%; }
-#ink-root[data-season="ha"] .painted-bg { filter: saturate(1.14) contrast(1.05) brightness(1.04) sepia(.07); }
-#ink-root[data-season="thu"] .painted-bg { filter: saturate(.94) contrast(1.04) brightness(.98) sepia(.32) hue-rotate(-12deg); }
-#ink-root[data-season="dong"] .painted-bg { filter: saturate(.46) contrast(.94) brightness(1.16) hue-rotate(10deg); }
-#ink-root[data-phase="result"] .painted-bg { filter: saturate(.95) contrast(1.02) brightness(.98) sepia(.16); }
+#ink-root[data-season="ha"] .painted-bg { filter: saturate(1.18) contrast(1.02) brightness(1.10) sepia(.04); }
+#ink-root[data-season="thu"] .painted-bg { filter: saturate(1.03) contrast(1.0) brightness(1.07) sepia(.20) hue-rotate(-8deg); }
+#ink-root[data-season="dong"] .painted-bg { filter: saturate(.60) contrast(.94) brightness(1.20) hue-rotate(10deg); }
+#ink-root[data-phase="result"] .painted-bg { filter: saturate(1.03) contrast(1.0) brightness(1.08) sepia(.08); }
 #ink-root[data-phase="night"] .painted-bg { filter: saturate(.5) contrast(.9) brightness(.42) hue-rotate(12deg); }
 
 /* ---- season palettes ---- */
@@ -159,16 +159,16 @@ svg .ground-far, svg .ground-near, svg .fol-a, svg .fol-b { transition: fill 1.6
   opacity: 0; transition: opacity 1.4s; pointer-events: none; }
 .ink-night { position: absolute; inset: 0; z-index: 9; background: #1d2126;
   opacity: 0; transition: opacity .8s; pointer-events: none; }
-#ink-root[data-phase="result"] .ink-dusk { opacity: .22; }
+#ink-root[data-phase="result"] .ink-dusk { opacity: .13; }
 #ink-root[data-phase="result"] .lamp { animation: none; opacity: .95; }
 #ink-root[data-phase="night"] .ink-night { opacity: .96; }
 
 /* ---- grain + vignette ---- */
-.ink-grain { position: absolute; inset: 0; z-index: 7; pointer-events: none; mix-blend-mode: multiply; opacity: .28;
+.ink-grain { position: absolute; inset: 0; z-index: 7; pointer-events: none; mix-blend-mode: multiply; opacity: .18;
   background-image: radial-gradient(rgba(120,110,90,.06) 1px, transparent 1.4px);
   background-size: 5px 5px; }
 .ink-vignette { position: absolute; inset: 0; z-index: 8; pointer-events: none;
-  background: radial-gradient(ellipse at 50% 44%, transparent 58%, rgba(52,54,46,.24) 100%); }
+  background: radial-gradient(ellipse at 50% 44%, transparent 62%, rgba(52,54,46,.13) 100%); }
 
 /* ---- NPC ---- */
 #ink-npc {

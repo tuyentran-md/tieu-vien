@@ -41,12 +41,12 @@ async function main() {
   const nChoices = d().querySelectorAll(".choice").length;
   put("Ngày 1 mở được, có lựa chọn (nhịp 1)", nChoices >= 2, "choices=" + nChoices);
 
-  // chọn nhịp 1 → ngày nhiều nhịp: nút 'Rồi sao nữa…', chưa dusk
+  // chọn nhịp 1 → ngày nhiều nhịp: nút 'Lặng nghe tiếp…', chưa dusk
   d().querySelector(".choice").click();
   await step(300);
   const midBtn = d().getElementById("next-day").textContent;
   const midPhase = d().getElementById("ink-root").dataset.phase;
-  put("Nhịp 1 tiếp diễn trong ngày (multi-beat)", /Rồi sao nữa/.test(midBtn) && midPhase !== "result",
+  put("Nhịp 1 tiếp diễn trong ngày (multi-beat)", /Lặng nghe tiếp/.test(midBtn) && midPhase !== "result",
     "btn=" + midBtn + " phase=" + midPhase);
 
   // reload giữa nhịp → resume được truyện
@@ -61,7 +61,7 @@ async function main() {
   let guard = 0;
   while (guard++ < 8) {
     const btn = d().getElementById("next-day");
-    if (!/Rồi sao nữa/.test(btn.textContent)) break;
+    if (!/Lặng nghe tiếp/.test(btn.textContent)) break;
     btn.click();
     await step(320);
     d().getElementById("scene").click(); // reveal typewriter

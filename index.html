@@ -8,8 +8,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600&family=Noto+Serif:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
 <link rel="preload" href="assets/art/courtyard-master-clean-xuan.png" as="image">
-<link rel="stylesheet" href="style.css?v=11">
-<link rel="stylesheet" href="ink/scene.css?v=11">
+<link rel="stylesheet" href="style.css?v=14">
+<link rel="stylesheet" href="ink/scene.css?v=14">
 </head>
 <body data-season="xuan">
 
@@ -39,8 +39,8 @@
         <span id="hud-meta"></span>
       </div>
       <nav>
-        <button id="btn-journal" title="Những câu bạn ngộ ra trong năm"><span class="nav-name">Sổ Nhỏ</span><small class="nav-cap">câu đã ghi</small></button>
-        <button id="btn-courtyard" title="Những vật khách để lại trong sân"><span class="nav-name">Trong sân</span><small class="nav-cap">vật đã giữ</small></button>
+        <button id="btn-journal" title="Xem những câu đã ghi lại sau mỗi chuyện"><span class="nav-name">Câu đã ghi</span><small id="nav-journal-count" class="nav-cap">0 câu</small></button>
+        <button id="btn-courtyard" title="Xem những vật đã giữ lại trong sân"><span class="nav-name">Vật đã giữ</span><small id="nav-courtyard-count" class="nav-cap">0 vật</small></button>
         <button id="btn-sound" class="btn-icon" title="Bật/tắt âm thanh">♪</button>
         <button id="btn-reset" class="btn-icon" title="Chơi lại từ đầu">↺</button>
       </nav>
@@ -70,9 +70,14 @@
     <div id="coach" class="hidden" aria-hidden="true">
       <div class="coach-card">
         <div class="coach-mark">庭</div>
-        <p class="coach-line">Bạn về giữ cái sân này đã lâu, lâu đến không còn nhớ rõ mình từng lánh khỏi điều gì. Dưới chân núi chỉ có một mái hiên, một gốc cây, một ấm trà — và bạn ở lại trông nom nó.</p>
-        <p class="coach-line dim-line">Người trên đường lên núi hay ghé qua, kể một đoạn đời rồi đi tiếp. Chạm vào họ để nghe. Điều bạn nói, giữ, hay buông — rồi sẽ trở lại: trong Sổ Nhỏ, trong sân, và trong chính bạn.</p>
-        <button id="coach-ok" class="btn-ghost">Bắt đầu lặng lẽ</button>
+        <p class="coach-kicker">Lời vào sân</p>
+        <h2>Giữ một tiểu viện qua bốn mùa</h2>
+        <div class="coach-steps">
+          <p><strong>Người ghé qua.</strong><span>Mỗi ngày là một vị khách, hoặc một khoảng sân vắng.</span></p>
+          <p><strong>Bạn đáp lại.</strong><span>Không có điểm số hiện ra; chỉ có điều mình nói, giữ, hay buông.</span></p>
+          <p><strong>Dấu ở lại.</strong><span>Câu đáng nhớ sẽ được ghi lại; vật khách để lại sẽ nằm lại trong sân.</span></p>
+        </div>
+        <button id="coach-ok" class="btn-ghost">Vào sân</button>
       </div>
     </div>
   </div>
@@ -96,13 +101,13 @@
     </div>
   </div>
 
-<script src="audio.js?v=11"></script>
-<script src="data/arcs.js?v=11"></script>
-<script src="data/events.js?v=11"></script>
-<script src="data/quotes.js?v=11"></script>
-<script src="data/epilogue.js?v=11"></script>
-<script src="core.js?v=11"></script>
-<script src="ink/scene.js?v=11"></script>
-<script src="boot.js?v=11"></script>
+<script src="audio.js?v=14"></script>
+<script src="data/arcs.js?v=14"></script>
+<script src="data/events.js?v=14"></script>
+<script src="data/quotes.js?v=14"></script>
+<script src="data/epilogue.js?v=14"></script>
+<script src="core.js?v=14"></script>
+<script src="ink/scene.js?v=14"></script>
+<script src="boot.js?v=14"></script>
 </body>
 </html>

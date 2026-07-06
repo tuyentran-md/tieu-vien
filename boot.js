@@ -64,18 +64,14 @@
     if (!current) return "";
     if (current.kind === "empty") return "Ngày vắng";
     if (current.kind === "event") return "Chuyện mùa";
-    if (/^moc_/.test(current.id)) return "Mạch Mộc";
-    if (/^thu_/.test(current.id)) return "Mạch Trần Thức";
-    if (/^co_/.test(current.id)) return "Mạch ván cờ";
-    return "Mạch chuyện";
+    if (/^moc_/.test(current.id)) return "Chuyện của Mộc";
+    if (/^thu_/.test(current.id)) return "Chuyện Trần Thức";
+    if (/^co_/.test(current.id)) return "Ván cờ dưới cây";
+    return "Chuyện đang mở";
   }
 
   function traceLine() {
-    const parts = [
-      "Sổ Nhỏ " + S.journal.length + " câu",
-      "Trong sân " + S.items.length + " vật",
-    ];
-    return parts.join(" · ");
+    return "Câu đã ghi: " + S.journal.length + " · Vật đã giữ: " + S.items.length;
   }
 
   function renderHud() {
@@ -89,6 +85,10 @@
     $("#hud-meta").textContent = "Ngày " + S.day + "/" + C.TOTAL_DAYS + " · Mùa " + seasonDay + "/" + C.DAYS_PER_SEASON + " · Còn " + left + " ngày";
     $("#event-kind").textContent = dayKindLabel();
     $("#trace-line").textContent = traceLine();
+    const journalCount = $("#nav-journal-count");
+    const courtyardCount = $("#nav-courtyard-count");
+    if (journalCount) journalCount.textContent = S.journal.length + " câu";
+    if (courtyardCount) courtyardCount.textContent = S.items.length + " vật";
   }
 
   function ensureDay() {
@@ -487,14 +487,14 @@
     r.classList.remove("hidden");
 
     const notes = [];
-    if (ch.quote) notes.push("✎ Một câu được chép vào Sổ Nhỏ.");
+    if (ch.quote) notes.push("✎ Một câu mới được ghi lại.");
     if (ch.item && ITEMS[ch.item]) notes.push("◦ " + ITEMS[ch.item].name + " — giờ thuộc về tiểu viện.");
     if (ch.returning) notes.push("◦ Chuyện này còn hẹn một ngày quay lại.");
     if (!ch.mid) notes.push("Còn " + Math.max(0, C.TOTAL_DAYS - S.day) + " ngày trong năm.");
     $("#notes").textContent = notes.join("   ");
     if (playUnlock && (ch.quote || ch.item) && typeof Ambient !== "undefined") Ambient.play("quote");
     const nd = $("#next-day");
-    nd.textContent = ch.mid ? "Rồi sao nữa…" : "Qua ngày";
+    nd.textContent = ch.mid ? "Lặng nghe tiếp…" : "Qua ngày";
     nd.classList.toggle("btn-continue", !!ch.mid);
     nd.classList.remove("hidden");
     const sc = $("#story-scroll");
@@ -559,17 +559,17 @@
     if (typeof Ambient !== "undefined") Ambient.play("quote");
     const list = $("#modal-list");
     list.innerHTML = "";
-    $("#modal-title").textContent = "Sổ Nhỏ Dưới Núi";
+    $("#modal-title").textContent = "Câu đã ghi";
 
     const sub = document.createElement("p");
     sub.className = "modal-sub";
-    sub.textContent = "Những câu bạn ngộ ra trong năm. Mỗi người ghé qua thường để lại một câu — chúng được chép vào đây.";
+    sub.textContent = "Danh sách những câu đáng nhớ đã được ghi lại sau các chuyện bạn trải qua.";
     list.appendChild(sub);
 
     if (!S.journal.length) {
       const e = document.createElement("p");
       e.className = "dim";
-      e.textContent = "Sổ còn trắng. Cứ sống với cái sân này thêm ít ngày, rồi sẽ có câu để ghi.";
+      e.textContent = "Chưa có câu nào. Khi một chuyện để lại dư âm, câu đáng nhớ sẽ hiện ở đây.";
       list.appendChild(e);
     } else {
       S.journal.forEach(q => {
@@ -586,17 +586,17 @@
     if (typeof Ambient !== "undefined") Ambient.play("menu");
     const list = $("#modal-list");
     list.innerHTML = "";
-    $("#modal-title").textContent = "Trong sân";
+    $("#modal-title").textContent = "Vật đã giữ";
 
     const sub = document.createElement("p");
     sub.className = "modal-sub";
-    sub.textContent = "Những vật khách để lại trong sân. Mỗi vật giữ một câu chuyện của người đã ghé qua.";
+    sub.textContent = "Danh sách những vật đang nằm trong sân vì một người, một lựa chọn, hoặc một chuyện đã qua.";
     list.appendChild(sub);
 
     if (!S.items.length) {
       const e = document.createElement("p");
       e.className = "dim";
-      e.textContent = "Sân còn trống — mới chỉ một mái hiên, một gốc cây, một ấm trà cũ. Vật sẽ đến cùng người.";
+      e.textContent = "Chưa có vật nào. Khi khách để lại thứ gì, hoặc bạn giữ lại thứ gì, nó sẽ hiện ở đây.";
       list.appendChild(e);
     } else {
       S.items.forEach(id => {
@@ -687,14 +687,14 @@
 
   function maybeCoach() {
     let seen = false;
-    try { seen = localStorage.getItem("tieuvien_coached") === "1"; } catch (e) {}
+    try { seen = localStorage.getItem("tieuvien_coached_v12") === "1"; } catch (e) {}
     if (seen) return;
     const coach = $("#coach");
     if (!coach) return;
     coach.classList.remove("hidden");
     function dismiss() {
       coach.classList.add("hidden");
-      try { localStorage.setItem("tieuvien_coached", "1"); } catch (e) {}
+      try { localStorage.setItem("tieuvien_coached_v12", "1"); } catch (e) {}
       if (typeof Ambient !== "undefined") Ambient.play("menu");
     }
     const ok = $("#coach-ok");
