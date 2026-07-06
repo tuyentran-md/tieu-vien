@@ -1,13 +1,13 @@
 # SPEC v3 — "Dưới Núi Có Một Tiểu Viện" (sơn thủy sống / living ink-wash scene)
 
-Contract for implementation. English for precision; in-game text is Vietnamese and ALREADY WRITTEN — do not author or edit any Vietnamese prose. Supersedes SPEC v2 (pixel courtyard, parked at commit 7deb920).
+Contract for implementation. English for precision; in-game text is Vietnamese. Supersedes SPEC v2 (pixel courtyard, parked at commit 7deb920). *Updated 2026-07: content voice pass đã mở khóa và hoàn tất; scene chuyển sang painted plate + overlay; audio thuần WebAudio.*
 
 ## 0. Non-negotiables
 
-1. **`data/*.js` is frozen.** Never edit arcs/events/quotes/epilogue.
+1. **`data/*.js` voice pass done (2026-07).** Mọi chỉnh sửa văn sau này phải giữ chuẩn giọng: hình ảnh trước, không đóng bài học trong result, choice là cử chỉ/câu nói; aphorism chỉ nằm trong Sổ Nhỏ hoặc lời thoại. Structure (flags/effects/schedule) không đổi tùy tiện.
 2. **`core.js` is the only game logic.** UI consumes `createCore(...)`; never reimplement pickToday/condOk/applyChoice. `node test/sim.js` must stay green (303 playthroughs).
-3. **Static site, no build step, no Phaser.** Plain `<script>` tags, runs from `python3 -m http.server`. `vendor/phaser.min.js` and `px/` are legacy — not loaded by index.html.
-4. **The scene is DOM/SVG/CSS** (`ink/scene.js` + `ink/scene.css`), drawn by hand, no bitmap art. All text = DOM, Noto Serif, full diacritics.
+3. **Static site, no build step, no Phaser.** Plain `<script>` tags, runs from `python3 -m http.server`. (Legacy `vendor/`, `px/`, `game.js`, `assets/ninja/` đã xóa.)
+4. **The scene = painted bitmap plate + DOM/SVG/CSS overlays.** Nền: `assets/art/courtyard-master-clean-xuan.png` (season/weather = CSS tone + particles). NPC + yard items = SVG overlays trong `ink/scene.js`. All text = DOM, serif stack, full diacritics.
 5. **Save compatibility:** localStorage key `tieuvien_save_v1`, shape from `core.newState()`. Persist after every mutation. Reload mid-day must NOT reroll the day.
 6. No new dependencies, no runtime network requests (Google Fonts allowed).
 
@@ -34,13 +34,13 @@ scene.onTap(cb);             // cb(hotspotId) — "porch"|"tree"|"gate"|"jar"|"n
 scene.setHotspotsGlow(on);   // empty days: 3-4 soft glowing dots
 ```
 
-### NPC silhouettes (SVG groups, one visible at a time)
-Role → figure variant (simple ink silhouettes, ~46px tall, 2-3 shapes each + one accent):
+### NPC ink figures (SVG groups, one visible at a time)
+Role → figure variant (ink-wash people, tỉ lệ thật ~5.5 đầu, áo giao lĩnh nhiều lớp + phụ kiện nhận diện):
 `boy` thiếu niên vác kiếm gỗ · `scholar` thư sinh cầm sách/ô · `oldman` ông lão chống gậy (arc cờ: thêm bàn cờ dưới cây khi `ban_co`) · `swordsman` kiếm khách (bầu rượu) · `monk` tăng nhân (nón lá, tràng hạt) · `woman` cô hái thuốc (gùi) · `child` con bé (thấp, tay vẫy) · `oldwoman` bà lão (khăn) · `trader` người buôn (đòn gánh) · `villager` dân làng · `master` người đưa thư (đến, đặt thư, đi ngay).
 Event→role map lives in ONE lookup table in boot (default `villager`):
-`moc_*`→boy · `thu_*`→scholar · `co_*`→oldman · `t_covu`→oldman2 · `h_kiemkhach`,`d_ruou`→swordsman · `t_tangnhan`→monk · `x_haithuoc`→woman · `x_mang`,`d_khoai`→child · `t_timcon`→oldwoman · `x_hatgiong`,`h_xinchu`→trader · `h_trau`,`h_gieng`,`x_ganh_nuoc`→villager · `t_lathu`,`d_baotuyet`→master (đến, đặt thư trên hiên, rời đi ngay — npcLeave sau ~2s).
-`moc_5` và `co_4`: npcLeave(true) — rời về phía núi.
-Walk = CSS transform transition 4–6s ease-in-out, gate → dưới gốc cây; a small `!`-less pause, then a soft chạm-glow on the figure.
+`moc_*`→boy · `thu_*`→scholar · `co_*`→oldman · `t_covu`→oldman2 · `h_kiemkhach`,`d_ruou`→swordsman · `t_tangnhan`→monk · `x_haithuoc`→woman · `x_mang`,`d_khoai`→child · `t_timcon`→oldwoman · `x_hatgiong`,`h_xinchu`→trader · `h_trau`,`h_gieng`,`x_ganh_nuoc`→villager · `t_lathu`→master (LETTER_DROP: đến, đặt thư trên hiên, rời sau ~2s) · `d_baotuyet`→traveler (cùng dáng nón lá, flow đợi bình thường).
+`co_4`: npcLeave(true) — rời về phía núi. Mộc rời qua cổng.
+Walk = CSS transform transition 4–6s ease-in-out (timer, không rAF — tab ẩn không kẹt), gate → giữa sân; tap bóng người đang đi = giục vào sân, mở lời ngay.
 
 ### Yard items (`S.items`) — SVG elements toggled visible
 `kiem_go_hien` thanh kiếm gỗ dựng cột hiên · `ban_co` bàn đá + quân cờ dưới cây (`quan_co_khuyet` thêm 1 chấm trắng) · `buc_thu`/`buc_thu_vodanh` phong thư trên hiên · `cay_mai` mai gần cổng (nở khi đông) · `la_de` chiếc lá trên chồng sách hiên · `con_meo` mèo nằm cuộn trên hiên (đuôi ve vẩy CSS). `kiem_go_trao` no visual (given away).
@@ -58,9 +58,9 @@ Tap item → tooltip box (DOM, paper style) with `ITEMS[id].memory`.
 - **Modals** Sổ Nhỏ / Trong sân / ♪ / ↺: keep current boot.js implementations.
 - Keep `?autoplay=N` (auto-first-choice N days, no audio) for audit scripts.
 
-## 4. Audio (unchanged from v2 plan)
+## 4. Audio — thuần WebAudio, không file
 
-Music `assets/ninja/music/`: title/xuan/ha/thu/dong/epilogue.ogg, loop, vol ~0.35, crossfade ≥1s at season change. SFX `assets/ninja/sfx/`: Accept (choice), Cancel (close), Menu1 (para advance), quote.wav (Sổ Nhỏ, vol .3). Unlock only after first gesture; `tieuvien_sound` toggle persists; `audio.js` ambient stays layered under music at 0.10 gain (drop if it muddies — note in commit).
+Toàn bộ âm thanh sinh trong `audio.js`: ambient gió (brown noise + LFO) / mưa (bandpass noise theo thời tiết) / chuông gió ngũ cung thưa / chim mùa xuân. SFX: mõ gỗ (chọn), tick giấy (mở/gấp), hai nốt chuông penta (mở khóa Sổ Nhỏ / vật). Epilogue: gió nhẹ + chuông rất thưa (~14s, p=.35). Unlock sau first gesture; `tieuvien_sound` toggle persists.
 
 ## 5. Milestones & gates
 

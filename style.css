@@ -74,30 +74,6 @@ body {
   border-bottom: 1px solid var(--line);
   background: var(--paper-deep);
 }
-#stage canvas {
-  display: block;
-  image-rendering: pixelated;
-  image-rendering: crisp-edges;
-}
-.scene-svg { position: absolute; inset: 0; width: 100%; height: 100%; }
-.scene-px { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
-
-.cloud { animation: drift 90s linear infinite; }
-.cloud.c1 { animation-duration: 130s; animation-delay: -40s; }
-.cloud.c2 { animation-duration: 170s; animation-delay: -90s; }
-@keyframes drift { from { transform: translateX(-180px); } to { transform: translateX(980px); } }
-
-.puff { animation: rise 7s ease-out infinite; }
-.puff.p1 { animation-delay: 2.3s; }
-.puff.p2 { animation-delay: 4.6s; }
-@keyframes rise {
-  0%   { transform: translate(0,0); opacity: .3; }
-  100% { transform: translate(14px,-46px); opacity: 0; }
-}
-
-.cat { transform-origin: 120px 268px; animation: breathe 4.5s ease-in-out infinite; }
-@keyframes breathe { 0%,100% { transform: scale(1,1); } 50% { transform: scale(1.012,1.035); } }
-
 #btn-sound.muted { opacity: .4; text-decoration: line-through; }
 
 header {
@@ -224,5 +200,5 @@ header nav button:hover { color: var(--ink); border-bottom-color: var(--ink-dim)
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .cloud, .puff, .cat, .fade-in { animation: none; }
+  .fade-in { animation: none; }
 }

@@ -1,27 +1,9 @@
-// ===== AMBIENT — gió, mưa, chuông gió, chim; sinh bằng WebAudio, không file =====
+// ===== AMBIENT — gió, mưa, chuông gió, chim + SFX mõ/chuông; toàn bộ sinh bằng WebAudio, không file =====
 
 const Ambient = (() => {
   let ac = null, master = null, on = false;
   let windGain, rainGain, chimeTimer = null, birdTimer = null;
-  let mediaReady = false, currentMusic = null, currentMusicKey = null, fadeTimer = null;
-  const music = {};
-  const sfx = {};
   const PREF_KEY = "tieuvien_sound";
-  const USE_MUSIC = false;
-  const MUSIC_SRC = {
-    title: "assets/ninja/music/title.ogg",
-    xuan: "assets/ninja/music/xuan.ogg",
-    ha: "assets/ninja/music/ha.ogg",
-    thu: "assets/ninja/music/thu.ogg",
-    dong: "assets/ninja/music/dong.ogg",
-    epilogue: "assets/ninja/music/epilogue.ogg",
-  };
-  const SFX_SRC = {
-    accept: "assets/ninja/sfx/Accept.wav",
-    cancel: "assets/ninja/sfx/Cancel.wav",
-    menu: "assets/ninja/sfx/Menu1.wav",
-    quote: "assets/ninja/sfx/quote.wav",
-  };
 
   function noiseBuffer(seconds, brown) {
     const len = ac.sampleRate * seconds;
@@ -36,26 +18,7 @@ const Ambient = (() => {
     return buf;
   }
 
-  function ensureMedia() {
-    if (mediaReady) return;
-    Object.keys(MUSIC_SRC).forEach(k => {
-      const a = new Audio(MUSIC_SRC[k]);
-      a.preload = "auto";
-      a.loop = true;
-      a.volume = 0;
-      music[k] = a;
-    });
-    Object.keys(SFX_SRC).forEach(k => {
-      const a = new Audio(SFX_SRC[k]);
-      a.preload = "auto";
-      a.volume = k === "quote" ? .2 : k === "menu" ? .12 : .22;
-      sfx[k] = a;
-    });
-    mediaReady = true;
-  }
-
   function start() {
-    ensureMedia();
     if (ac) { ac.resume(); return; }
     ac = new (window.AudioContext || window.webkitAudioContext)();
     master = ac.createGain(); master.gain.value = .085; master.connect(ac.destination);
@@ -93,6 +56,39 @@ const Ambient = (() => {
   }
   const PENTA = [440, 523.25, 587.33, 659.25, 783.99];
 
+  // mõ gỗ — thân sine trầm rơi nhanh + tiếng gõ nhỏ
+  function knock(f0, vol) {
+    if (!ac || !on) return;
+    const t = ac.currentTime;
+    const o = ac.createOscillator(); o.type = "sine";
+    o.frequency.setValueAtTime(f0, t);
+    o.frequency.exponentialRampToValueAtTime(f0*.72, t+.07);
+    const g = ac.createGain();
+    g.gain.setValueAtTime(0, t);
+    g.gain.linearRampToValueAtTime(vol, t+.004);
+    g.gain.exponentialRampToValueAtTime(.0001, t+.11);
+    o.connect(g); g.connect(master); o.start(t); o.stop(t+.15);
+
+    const n = ac.createBufferSource(); n.buffer = noiseBuffer(.05, false);
+    const f = ac.createBiquadFilter(); f.type = "bandpass"; f.frequency.value = 1500; f.Q.value = 1.2;
+    const ng = ac.createGain();
+    ng.gain.setValueAtTime(vol*.5, t);
+    ng.gain.exponentialRampToValueAtTime(.0001, t+.045);
+    n.connect(f); f.connect(ng); ng.connect(master); n.start(t);
+  }
+
+  // tick giấy — lật trang, đóng mở
+  function tick(freq, vol, dur) {
+    if (!ac || !on) return;
+    const t = ac.currentTime;
+    const n = ac.createBufferSource(); n.buffer = noiseBuffer(dur+.02, false);
+    const f = ac.createBiquadFilter(); f.type = "bandpass"; f.frequency.value = freq; f.Q.value = .9;
+    const g = ac.createGain();
+    g.gain.setValueAtTime(vol, t);
+    g.gain.exponentialRampToValueAtTime(.0001, t+dur);
+    n.connect(f); f.connect(g); g.connect(master); n.start(t);
+  }
+
   function chirp() {
     if (!ac || !on) return;
     const t = ac.currentTime;
@@ -121,72 +117,36 @@ const Ambient = (() => {
       birdTimer = setInterval(() => { if (Math.random()<.55) chirp(); }, 6500);
   }
 
-  function fadeToMusic(key) {
-    if (!USE_MUSIC || !on) return;
-    ensureMedia();
-    const next = music[key] || music.xuan;
-    if (!next || currentMusicKey === key) return;
-    clearInterval(fadeTimer);
-
-    const prev = currentMusic;
-    currentMusic = next;
-    currentMusicKey = key;
-    next.volume = 0;
-    next.play().catch(() => {});
-
-    const dur = 1200;
-    const startAt = performance.now();
-    fadeTimer = setInterval(() => {
-      const t = Math.min(1, (performance.now() - startAt) / dur);
-      next.volume = .35 * t;
-      if (prev && prev !== next) prev.volume = .35 * (1 - t);
-      if (t >= 1) {
-        clearInterval(fadeTimer);
-        fadeTimer = null;
-        next.volume = .35;
-        if (prev && prev !== next) {
-          prev.pause();
-          prev.currentTime = 0;
-          prev.volume = 0;
-        }
-      }
-    }, 50);
-  }
-
-  function stopMusic() {
-    clearInterval(fadeTimer);
-    fadeTimer = null;
-    Object.keys(music).forEach(k => {
-      music[k].pause();
-      music[k].volume = 0;
-    });
-    currentMusic = null;
-    currentMusicKey = null;
-  }
-
   function setScene(season, weather) {
     if (!ac || !on) return;
     const t = ac.currentTime;
     rainGain.gain.linearRampToValueAtTime(weather==="rain" ? .16 : 0, t+1.5);
     windGain.gain.linearRampToValueAtTime(season==="dong" ? .34 : season==="ha" ? .16 : .25, t+1.5);
     schedule(season, weather);
-    fadeToMusic(season);
   }
 
   function setEpilogue() {
     if (!ac || !on) return;
     clearInterval(chimeTimer); clearInterval(birdTimer);
-    fadeToMusic("epilogue");
+    const t = ac.currentTime;
+    rainGain.gain.linearRampToValueAtTime(0, t+1.5);
+    windGain.gain.linearRampToValueAtTime(.15, t+2);
+    // đêm cuối năm: chuông rất thưa, rất khẽ
+    chimeTimer = setInterval(() => {
+      if (Math.random() < .35) bell(PENTA[Math.floor(Math.random()*3)], .06, 4.5);
+    }, 14000);
   }
 
+  // SFX tổng hợp — cùng chất liệu với ambient
   function play(name) {
-    if (!on) return;
-    ensureMedia();
-    const base = sfx[name];
-    if (!base) return;
-    const a = base.cloneNode();
-    a.volume = base.volume;
-    a.play().catch(() => {});
+    if (!on || !ac) return;
+    if (name === "accept") knock(190, .18);                    // chọn — một tiếng mõ
+    else if (name === "menu") tick(2800, .05, .05);            // lật/giở — tick giấy
+    else if (name === "cancel") tick(900, .06, .07);           // gấp lại — tick trầm
+    else if (name === "quote") {                               // mở khóa — hai nốt chuông
+      bell(587.33, .07, 2.2);
+      setTimeout(() => bell(783.99, .055, 2.8), 170);
+    }
   }
 
   function toggle() {
@@ -197,7 +157,6 @@ const Ambient = (() => {
       ac.suspend();
       clearInterval(chimeTimer);
       clearInterval(birdTimer);
-      stopMusic();
     }
     return on;
   }
