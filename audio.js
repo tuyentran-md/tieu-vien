@@ -1,4 +1,4 @@
-// ===== AMBIENT — gió, mưa, chuông gió, chim + SFX mõ/chuông; toàn bộ sinh bằng WebAudio, không file =====
+// ===== AMBIENT — gió thoáng, mưa, chim + SFX mõ/chuông; toàn bộ sinh bằng WebAudio, không file =====
 
 const Ambient = (() => {
   let ac = null, master = null, on = false;
@@ -28,16 +28,26 @@ const Ambient = (() => {
   function start() {
     if (ac) { ac.resume(); return; }
     ac = new (window.AudioContext || window.webkitAudioContext)();
-    master = ac.createGain(); master.gain.value = .26; master.connect(ac.destination);
+    const comp = ac.createDynamicsCompressor();
+    comp.threshold.value = -24;
+    comp.knee.value = 16;
+    comp.ratio.value = 4;
+    comp.attack.value = .006;
+    comp.release.value = .18;
+    master = ac.createGain();
+    master.gain.value = .46;
+    master.connect(comp);
+    comp.connect(ac.destination);
 
-    // gió — brown noise + lowpass, phập phồng chậm
-    const wind = ac.createBufferSource(); wind.buffer = noiseBuffer(4, true); wind.loop = true;
-    const lp = ac.createBiquadFilter(); lp.type = "lowpass"; lp.frequency.value = 420;
-    windGain = ac.createGain(); windGain.gain.value = .14;
+    // gió thoáng — bỏ phần trầm để không còn tiếng ù nền.
+    const wind = ac.createBufferSource(); wind.buffer = noiseBuffer(4, false); wind.loop = true;
+    const hp = ac.createBiquadFilter(); hp.type = "highpass"; hp.frequency.value = 280; hp.Q.value = .4;
+    const lp = ac.createBiquadFilter(); lp.type = "lowpass"; lp.frequency.value = 1450; lp.Q.value = .45;
+    windGain = ac.createGain(); windGain.gain.value = .018;
     const lfo = ac.createOscillator(); lfo.frequency.value = .06;
-    const lfoG = ac.createGain(); lfoG.gain.value = .12;
+    const lfoG = ac.createGain(); lfoG.gain.value = .012;
     lfo.connect(lfoG); lfoG.connect(windGain.gain);
-    wind.connect(lp); lp.connect(windGain); windGain.connect(master);
+    wind.connect(hp); hp.connect(lp); lp.connect(windGain); windGain.connect(master);
     wind.start(); lfo.start();
 
     // mưa — white noise bandpass, bật/tắt theo thời tiết
@@ -47,14 +57,14 @@ const Ambient = (() => {
     rain.connect(bp); bp.connect(rainGain); rainGain.connect(master);
     rain.start();
 
-    // nước chảy rất nhỏ — noise hẹp, lăn chậm dưới nền
+    // nước chảy rất nhỏ — noise hẹp, chỉ đủ tạo cảm giác sân vườn.
     const water = ac.createBufferSource(); water.buffer = noiseBuffer(5, false); water.loop = true;
     const wp = ac.createBiquadFilter(); wp.type = "bandpass"; wp.frequency.value = 680; wp.Q.value = .75;
-    waterGain = ac.createGain(); waterGain.gain.value = .022;
+    waterGain = ac.createGain(); waterGain.gain.value = .01;
     water.connect(wp); wp.connect(waterGain); waterGain.connect(master);
     water.start();
 
-    // nhạc nền không lời: pad rất mềm, đủ nghe nhưng nằm dưới lời.
+    // Dàn pad giữ lại để đổi mood nếu cần, nhưng mặc định tắt để tránh ù nền.
     const padFilter = ac.createBiquadFilter(); padFilter.type = "lowpass"; padFilter.frequency.value = 900; padFilter.Q.value = .4;
     padGain = ac.createGain(); padGain.gain.value = 0;
     padFilter.connect(padGain); padGain.connect(master);
@@ -80,17 +90,17 @@ const Ambient = (() => {
     padGain.gain.setTargetAtTime(gain, t, 2.4);
   }
 
-  // chuông gió mềm — bỏ overtone cao/chói
+  // chuông gió mềm — chỉ dùng cho SFX mở khóa, không phát ngẫu nhiên trong nền.
   function bell(freq, vol, dur) {
     if (!ac || !on) return;
     const t = ac.currentTime;
-    const lp = ac.createBiquadFilter(); lp.type = "lowpass"; lp.frequency.value = 1200; lp.Q.value = .35;
+    const lp = ac.createBiquadFilter(); lp.type = "lowpass"; lp.frequency.value = 980; lp.Q.value = .35;
     lp.connect(master);
     [1, 1.5, 2].forEach((h, i) => {
       const o = ac.createOscillator(); o.type = i ? "triangle" : "sine"; o.frequency.value = freq*h;
       const g = ac.createGain();
       g.gain.setValueAtTime(0, t);
-      g.gain.linearRampToValueAtTime(vol/(i+1.8), t+.055);
+      g.gain.linearRampToValueAtTime(vol/(i+2.2), t+.06);
       g.gain.exponentialRampToValueAtTime(.0001, t+dur);
       o.connect(g); g.connect(lp); o.start(t); o.stop(t+dur+.1);
     });
@@ -108,9 +118,9 @@ const Ambient = (() => {
     const t = ac.currentTime;
     const g = ac.createGain();
     g.gain.setValueAtTime(0, t);
-    g.gain.linearRampToValueAtTime(vol, t + .9);
-    g.gain.setTargetAtTime(.0001, t + dur * .62, dur * .22);
-    const lp = ac.createBiquadFilter(); lp.type = "lowpass"; lp.frequency.value = 1200; lp.Q.value = .45;
+    g.gain.linearRampToValueAtTime(vol, t + .65);
+    g.gain.setTargetAtTime(.0001, t + dur * .58, dur * .2);
+    const lp = ac.createBiquadFilter(); lp.type = "lowpass"; lp.frequency.value = 1500; lp.Q.value = .45;
     g.connect(lp); lp.connect(master);
     [1, 1.5].forEach((mul, i) => {
       const o = ac.createOscillator();
@@ -121,6 +131,29 @@ const Ambient = (() => {
       o.connect(og); og.connect(g);
       o.start(t);
       o.stop(t + dur + 1.2);
+    });
+  }
+
+  function musicNote(freq, vol, delay, dur) {
+    if (!ac || !on) return;
+    const t = ac.currentTime + delay;
+    const lp = ac.createBiquadFilter();
+    lp.type = "lowpass";
+    lp.frequency.value = 1700;
+    lp.Q.value = .45;
+    lp.connect(master);
+    [1, 2.01].forEach((mul, i) => {
+      const o = ac.createOscillator();
+      const g = ac.createGain();
+      o.type = i ? "triangle" : "sine";
+      o.frequency.value = freq * mul;
+      g.gain.setValueAtTime(0, t);
+      g.gain.linearRampToValueAtTime(vol / (i ? 5.2 : 1), t + .018);
+      g.gain.exponentialRampToValueAtTime(.0001, t + dur);
+      o.connect(g);
+      g.connect(lp);
+      o.start(t);
+      o.stop(t + dur + .1);
     });
   }
 
@@ -140,7 +173,7 @@ const Ambient = (() => {
     const n = ac.createBufferSource(); n.buffer = noiseBuffer(.05, false);
     const f = ac.createBiquadFilter(); f.type = "bandpass"; f.frequency.value = 1500; f.Q.value = 1.2;
     const ng = ac.createGain();
-    ng.gain.setValueAtTime(vol*.5, t);
+    ng.gain.setValueAtTime(vol*.44, t);
     ng.gain.exponentialRampToValueAtTime(.0001, t+.045);
     n.connect(f); f.connect(ng); ng.connect(master); n.start(t);
   }
@@ -167,7 +200,7 @@ const Ambient = (() => {
     o.frequency.setValueAtTime(f0, t);
     o.frequency.exponentialRampToValueAtTime(f0*1.4, t+.07);
     o.frequency.exponentialRampToValueAtTime(f0*.9, t+.14);
-    g.gain.linearRampToValueAtTime(.05, t+.02);
+    g.gain.linearRampToValueAtTime(.095, t+.02);
     g.gain.exponentialRampToValueAtTime(.0001, t+.18);
     o.start(t); o.stop(t+.25);
     if (Math.random()<.6) setTimeout(chirp, 180+Math.random()*160);
@@ -175,19 +208,28 @@ const Ambient = (() => {
 
   function schedule(season, weather) {
     clearInterval(chimeTimer); clearInterval(birdTimer); clearInterval(musicTimer);
-    chimeTimer = setInterval(() => {
-      if (Math.random() < (season==="dong" ? .08 : .16)) {
-        bell(PENTA_LOW[season][Math.floor(Math.random()*3)] * 1.5, .024, 4.2);
-      }
-    }, 24000);
+    chimeTimer = null;
     if (season==="xuan" && weather!=="rain")
-      birdTimer = setInterval(() => { if (Math.random()<.42) chirp(); }, 8500);
+      birdTimer = setInterval(() => { if (Math.random()<.62) chirp(); }, 7600);
     const scale = PENTA_LOW[season] || PENTA_LOW.xuan;
+    let motifIndex = 0;
+    const motifs = [
+      [0, 2, 4, 3, 2, 1],
+      [1, 3, 4, 2, 3],
+      [2, 4, 3, 1, 0, 2],
+    ];
     const playDrift = () => {
       if (!on || !ac) return;
-      const i = Math.floor(Math.random() * scale.length);
-      softNote(scale[i], season === "dong" ? .018 : .026, 8.5 + Math.random() * 3.5);
-      if (Math.random() < .55) setTimeout(() => softNote(scale[(i + 2) % scale.length], .014, 7.2), 1300);
+      const motif = motifs[motifIndex % motifs.length];
+      motifIndex += 1;
+      motif.forEach((idx, n) => {
+        const f = scale[idx % scale.length] * (n % 4 === 3 ? 3 : 2);
+        musicNote(f, season === "dong" ? .03 : .044, n * .58, 2.2 + (n % 2) * .45);
+      });
+      if (Math.random() < .55) {
+        const root = scale[motif[0] % scale.length] * 2;
+        setTimeout(() => softNote(root, season === "dong" ? .014 : .018, 4.4), 260);
+      }
     };
     setTimeout(playDrift, 700);
     musicTimer = setInterval(playDrift, season === "ha" ? 7600 : 8400);
@@ -196,10 +238,10 @@ const Ambient = (() => {
   function setScene(season, weather) {
     if (!ac || !on) return;
     const t = ac.currentTime;
-    rainGain.gain.linearRampToValueAtTime(weather==="rain" ? .13 : 0, t+1.5);
-    windGain.gain.linearRampToValueAtTime(season==="dong" ? .22 : season==="ha" ? .1 : .14, t+1.5);
-    waterGain.gain.linearRampToValueAtTime(weather==="rain" ? .04 : season==="xuan" ? .032 : season==="dong" ? .016 : .024, t+1.5);
-    setPad(season, weather==="rain" ? .045 : season==="dong" ? .038 : .056);
+    rainGain.gain.linearRampToValueAtTime(weather==="rain" ? .075 : 0, t+1.5);
+    windGain.gain.linearRampToValueAtTime(season==="dong" ? .04 : season==="ha" ? .016 : .024, t+1.5);
+    waterGain.gain.linearRampToValueAtTime(weather==="rain" ? .022 : season==="xuan" ? .014 : season==="dong" ? .006 : .01, t+1.5);
+    setPad(season, 0);
     schedule(season, weather);
   }
 
@@ -208,25 +250,25 @@ const Ambient = (() => {
     clearInterval(chimeTimer); clearInterval(birdTimer); clearInterval(musicTimer);
     const t = ac.currentTime;
     rainGain.gain.linearRampToValueAtTime(0, t+1.5);
-    windGain.gain.linearRampToValueAtTime(.1, t+2);
-    waterGain.gain.linearRampToValueAtTime(.018, t+2);
-    setPad("dong", .034);
-    musicTimer = setInterval(() => softNote(PENTA_LOW.dong[Math.floor(Math.random()*3)], .016, 10), 14000);
-    // đêm cuối năm: chuông rất thưa, rất khẽ
-    chimeTimer = setInterval(() => {
-      if (Math.random() < .16) bell(PENTA_LOW.dong[Math.floor(Math.random()*3)] * 1.5, .022, 4.8);
-    }, 26000);
+    windGain.gain.linearRampToValueAtTime(.026, t+2);
+    waterGain.gain.linearRampToValueAtTime(.008, t+2);
+    setPad("dong", 0);
+    const ending = [1, 3, 4, 2, 0];
+    musicTimer = setInterval(() => {
+      ending.forEach((idx, n) => musicNote(PENTA_LOW.dong[idx] * 2, .026, n * .68, 2.6));
+    }, 11000);
+    chimeTimer = null;
   }
 
   // SFX tổng hợp — cùng chất liệu với ambient
   function play(name) {
     if (!on || !ac) return;
-    if (name === "accept") knock(170, .13);                    // chọn — một tiếng mõ mềm
-    else if (name === "menu") tick(1900, .04, .05);            // lật/giở — tick giấy
-    else if (name === "cancel") tick(760, .045, .07);          // gấp lại — tick trầm
+    if (name === "accept") knock(170, .11);                    // chọn — một tiếng mõ mềm
+    else if (name === "menu") tick(1900, .05, .05);            // lật/giở — tick giấy
+    else if (name === "cancel") tick(760, .05, .07);           // gấp lại — tick trầm
     else if (name === "quote") {                               // mở khóa — hai nốt bowl mềm
-      bell(392, .032, 2.8);
-      setTimeout(() => bell(523.25, .024, 3.1), 220);
+      bell(392, .018, 2.5);
+      setTimeout(() => bell(523.25, .014, 2.8), 220);
     }
   }
 
