@@ -292,12 +292,9 @@
   + '<g class="fol-b" opacity=".7"><ellipse cx="212" cy="258" rx="40" ry="18"/>'
   + '<ellipse cx="296" cy="270" rx="42" ry="17"/></g>'
 
-  // go table under tree (item ban_co) + missing stone
-  + '<g id="it-ban_co" class="yi"><rect x="282" y="374" width="54" height="10" rx="5" fill="#b5b0a0"/>'
-  + '<rect x="286" y="384" width="46" height="8" rx="3" fill="#a8a292"/>'
-  + '<rect x="298" y="392" width="22" height="12" rx="3" fill="#94907f"/>'
-  + '<g stroke="#7f7a6a" stroke-width="1"><line x1="290" y1="377" x2="328" y2="377"/><line x1="290" y1="380" x2="328" y2="380"/></g></g>'
-  + '<circle id="it-quan_co_khuyet" class="yi" cx="312" cy="378" r="2.4" fill="#f2efe4"/>'
+  // bitmap yard items
+  + '<image id="it-ban_co" class="yi yi-img" href="assets/art/items/item-ban_co.png" x="256" y="330" width="126" height="126" preserveAspectRatio="xMidYMid meet"/>'
+  + '<image id="it-quan_co_khuyet" class="yi yi-img" href="assets/art/items/item-quan_co_khuyet.png" x="309" y="373" width="20" height="20" preserveAspectRatio="xMidYMid meet"/>'
 
   // house: porch, pillars, wall, window+lamp, door, roof
   + '<g><rect x="500" y="392" width="268" height="16" rx="3" fill="#8a7a62"/>'
@@ -333,24 +330,14 @@
   // quiet-day traces (flags, not inventory items)
   + '<g id="fx-va_maihien" class="yf"><path d="M556,278 q38,-12 84,-9 l-8,18 q-42,-5 -78,8 Z" fill="#6d6655" opacity=".9"/>'
   + '<path d="M564,282 q30,-8 62,-7 M558,290 q34,-9 70,-6" stroke="#a99061" stroke-width="1.4" opacity=".75"/></g>'
-  + '<g id="fx-doc_sach" class="yf"><path d="M686,371 q10,-7 21,0 l0,12 q-10,-5 -21,0 Z" fill="#e8dec4" stroke="#a89b7d" stroke-width="1"/>'
-  + '<path d="M707,371 q10,-7 21,0 l0,12 q-10,-5 -21,0 Z" fill="#f1e8d2" stroke="#a89b7d" stroke-width="1"/>'
-  + '<path d="M707,371 l0,12 M691,376 q6,-2 12,0 M712,376 q6,-2 12,0" stroke="#9a8b6b" stroke-width=".8"/></g>'
-  + '<g id="fx-danh_co_mot_minh" class="yf"><circle cx="294" cy="382" r="2.8" fill="#ede8d6" stroke="#8a8270" stroke-width=".7"/>'
-  + '<circle cx="324" cy="378" r="2.8" fill="#3f3a30" stroke="#8a8270" stroke-width=".7"/>'
-  + '<circle cx="306" cy="389" r="2.4" fill="#3f3a30" opacity=".9"/></g>'
+  + '<image id="fx-doc_sach" class="yf yf-img" href="assets/art/items/fx-doc_sach.png" x="666" y="334" width="82" height="82" preserveAspectRatio="xMidYMid meet"/>'
+  + '<image id="fx-danh_co_mot_minh" class="yf yf-img" href="assets/art/items/item-ban_co.png" x="256" y="330" width="126" height="126" preserveAspectRatio="xMidYMid meet"/>'
 
-  // porch items: sword / letter / leaf-book / cat
-  + '<g id="it-kiem_go_hien" class="yi"><line x1="533" y1="388" x2="524" y2="330" stroke="#7a6248" stroke-width="4" stroke-linecap="round"/>'
-  + '<line x1="522" y1="342" x2="533" y2="346" stroke="#5d4a34" stroke-width="3" stroke-linecap="round"/></g>'
-  + '<g id="it-buc_thu" class="yi"><rect x="644" y="370" width="17" height="10" rx="1" fill="#f0ead6" stroke="#b8ae92" stroke-width="1" transform="rotate(-6 652 375)"/></g>'
-  + '<g id="it-la_de" class="yi"><rect x="700" y="372" width="20" height="7" rx="1" fill="#d9d0b6"/>'
-  + '<rect x="702" y="368" width="16" height="5" rx="1" fill="#cabf9f"/>'
-  + '<path d="M706,364 q6,-6 12,-2 q-5,6 -12,2 Z" fill="#7d8a5e"/></g>'
-  + '<g id="it-con_meo" class="yi"><ellipse cx="726" cy="381" rx="11" ry="6" fill="#8a7f6a"/>'
-  + '<circle cx="717" cy="377" r="4.6" fill="#8a7f6a"/>'
-  + '<path d="M714,374 l-2,-4 l4,1 Z" fill="#8a7f6a"/><path d="M719,373 l0,-4 l3,3 Z" fill="#8a7f6a"/>'
-  + '<path class="cat-tail" d="M736,382 q8,-2 8,-8" stroke="#8a7f6a" stroke-width="3" fill="none" stroke-linecap="round"/></g>'
+  // porch bitmap items: sword / letter / leaf-book / cat
+  + '<image id="it-kiem_go_hien" class="yi yi-img" href="assets/art/items/item-kiem_go_hien.png" x="492" y="270" width="100" height="140" preserveAspectRatio="xMidYMid meet"/>'
+  + '<image id="it-buc_thu" class="yi yi-img" href="assets/art/items/item-buc_thu.png" x="610" y="332" width="82" height="82" preserveAspectRatio="xMidYMid meet"/>'
+  + '<image id="it-la_de" class="yi yi-img" href="assets/art/items/item-la_de.png" x="676" y="344" width="88" height="66" preserveAspectRatio="xMidYMid meet"/>'
+  + '<image id="it-con_meo" class="yi yi-img" href="assets/art/items/item-con_meo.png" x="700" y="336" width="92" height="92" preserveAspectRatio="xMidYMid meet"/>'
 
   // mai tree (item cay_mai; blooms in đông)
   + '<g id="it-cay_mai" class="yi">'

@@ -208,6 +208,8 @@ svg .ground-far, svg .ground-near, svg .fol-a, svg .fol-b { transition: fill 1.6
 /* ---- yard items ---- */
 .yi { opacity: 0; transition: opacity 1s; pointer-events: none; }
 .yi.on { opacity: 1; pointer-events: auto; cursor: pointer; }
+.yi-img, .yf-img { filter: saturate(.86) contrast(.96) brightness(.97); }
+#it-ban_co, #fx-danh_co_mot_minh { filter: saturate(.78) contrast(.94) brightness(.94); }
 .yi.pop { animation: ink-item-pop 1.8s ease both; }
 @keyframes ink-item-pop {
   0% { opacity: 0; filter: drop-shadow(0 0 0 rgba(255,232,162,0)); transform: translateY(5px); }
