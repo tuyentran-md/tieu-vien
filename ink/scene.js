@@ -1,5 +1,5 @@
 // ===== Sơn thủy sống — scene module (SPEC v3 §2) =====
-// Vẽ tay toàn bộ bằng SVG/CSS. Không bitmap, không Phaser.
+// Painted background + DOM bitmap overlays; SVG is now only legacy/fallback scenery.
 // API: InkScene.boot(el) → { setDay, npcArrive, npcLeave, setPhase, onTap, setHotspotsGlow, tipAt }
 
 (function (root) {
@@ -236,7 +236,7 @@
   // khách lỡ đường đội nón như người đưa thư — cùng một dáng
   FIGS.traveler = FIGS.master;
 
-  const POS = { gate: [150, 438], yard: [340, 416], talk: [582, 360], mountain: [58, 310] };
+  const POS = { gate: [150, 438], yard: [340, 416], talk: [340, 402], mountain: [58, 310] };
 
   const SVG = ''
   + '<svg class="ink-svg" viewBox="0 0 800 520" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">'
@@ -292,10 +292,6 @@
   + '<g class="fol-b" opacity=".7"><ellipse cx="212" cy="258" rx="40" ry="18"/>'
   + '<ellipse cx="296" cy="270" rx="42" ry="17"/></g>'
 
-  // bitmap yard items
-  + '<image id="it-ban_co" class="yi yi-img" href="assets/art/items/item-ban_co.png" x="256" y="330" width="126" height="126" preserveAspectRatio="xMidYMid meet"/>'
-  + '<image id="it-quan_co_khuyet" class="yi yi-img" href="assets/art/items/item-quan_co_khuyet.png" x="309" y="373" width="20" height="20" preserveAspectRatio="xMidYMid meet"/>'
-
   // house: porch, pillars, wall, window+lamp, door, roof
   + '<g><rect x="500" y="392" width="268" height="16" rx="3" fill="#8a7a62"/>'
   + '<rect x="508" y="408" width="10" height="18" fill="#6f6350"/>'
@@ -330,15 +326,6 @@
   // quiet-day traces (flags, not inventory items)
   + '<g id="fx-va_maihien" class="yf"><path d="M556,278 q38,-12 84,-9 l-8,18 q-42,-5 -78,8 Z" fill="#6d6655" opacity=".9"/>'
   + '<path d="M564,282 q30,-8 62,-7 M558,290 q34,-9 70,-6" stroke="#a99061" stroke-width="1.4" opacity=".75"/></g>'
-  + '<image id="fx-doc_sach" class="yf yf-img" href="assets/art/items/fx-doc_sach.png" x="666" y="334" width="82" height="82" preserveAspectRatio="xMidYMid meet"/>'
-  + '<image id="fx-danh_co_mot_minh" class="yf yf-img" href="assets/art/items/item-ban_co.png" x="256" y="330" width="126" height="126" preserveAspectRatio="xMidYMid meet"/>'
-
-  // porch bitmap items: sword / letter / leaf-book / cat
-  + '<image id="it-kiem_go_hien" class="yi yi-img" href="assets/art/items/item-kiem_go_hien.png" x="492" y="270" width="100" height="140" preserveAspectRatio="xMidYMid meet"/>'
-  + '<image id="it-buc_thu" class="yi yi-img" href="assets/art/items/item-buc_thu.png" x="610" y="332" width="82" height="82" preserveAspectRatio="xMidYMid meet"/>'
-  + '<image id="it-la_de" class="yi yi-img" href="assets/art/items/item-la_de.png" x="676" y="344" width="88" height="66" preserveAspectRatio="xMidYMid meet"/>'
-  + '<image id="it-con_meo" class="yi yi-img" href="assets/art/items/item-con_meo.png" x="700" y="336" width="92" height="92" preserveAspectRatio="xMidYMid meet"/>'
-
   // mai tree (item cay_mai; blooms in đông)
   + '<g id="it-cay_mai" class="yi">'
   + '<path d="M120,470 Q124,432 112,412 Q108,398 120,390 M118,428 Q136,416 150,416" stroke="#4f4a40" stroke-width="6" fill="none" stroke-linecap="round"/>'
@@ -376,11 +363,32 @@
 
   const ITEM_IDS = ["kiem_go_hien", "ban_co", "quan_co_khuyet", "buc_thu", "cay_mai", "la_de", "con_meo"];
   const FLAG_IDS = ["va_maihien", "doc_sach", "danh_co_mot_minh"];
+  const IMG_ITEMS = [
+    ["it-ban_co", "assets/art/items/item-ban_co.png", 30.0, 67.0, 10.8, 16.4],
+    ["it-quan_co_khuyet", "assets/art/items/item-quan_co_khuyet.png", 34.3, 73.2, 2.4, 3.8],
+    ["it-kiem_go_hien", "assets/art/items/item-kiem_go_hien.png", 63.8, 56.0, 7.2, 17.2],
+    ["it-buc_thu", "assets/art/items/item-buc_thu.png", 77.6, 66.2, 7.2, 10.8],
+    ["it-la_de", "assets/art/items/item-la_de.png", 84.4, 67.4, 7.6, 7.6],
+    ["it-con_meo", "assets/art/items/item-con_meo.png", 88.3, 66.2, 8.0, 10.6],
+  ];
+  const IMG_FLAGS = [
+    ["fx-doc_sach", "assets/art/items/fx-doc_sach.png", 82.2, 66.2, 7.6, 10.6],
+    ["fx-danh_co_mot_minh", "assets/art/items/item-ban_co.png", 30.0, 67.0, 10.8, 16.4],
+  ];
+
+  function imageLayerMarkup() {
+    return IMG_ITEMS.concat(IMG_FLAGS).map(function (it) {
+      return '<button type="button" id="' + it[0] + '" aria-label="Vật trong sân" class="' + (it[0].indexOf("fx-") === 0 ? "yf" : "yi")
+        + ' ink-item" style="left:' + it[2] + '%;top:' + it[3] + '%;width:' + it[4] + '%;height:' + it[5] + '%">'
+        + '<img src="' + it[1] + '" alt="" aria-hidden="true"></button>';
+    }).join("");
+  }
 
   function boot(el) {
     el.innerHTML = '<div id="ink-root" class="painted-mode" data-season="xuan" data-phase="day" data-focus="center">'
       + '<div class="painted-bg" aria-hidden="true"></div>'
       + SVG
+      + '<div class="ink-items">' + imageLayerMarkup() + '</div>'
       + '<div id="ink-npc"><svg viewBox="-28 -84 56 90" aria-hidden="true"><g class="walker"></g></svg><img class="npc-img" alt="" aria-hidden="true"></div>'
       + '<div class="ink-mist m1"></div><div class="ink-mist m2"></div><div class="ink-mist m3"></div>'
       + '<div class="ink-fx"></div><div class="ink-memory"></div><div class="ink-steam"></div>'
@@ -600,8 +608,8 @@
         if (!npcG.classList.contains("on")) return;
         clearTimeout(arriveTimer); clearTimeout(walkTimer);
         npcG.classList.remove("walking");
-        npcG.style.transition = "left 1.1s ease, top 1.1s ease, transform 1.1s ease, opacity .9s";
-        if (on) { place(POS.talk, 1.14); npcG.classList.add("glow"); }
+        npcG.style.transition = "left .45s ease, top .45s ease, transform .45s ease, opacity .9s";
+        if (on) { place(POS.talk, 1.0); npcG.classList.add("glow"); }
         else { place(POS.yard, .95); }
         setTimeout(function () { npcG.style.transition = ""; }, 1150);
       },

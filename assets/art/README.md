@@ -1,14 +1,17 @@
 # Art Assets
 
-Generated with the built-in Codex image generation tool on 2026-07-05.
+Generated with the built-in Codex image generation tool.
 
 ## Current In-Game Background
 
-- `courtyard-master-clean-xuan.png`
-  - Clean 21:9 painted background.
+- `courtyard-master-spring-bright.png`
+  - Current clean 21:9 spring background, rebuilt 2026-07-07 with a brighter green/blue palette.
   - No fixed characters.
   - Used by `ink/scene.css` as the base scene plate.
   - Season/weather variants are currently CSS tone overlays and particles, not separate images.
+
+- `courtyard-master-clean-xuan.png`
+  - Older clean 21:9 background, kept as fallback/reference.
 
 ## Concept Reference Only
 

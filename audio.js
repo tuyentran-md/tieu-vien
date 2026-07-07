@@ -2,8 +2,15 @@
 
 const Ambient = (() => {
   let ac = null, master = null, on = false;
-  let windGain, rainGain, waterGain, chimeTimer = null, birdTimer = null, musicTimer = null;
+  let windGain, rainGain, waterGain, padGain, chimeTimer = null, birdTimer = null, musicTimer = null;
+  let padOscs = [];
   const PREF_KEY = "tieuvien_sound";
+  const PAD_CHORDS = {
+    xuan: [196, 261.63, 329.63, 392],
+    ha: [174.61, 220, 293.66, 349.23],
+    thu: [196, 246.94, 293.66, 392],
+    dong: [164.81, 196, 246.94, 329.63],
+  };
 
   function noiseBuffer(seconds, brown) {
     const len = ac.sampleRate * seconds;
@@ -21,12 +28,12 @@ const Ambient = (() => {
   function start() {
     if (ac) { ac.resume(); return; }
     ac = new (window.AudioContext || window.webkitAudioContext)();
-    master = ac.createGain(); master.gain.value = .16; master.connect(ac.destination);
+    master = ac.createGain(); master.gain.value = .26; master.connect(ac.destination);
 
     // gió — brown noise + lowpass, phập phồng chậm
     const wind = ac.createBufferSource(); wind.buffer = noiseBuffer(4, true); wind.loop = true;
     const lp = ac.createBiquadFilter(); lp.type = "lowpass"; lp.frequency.value = 420;
-    windGain = ac.createGain(); windGain.gain.value = .25;
+    windGain = ac.createGain(); windGain.gain.value = .14;
     const lfo = ac.createOscillator(); lfo.frequency.value = .06;
     const lfoG = ac.createGain(); lfoG.gain.value = .12;
     lfo.connect(lfoG); lfoG.connect(windGain.gain);
@@ -43,22 +50,49 @@ const Ambient = (() => {
     // nước chảy rất nhỏ — noise hẹp, lăn chậm dưới nền
     const water = ac.createBufferSource(); water.buffer = noiseBuffer(5, false); water.loop = true;
     const wp = ac.createBiquadFilter(); wp.type = "bandpass"; wp.frequency.value = 680; wp.Q.value = .75;
-    waterGain = ac.createGain(); waterGain.gain.value = .025;
+    waterGain = ac.createGain(); waterGain.gain.value = .022;
     water.connect(wp); wp.connect(waterGain); waterGain.connect(master);
     water.start();
+
+    // nhạc nền không lời: pad rất mềm, đủ nghe nhưng nằm dưới lời.
+    const padFilter = ac.createBiquadFilter(); padFilter.type = "lowpass"; padFilter.frequency.value = 900; padFilter.Q.value = .4;
+    padGain = ac.createGain(); padGain.gain.value = 0;
+    padFilter.connect(padGain); padGain.connect(master);
+    padOscs = PAD_CHORDS.xuan.map((f, i) => {
+      const o = ac.createOscillator();
+      const g = ac.createGain();
+      o.type = i % 2 ? "triangle" : "sine";
+      o.frequency.value = f;
+      o.detune.value = (i - 1.5) * 3;
+      g.gain.value = i === 0 ? .22 : .16;
+      o.connect(g); g.connect(padFilter);
+      o.start();
+      return o;
+    });
   }
 
-  // chuông gió — ngũ cung, thưa
+  function setPad(season, gain) {
+    if (!padGain || !padOscs.length) return;
+    const t = ac.currentTime;
+    const chord = PAD_CHORDS[season] || PAD_CHORDS.xuan;
+    padOscs.forEach((o, i) => o.frequency.setTargetAtTime(chord[i % chord.length], t, 1.8));
+    padGain.gain.cancelScheduledValues(t);
+    padGain.gain.setTargetAtTime(gain, t, 2.4);
+  }
+
+  // chuông gió mềm — bỏ overtone cao/chói
   function bell(freq, vol, dur) {
     if (!ac || !on) return;
     const t = ac.currentTime;
-    [1, 2.76, 5.4].forEach((h, i) => {
-      const o = ac.createOscillator(); o.type = "sine"; o.frequency.value = freq*h;
+    const lp = ac.createBiquadFilter(); lp.type = "lowpass"; lp.frequency.value = 1200; lp.Q.value = .35;
+    lp.connect(master);
+    [1, 1.5, 2].forEach((h, i) => {
+      const o = ac.createOscillator(); o.type = i ? "triangle" : "sine"; o.frequency.value = freq*h;
       const g = ac.createGain();
       g.gain.setValueAtTime(0, t);
-      g.gain.linearRampToValueAtTime(vol/(i+1.5), t+.008);
+      g.gain.linearRampToValueAtTime(vol/(i+1.8), t+.055);
       g.gain.exponentialRampToValueAtTime(.0001, t+dur);
-      o.connect(g); g.connect(master); o.start(t); o.stop(t+dur+.1);
+      o.connect(g); g.connect(lp); o.start(t); o.stop(t+dur+.1);
     });
   }
   const PENTA = [440, 523.25, 587.33, 659.25, 783.99];
@@ -142,30 +176,30 @@ const Ambient = (() => {
   function schedule(season, weather) {
     clearInterval(chimeTimer); clearInterval(birdTimer); clearInterval(musicTimer);
     chimeTimer = setInterval(() => {
-      if (Math.random() < (season==="dong" ? .25 : .5)) {
-        const n = 1+Math.floor(Math.random()*2);
-        for (let i=0;i<n;i++) setTimeout(() => bell(PENTA[Math.floor(Math.random()*5)], .10, 3.2), i*420);
+      if (Math.random() < (season==="dong" ? .08 : .16)) {
+        bell(PENTA_LOW[season][Math.floor(Math.random()*3)] * 1.5, .024, 4.2);
       }
-    }, 11000);
+    }, 24000);
     if (season==="xuan" && weather!=="rain")
-      birdTimer = setInterval(() => { if (Math.random()<.55) chirp(); }, 6500);
+      birdTimer = setInterval(() => { if (Math.random()<.42) chirp(); }, 8500);
     const scale = PENTA_LOW[season] || PENTA_LOW.xuan;
     const playDrift = () => {
       if (!on || !ac) return;
       const i = Math.floor(Math.random() * scale.length);
-      softNote(scale[i], season === "dong" ? .012 : .015, 7.5 + Math.random() * 3.5);
-      if (Math.random() < .45) setTimeout(() => softNote(scale[(i + 2) % scale.length], .009, 6.5), 1300);
+      softNote(scale[i], season === "dong" ? .018 : .026, 8.5 + Math.random() * 3.5);
+      if (Math.random() < .55) setTimeout(() => softNote(scale[(i + 2) % scale.length], .014, 7.2), 1300);
     };
     setTimeout(playDrift, 700);
-    musicTimer = setInterval(playDrift, season === "ha" ? 9500 : 11500);
+    musicTimer = setInterval(playDrift, season === "ha" ? 7600 : 8400);
   }
 
   function setScene(season, weather) {
     if (!ac || !on) return;
     const t = ac.currentTime;
-    rainGain.gain.linearRampToValueAtTime(weather==="rain" ? .16 : 0, t+1.5);
-    windGain.gain.linearRampToValueAtTime(season==="dong" ? .34 : season==="ha" ? .16 : .25, t+1.5);
-    waterGain.gain.linearRampToValueAtTime(weather==="rain" ? .045 : season==="xuan" ? .034 : season==="dong" ? .018 : .027, t+1.5);
+    rainGain.gain.linearRampToValueAtTime(weather==="rain" ? .13 : 0, t+1.5);
+    windGain.gain.linearRampToValueAtTime(season==="dong" ? .22 : season==="ha" ? .1 : .14, t+1.5);
+    waterGain.gain.linearRampToValueAtTime(weather==="rain" ? .04 : season==="xuan" ? .032 : season==="dong" ? .016 : .024, t+1.5);
+    setPad(season, weather==="rain" ? .045 : season==="dong" ? .038 : .056);
     schedule(season, weather);
   }
 
@@ -174,24 +208,25 @@ const Ambient = (() => {
     clearInterval(chimeTimer); clearInterval(birdTimer); clearInterval(musicTimer);
     const t = ac.currentTime;
     rainGain.gain.linearRampToValueAtTime(0, t+1.5);
-    windGain.gain.linearRampToValueAtTime(.15, t+2);
+    windGain.gain.linearRampToValueAtTime(.1, t+2);
     waterGain.gain.linearRampToValueAtTime(.018, t+2);
-    musicTimer = setInterval(() => softNote(PENTA_LOW.dong[Math.floor(Math.random()*3)], .01, 9), 16000);
+    setPad("dong", .034);
+    musicTimer = setInterval(() => softNote(PENTA_LOW.dong[Math.floor(Math.random()*3)], .016, 10), 14000);
     // đêm cuối năm: chuông rất thưa, rất khẽ
     chimeTimer = setInterval(() => {
-      if (Math.random() < .35) bell(PENTA[Math.floor(Math.random()*3)], .06, 4.5);
-    }, 14000);
+      if (Math.random() < .16) bell(PENTA_LOW.dong[Math.floor(Math.random()*3)] * 1.5, .022, 4.8);
+    }, 26000);
   }
 
   // SFX tổng hợp — cùng chất liệu với ambient
   function play(name) {
     if (!on || !ac) return;
-    if (name === "accept") knock(190, .18);                    // chọn — một tiếng mõ
-    else if (name === "menu") tick(2800, .05, .05);            // lật/giở — tick giấy
-    else if (name === "cancel") tick(900, .06, .07);           // gấp lại — tick trầm
-    else if (name === "quote") {                               // mở khóa — hai nốt chuông
-      bell(587.33, .07, 2.2);
-      setTimeout(() => bell(783.99, .055, 2.8), 170);
+    if (name === "accept") knock(170, .13);                    // chọn — một tiếng mõ mềm
+    else if (name === "menu") tick(1900, .04, .05);            // lật/giở — tick giấy
+    else if (name === "cancel") tick(760, .045, .07);          // gấp lại — tick trầm
+    else if (name === "quote") {                               // mở khóa — hai nốt bowl mềm
+      bell(392, .032, 2.8);
+      setTimeout(() => bell(523.25, .024, 3.1), 220);
     }
   }
 

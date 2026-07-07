@@ -16,8 +16,9 @@
 }
 #ink-root[data-season="xuan"]::before {
   background:
-    radial-gradient(ellipse at 24% 26%, rgba(226, 183, 184, .28), rgba(226, 183, 184, 0) 34%),
-    linear-gradient(180deg, rgba(232, 238, 221, .22), rgba(226, 232, 208, .06) 48%, rgba(182, 155, 110, .12));
+    radial-gradient(ellipse at 26% 24%, rgba(209, 237, 190, .28), rgba(209, 237, 190, 0) 36%),
+    radial-gradient(ellipse at 72% 24%, rgba(190, 225, 246, .18), rgba(190, 225, 246, 0) 38%),
+    linear-gradient(180deg, rgba(239, 249, 227, .16), rgba(227, 243, 216, .04) 54%, rgba(140, 184, 102, .08));
 }
 #ink-root[data-season="ha"]::before {
   background:
@@ -40,10 +41,10 @@
   position: absolute;
   inset: 0;
   z-index: 0;
-  background-image: url("../assets/art/courtyard-master-clean-xuan.png");
+  background-image: url("../assets/art/courtyard-master-spring-bright.png");
   background-size: cover;
   background-position: 50% 100%;
-  filter: saturate(1.08) contrast(.99) brightness(1.12);
+  filter: saturate(1.02) contrast(.99) brightness(1.02);
   transform: scale(1.002);
   transition: background-position 1.1s ease, filter 1.6s ease, opacity 1.2s ease;
 }
@@ -51,6 +52,7 @@
 #ink-root[data-focus="tree"] .painted-bg { background-position: 12% 100%; }
 #ink-root[data-focus="porch"] .painted-bg { background-position: 76% 100%; }
 #ink-root[data-focus="center"] .painted-bg { background-position: 50% 100%; }
+#ink-root[data-season="xuan"] .painted-bg { filter: saturate(1.02) contrast(.99) brightness(1.02); }
 #ink-root[data-season="ha"] .painted-bg { filter: saturate(1.18) contrast(1.02) brightness(1.10) sepia(.04); }
 #ink-root[data-season="thu"] .painted-bg { filter: saturate(1.03) contrast(1.0) brightness(1.07) sepia(.20) hue-rotate(-8deg); }
 #ink-root[data-season="dong"] .painted-bg { filter: saturate(.60) contrast(.94) brightness(1.20) hue-rotate(10deg); }
@@ -208,8 +210,28 @@ svg .ground-far, svg .ground-near, svg .fol-a, svg .fol-b { transition: fill 1.6
 /* ---- yard items ---- */
 .yi { opacity: 0; transition: opacity 1s; pointer-events: none; }
 .yi.on { opacity: 1; pointer-events: auto; cursor: pointer; }
-.yi-img, .yf-img { filter: saturate(.86) contrast(.96) brightness(.97); }
-#it-ban_co, #fx-danh_co_mot_minh { filter: saturate(.78) contrast(.94) brightness(.94); }
+.ink-items { position: absolute; inset: 0; z-index: 10; pointer-events: none; }
+.ink-item {
+  position: absolute;
+  display: block;
+  border: 0;
+  padding: 0;
+  background: none;
+  opacity: 0;
+  transform-origin: 50% 80%;
+  transition: opacity 1s, transform .4s;
+  pointer-events: none;
+}
+.ink-item img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: saturate(.78) contrast(.9) brightness(.92);
+}
+#it-ban_co img, #fx-danh_co_mot_minh img { filter: saturate(.62) contrast(.82) brightness(.82); }
+.ink-item.on { opacity: .72; pointer-events: auto; cursor: pointer; }
+.ink-item:hover { opacity: 1; transform: translateY(-1px); }
 .yi.pop { animation: ink-item-pop 1.8s ease both; }
 @keyframes ink-item-pop {
   0% { opacity: 0; filter: drop-shadow(0 0 0 rgba(255,232,162,0)); transform: translateY(5px); }
@@ -218,6 +240,7 @@ svg .ground-far, svg .ground-near, svg .fol-a, svg .fol-b { transition: fill 1.6
 }
 .yf { opacity: 0; transition: opacity 1s; pointer-events: none; }
 .yf.on { opacity: 1; }
+.ink-item.yf.on { opacity: .6; }
 .cat-tail { transform-origin: left center; animation: ink-tail 4s ease-in-out infinite; }
 @keyframes ink-tail { 0%,100% { transform: rotate(0); } 50% { transform: rotate(-14deg); } }
 
@@ -246,7 +269,7 @@ svg .ground-far, svg .ground-near, svg .fol-a, svg .fol-b { transition: fill 1.6
 }
 
 /* ---- hotspots ---- */
-.ink-hots { position: absolute; inset: 0; z-index: 10; pointer-events: none; }
+.ink-hots { position: absolute; inset: 0; z-index: 9; pointer-events: none; }
 .ink-hot { position: absolute; pointer-events: auto; cursor: pointer;
   background: none; border: none; padding: 0; }
 .ink-hot .dot { position: absolute; left: 50%; top: 50%; width: 12px; height: 12px;

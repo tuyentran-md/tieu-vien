@@ -89,13 +89,13 @@ body {
 #game::before {
   top: 0;
   height: 22vh;
-  background: linear-gradient(180deg, rgba(14, 17, 16, .30), rgba(14, 17, 16, 0));
+  background: linear-gradient(180deg, rgba(14, 17, 16, .14), rgba(14, 17, 16, 0));
 }
 #game::after {
   bottom: 0;
   height: 36vh;
   background:
-    linear-gradient(0deg, rgba(14, 15, 13, .36) 0%, rgba(14, 15, 13, .14) 48%, rgba(14, 15, 13, 0) 100%);
+    linear-gradient(0deg, rgba(14, 15, 13, .20) 0%, rgba(14, 15, 13, .08) 48%, rgba(14, 15, 13, 0) 100%);
 }
 #game-col {
   position: relative;
