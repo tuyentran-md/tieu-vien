@@ -35,7 +35,7 @@ const Ambient = (() => {
     comp.attack.value = .006;
     comp.release.value = .18;
     master = ac.createGain();
-    master.gain.value = .46;
+    master.gain.value = .58;
     master.connect(comp);
     comp.connect(ac.destination);
 
@@ -52,9 +52,10 @@ const Ambient = (() => {
 
     // mưa — white noise bandpass, bật/tắt theo thời tiết
     const rain = ac.createBufferSource(); rain.buffer = noiseBuffer(3, false); rain.loop = true;
-    const bp = ac.createBiquadFilter(); bp.type = "bandpass"; bp.frequency.value = 2400; bp.Q.value = .6;
+    const bp = ac.createBiquadFilter(); bp.type = "bandpass"; bp.frequency.value = 1300; bp.Q.value = .5;
+    const rlp = ac.createBiquadFilter(); rlp.type = "lowpass"; rlp.frequency.value = 2200; rlp.Q.value = .3;
     rainGain = ac.createGain(); rainGain.gain.value = 0;
-    rain.connect(bp); bp.connect(rainGain); rainGain.connect(master);
+    rain.connect(bp); bp.connect(rlp); rlp.connect(rainGain); rainGain.connect(master);
     rain.start();
 
     // nước chảy rất nhỏ — noise hẹp, chỉ đủ tạo cảm giác sân vườn.
@@ -200,7 +201,7 @@ const Ambient = (() => {
     o.frequency.setValueAtTime(f0, t);
     o.frequency.exponentialRampToValueAtTime(f0*1.4, t+.07);
     o.frequency.exponentialRampToValueAtTime(f0*.9, t+.14);
-    g.gain.linearRampToValueAtTime(.095, t+.02);
+    g.gain.linearRampToValueAtTime(.15, t+.02);
     g.gain.exponentialRampToValueAtTime(.0001, t+.18);
     o.start(t); o.stop(t+.25);
     if (Math.random()<.6) setTimeout(chirp, 180+Math.random()*160);
@@ -209,30 +210,53 @@ const Ambient = (() => {
   function schedule(season, weather) {
     clearInterval(chimeTimer); clearInterval(birdTimer); clearInterval(musicTimer);
     chimeTimer = null;
-    if (season==="xuan" && weather!=="rain")
-      birdTimer = setInterval(() => { if (Math.random()<.62) chirp(); }, 7600);
+    if ((season==="xuan" || season==="ha") && weather!=="rain")
+      birdTimer = setInterval(() => { if (Math.random()<.66) chirp(); }, 6200);
     const scale = PENTA_LOW[season] || PENTA_LOW.xuan;
-    let motifIndex = 0;
+    // Nhiều câu nhạc, dài ngắn khác nhau, để giai điệu không lặp một kiểu.
     const motifs = [
       [0, 2, 4, 3, 2, 1],
       [1, 3, 4, 2, 3],
       [2, 4, 3, 1, 0, 2],
+      [0, 1, 3, 2, 4],
+      [4, 3, 1, 2, 0, 1],
+      [2, 1, 3, 4, 2],
+      [0, 2, 1, 3],
+      [3, 4, 2, 3, 1, 0],
     ];
+    let lastMotif = -1;
     const playDrift = () => {
       if (!on || !ac) return;
-      const motif = motifs[motifIndex % motifs.length];
-      motifIndex += 1;
-      motif.forEach((idx, n) => {
-        const f = scale[idx % scale.length] * (n % 4 === 3 ? 3 : 2);
-        musicNote(f, season === "dong" ? .03 : .044, n * .58, 2.2 + (n % 2) * .45);
+      // chọn ngẫu nhiên nhưng không lặp lại câu vừa chơi
+      let mi = Math.floor(Math.random() * motifs.length);
+      if (mi === lastMotif) mi = (mi + 1) % motifs.length;
+      lastMotif = mi;
+      const motif = motifs[mi];
+      // đôi lúc chơi từ cuối lên đầu, để cùng một câu nghe vẫn khác
+      const seq = Math.random() < .28 ? motif.slice().reverse() : motif;
+      let clock = 0;
+      seq.forEach((idx, n) => {
+        // quãng lên cao thất thường thay vì đều đặn
+        const oct = (idx >= 3 && Math.random() < .5) ? 3 : 2;
+        const f = scale[idx % scale.length] * oct;
+        const dur = 2.0 + Math.random() * .9;
+        musicNote(f, season === "dong" ? .03 : .044, clock, dur);
+        // nhịp co giãn: có nốt liền, có nốt ngân
+        clock += .46 + Math.random() * .5 + (n % 3 === 2 ? .3 : 0);
       });
-      if (Math.random() < .55) {
-        const root = scale[motif[0] % scale.length] * 2;
-        setTimeout(() => softNote(root, season === "dong" ? .014 : .018, 4.4), 260);
+      if (Math.random() < .6) {
+        const root = scale[seq[0] % scale.length] * 2;
+        setTimeout(() => softNote(root, season === "dong" ? .014 : .018, 4.6), 200 + Math.random() * 400);
       }
     };
     setTimeout(playDrift, 700);
-    musicTimer = setInterval(playDrift, season === "ha" ? 7600 : 8400);
+    // khoảng lặng giữa các câu cũng thay đổi, tránh cảm giác đếm nhịp
+    const base = season === "ha" ? 8200 : 9000;
+    const tick = () => {
+      playDrift();
+      musicTimer = setTimeout(tick, base + Math.random() * 3200);
+    };
+    musicTimer = setTimeout(tick, base + Math.random() * 3200);
   }
 
   function setScene(season, weather) {

@@ -3,7 +3,7 @@
 const QUOTES = {
   q_sai:        "Sai mà biết là sai, thì chưa sai hẳn.",
   q_hat:        "Có những hạt gieo xuống không nảy mầm ở sân nhà mình. Không có nghĩa là nó không nảy mầm.",
-  q_run:        "Tay run mà chân vẫn đứng đó — vậy là được rồi.",
+  q_run:        "Tay run mà chân vẫn đứng đó, vậy là được rồi.",
   q_tuchon:     "Giữ một người giỏi nhất là để cửa mở, chứ không phải nắm tay áo.",
   q_moc_ket:    "Dạy kiếm, cuối cùng là dạy lúc nào không cần rút kiếm.",
   q_nuacau:     "Có những nửa câu không cần nửa còn lại.",
@@ -14,7 +14,7 @@ const QUOTES = {
   q_thatha:     "Người khó tha thứ cho mình nhất, thường chính là mình.",
   q_thoigian:   "Việc gì khuyên không được thì để thời gian khuyên. Nó nói chậm, nhưng chưa từng nói sai.",
   q_khonghieu:  "Có những chuyện không cần hiểu. Chỉ cần đừng bỏ dở.",
-  q_codanh:     "Có kiểu đánh cờ không phải để thắng — như người dọn nhà lần cuối: chậm, kỹ, không tiếc.",
+  q_codanh:     "Có kiểu đánh cờ không phải để thắng, mà như người dọn nhà lần cuối: chậm, kỹ, không tiếc.",
   q_vanco:      "Ván cờ chưa tàn thì còn chỗ cho người ngồi xuống.",
   q_di_truoc:   "Người đi trước không mất. Họ chỉ đợi ở một khúc quành mình chưa tới.",
   q_khongchac:  "Không chắc, thì đừng. Thuốc mà đoán thì thành độc, lời mà đoán thì thành dao.",
@@ -28,7 +28,7 @@ const QUOTES = {
   q_dinhnui:    "Đỉnh núi nào nhìn từ xa cũng nhỏ. Chỉ có đường lên là dài.",
   q_cauhoi:     "Trẻ con giữ câu hỏi bền hơn người lớn giữ câu trả lời.",
   q_canhlua:    "Có người ngủ được vì có người thức. Xưa nay vẫn vậy.",
-  q_chumnuoc:   "Cứu một người đôi khi chỉ tốn một chum nước — và mình không bao giờ biết.",
+  q_chumnuoc:   "Cứu một người đôi khi chỉ tốn một chum nước, mà mình không bao giờ biết.",
 };
 
 // ===== VẬT TRONG SÂN — mỗi vật một dòng nhớ =====
@@ -58,7 +58,7 @@ const YARD_LINES = {
   ha: {
     tam:   "Nắng gắt mà lòng không gắt. Cũng là một thứ công phu.",
     duyen: "Tiếng ve ran. Chum nước đầu hè đã có người ghé uống.",
-    danh:  "Đường núi trưa nay có tiếng người — lại ai đó tìm lên.",
+    danh:  "Đường núi trưa nay có tiếng người, lại ai đó tìm lên.",
     tinh:  "Gió qua rặng trúc, cả trưa chỉ nghe một thứ tiếng đó.",
     none:  "Ngày hạ dài. Bóng cây trước sân tròn rồi lại nghiêng.",
   },

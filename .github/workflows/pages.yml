@@ -32,7 +32,9 @@ jobs:
             --exclude='test' \
             --exclude='tools' \
             --exclude='assets/art/npc' \
-            --exclude='assets/art/items' \
+            --include='assets/art/items/item-*.png' \
+            --include='assets/art/items/fx-*.png' \
+            --exclude='assets/art/items/*' \
             --exclude='DESIGN.md' \
             --exclude='SPEC.md' \
             --exclude='ART_PROMPTS.md' \

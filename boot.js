@@ -488,13 +488,13 @@
 
     const notes = [];
     if (ch.quote) notes.push("✎ Một câu mới được ghi lại.");
-    if (ch.item && ITEMS[ch.item]) notes.push("◦ " + ITEMS[ch.item].name + " — giờ thuộc về tiểu viện.");
+    if (ch.item && ITEMS[ch.item]) notes.push("◦ " + ITEMS[ch.item].name + ", giờ thuộc về tiểu viện.");
     if (ch.returning) notes.push("◦ Chuyện này còn hẹn một ngày quay lại.");
     if (!ch.mid) notes.push("Còn " + Math.max(0, C.TOTAL_DAYS - S.day) + " ngày trong năm.");
     $("#notes").textContent = notes.join("   ");
     if (playUnlock && (ch.quote || ch.item) && typeof Ambient !== "undefined") Ambient.play("quote");
     const nd = $("#next-day");
-    nd.textContent = ch.mid ? "Lặng nghe tiếp…" : "Qua ngày";
+    nd.textContent = ch.mid ? "Lặng nghe tiếp…" : "Khép lại một ngày";
     nd.classList.toggle("btn-continue", !!ch.mid);
     nd.classList.remove("hidden");
     const sc = $("#story-scroll");

@@ -539,6 +539,7 @@
         rootEl.dataset.season = o.season || "xuan";
         rootEl.dataset.phase = o.phase || "day";
         rootEl.dataset.focus = o.focus || "center";
+        rootEl.dataset.weather = o.weather || "clear";
         weatherFx(curSeason, curWeather, o.phase || "day");
         syncItems(o.items || []);
         syncFlags(o.flags || {});

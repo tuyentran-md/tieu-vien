@@ -297,7 +297,8 @@ header nav button:hover .nav-cap { color: rgba(255,248,232,.72); }
   letter-spacing: 0;
   line-height: 1.28;
   margin-bottom: .68rem;
-  max-width: 22ch;
+  max-width: 38ch;
+  text-wrap: balance;
   color: #f4ecda;
 }
 #event-title:empty { display: none; }
