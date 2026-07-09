@@ -192,3 +192,28 @@ Biến thể: **bão tuyết (d_baotuyet):** một người cha và một đứa
 6. Gửi em 1–2 hình mẫu trước; em sẽ dựng lớp overlay + tọa độ + cơ chế đổi biến thể (mùa/cảm xúc/cầm vật) trong `ink/scene.js`, thay dần SVG.
 
 > Khi có bộ ảnh, đợt sau em sẽ: thay figure SVG bằng ảnh cutout theo vai + biến thể, ghép item bằng ảnh, và (nếu làm 4 nền mùa) chuyển nền theo mùa thay vì lọc CSS.
+
+---
+
+## 5. TÁI BỐ CỤC NỀN — bàn trà + bàn cờ (yêu cầu của sếp)
+
+Vấn đề bản hiện tại (`courtyard-master-spring-bright.png`): bàn trà nhỏ và **sát mép phải**, khó ghép; bàn cờ (overlay `it-ban_co`) lại ở **giữa-trái dưới gốc cây**, xa bàn trà. Sếp muốn **bàn cờ nằm cạnh bàn trà**, bàn trà **to hơn và kéo vào trong**.
+
+Cách chắc nhất: **giữ y hệt bố cục lớn** (cổng trái – cây giữa – nhà phải) bằng cách đính `courtyard-master-spring-bright.png` làm reference, chỉ đổi vùng hiên/sân phải. Xuất `courtyard-master-spring-bright.png` (đè bản cũ) cỡ 2400×1030 (21:9).
+
+```
+[STYLE ANCHOR]
+Redraw of the attached courtyard painting — KEEP the same overall layout, palette, light and
+brush feel: wooden gate + bamboo on the left, worn stone path and old gnarled tree in the
+center, wooden house with curved tiled roof and raised porch on the right. ONLY change the porch
+/ right-foreground area: make the low wooden tea table noticeably LARGER and moved INWARD from
+the edge onto the porch (not touching the frame), with a small teapot and two cups and a faint
+wisp of steam. Beside the tea table, set a low stone GO/weiqi board table with a few black and
+white stones, as if two people just paused a game over tea. Both tables share the porch, close
+together, unhurried. Keep everything else identical to the reference. 21:9 wide, eye-level,
+empty of people, painterly ink-and-color, muted sage/ochre/stone, tranquil.
+```
+
+Sau khi có nền mới:
+- Dời overlay `it-ban_co` (và `fx-danh_co_mot_minh`, `it-quan_co_khuyet`) trong `ink/scene.js` sang toạ độ cạnh bàn trà (vùng ~62–72% ngang, ~62–68% dọc) cho khớp ảnh, rồi eyeball lại.
+- Nếu làm 4 nền mùa, giữ đúng chỗ hai bàn ở cả bốn để chuyển mùa không giật.
