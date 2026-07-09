@@ -24,7 +24,7 @@ Quy ước xuất (mọi nhân vật & vật):
 - Cùng một **hướng sáng** (dịu, từ trên-trái) cho tất cả để ghép vào sân không lệch.
 - Đặt **cùng một seed** cho mỗi nhân vật khi làm biến thể, để giữ nhận diện.
 
-Cỡ đề xuất: nhân vật 768×1024 (dọc), vật 768×768, nền 2400×1030 (21:9).
+Cỡ đề xuất: nhân vật 768×1024 (dọc), vật 768×768, nền 1920×1080 (16:9).
 
 ---
 
@@ -38,7 +38,7 @@ Cỡ đề xuất: nhân vật 768×1024 (dọc), vật 768×768, nền 2400×10
 A small courtyard temple/retreat at the foot of misty layered mountains. Left: an old wooden
 gate in a low earthen wall, tall bamboo grove. Center: worn stone-slab path, a stone lantern,
 an old gnarled tree. Right: a wooden house with curved tiled roof, raised porch, paper lattice
-windows, a low tea table, a water jar. Distant peaks fading into fog. 21:9 wide, empty of people,
+windows, a low tea table, a water jar. Distant peaks fading into fog. 16:9 frame, empty of people,
 eye-level, painterly, tranquil.
 ```
 Biến thể mùa (thêm vào cuối):
@@ -199,7 +199,7 @@ Biến thể: **bão tuyết (d_baotuyet):** một người cha và một đứa
 
 Vấn đề bản hiện tại (`courtyard-master-spring-bright.png`): bàn trà nhỏ và **sát mép phải**, khó ghép; bàn cờ (overlay `it-ban_co`) lại ở **giữa-trái dưới gốc cây**, xa bàn trà. Sếp muốn **bàn cờ nằm cạnh bàn trà**, bàn trà **to hơn và kéo vào trong**.
 
-Cách chắc nhất: **giữ y hệt bố cục lớn** (cổng trái – cây giữa – nhà phải) bằng cách đính `courtyard-master-spring-bright.png` làm reference, chỉ đổi vùng hiên/sân phải. Xuất `courtyard-master-spring-bright.png` (đè bản cũ) cỡ 2400×1030 (21:9).
+Cách chắc nhất: **giữ y hệt bố cục lớn** (cổng trái – cây giữa – nhà phải) bằng cách đính `courtyard-master-spring-bright.png` làm reference, chỉ đổi vùng hiên/sân phải. Xuất `courtyard-master-spring-bright.png` (đè bản cũ) cỡ 1920×1080 (16:9).
 
 ```
 [STYLE ANCHOR]
@@ -210,7 +210,7 @@ center, wooden house with curved tiled roof and raised porch on the right. ONLY 
 the edge onto the porch (not touching the frame), with a small teapot and two cups and a faint
 wisp of steam. Beside the tea table, set a low stone GO/weiqi board table with a few black and
 white stones, as if two people just paused a game over tea. Both tables share the porch, close
-together, unhurried. Keep everything else identical to the reference. 21:9 wide, eye-level,
+together, unhurried. Keep everything else identical to the reference. 16:9 frame, eye-level,
 empty of people, painterly ink-and-color, muted sage/ochre/stone, tranquil.
 ```
 
