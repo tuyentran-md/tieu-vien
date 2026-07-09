@@ -4,14 +4,14 @@ Generated with the built-in Codex image generation tool.
 
 ## Current In-Game Background
 
-- `courtyard-master-spring-bright.png`
-  - Current clean 21:9 spring background, rebuilt 2026-07-07 with a brighter green/blue palette.
-  - No fixed characters.
+- `courtyard-master-clean-xuan.png`
+  - Current clean 21:9 spring background.
   - Used by `ink/scene.css` as the base scene plate.
   - Season/weather variants are currently CSS tone overlays and particles, not separate images.
 
-- `courtyard-master-clean-xuan.png`
-  - Older clean 21:9 background, kept as fallback/reference.
+- `courtyard-master-spring-bright.png`
+  - Brighter 2026-07-07 mood plate, kept as reference.
+  - Do not use as the generic base scene because it includes fixed chess-board scenery.
 
 ## Concept Reference Only
 

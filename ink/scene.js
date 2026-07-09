@@ -413,10 +413,11 @@
 
     // vai đã có ảnh painted (grow dần khi Codex xuất thêm); còn lại fallback SVG
     const FIG_BASE = "assets/art/fig/";
-    const FIG_IMG = { boy: 1, scholar: 1, oldman: 1, oldman2: 1, child: 1, monk: 1,
+    const FIG_IMG = { boy: 1, scholar: 1, oldman2: 1, child: 1, monk: 1,
       swordsman: 1, woman: 1, oldwoman: 1, trader: 1, villager: 1, master: 1 };
     function setFigure(role) {
       const imgRole = role === "traveler" ? "master" : role;
+      npcG.dataset.role = imgRole;
       if (FIG_IMG[imgRole]) {
         npcImg.src = FIG_BASE + imgRole + ".png";
         npcG.classList.add("has-img");
@@ -452,7 +453,8 @@
       const f = flags || {};
       FLAG_IDS.forEach(function (id) {
         const g = el.querySelector("#fx-" + id);
-        if (g) g.classList.toggle("on", !!f[id]);
+        const duplicateBoard = id === "danh_co_mot_minh" && dayItems.indexOf("ban_co") >= 0;
+        if (g) g.classList.toggle("on", !!f[id] && !duplicateBoard);
       });
     }
     function pulseItem(id) {
