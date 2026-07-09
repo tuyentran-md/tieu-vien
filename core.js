@@ -84,6 +84,17 @@
     return entries[0][1] >= 2 ? entries[0][0] : "none";
   }
 
+  // Bản tâm đang nghiêng đâu — không phải chỉ số cao là "tốt".
+  // Trả về một khóa để interlude soi lòng người chơi mỗi khi sang mùa.
+  // "chom" = chưa rõ · "tinh"/"tam"/"duyen" = nghiêng theo cái nhẹ/vững/nối
+  // "danh" = tiếng vang nhưng còn thăng bằng · "huongngoai" = danh nặng mà tĩnh đã cạn
+  function banTamKey(S) {
+    const top = dominantStat(S);
+    if (top === "none") return "chom";
+    if (top === "danh") return (S.stats.tinh || 0) < 2 ? "huongngoai" : "danh";
+    return top; // tam | duyen | tinh
+  }
+
   // ---- pick / resolve today's content ----
   // rng: override cho sim (mặc định seededRand theo ngày — giống browser thật)
   function pickToday(S, rng) {
@@ -170,7 +181,7 @@
 
   return {
     TOTAL_DAYS, DAYS_PER_SEASON, SEASONS, SEASON_NAMES, EMPTY_WEATHER,
-    newState, seasonOf, hasFlag, condOk, seededRand, weatherOf, dominantStat,
+    newState, seasonOf, hasFlag, condOk, seededRand, weatherOf, dominantStat, banTamKey,
     pickToday, resolveNode, visibleParas, visibleChoices, applyChoice,
     beatOf, beatCount, isFinalBeat,
     epilogueParas, yardLine, hudLine, statsLine,

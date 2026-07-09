@@ -58,27 +58,56 @@ const SEASON_EVENTS = {
     {
       id: "x_haithuoc",
       title: "Cô gái hái thuốc trú mưa",
-      paras: [
-        { text: "Mưa rào bất chợt. Một cô gái đeo gùi thuốc chạy vào hiên trú, tóc ướt lấm tấm, miệng liến thoắng xin lỗi vì làm ướt thềm." },
-        { text: "Chờ mưa, cô kể: học nghề thuốc của mẹ, mẹ mất rồi, giờ toàn phải tự đoán. “Có cây hôm qua cháu hái, giờ nghĩ lại không chắc là sài đất hay lưỡi rắn nữa.”" },
-      ],
-      choices: [
+      beats: [
+        // --- nhịp 1: trú mưa, câu chuyện của cô ---
         {
-          label: "“Không chắc, thì đổ đi. Cả gùi cũng đổ.”",
-          result: "Cô gái tròn mắt: nguyên một buổi hái. Rồi cô gật: “Dạ. Thuốc mà đoán thì thành độc.” Cô đổ thật, không tiếc nữa.",
-          effects: { tam: 1 },
-          quote: "q_khongchac",
+          paras: [
+            { text: "Mưa rào bất chợt. Một cô gái đeo gùi thuốc chạy vào hiên trú, tóc ướt lấm tấm, miệng liến thoắng xin lỗi vì làm ướt thềm." },
+            { text: "Chờ mưa, cô kể: học nghề thuốc của mẹ, mẹ mất rồi, giờ toàn phải tự đoán. “Có cây hôm qua cháu hái, giờ nghĩ lại không chắc là sài đất hay lưỡi rắn nữa.”" },
+          ],
+          choices: [
+            {
+              label: "Ghé nhìn cái cây cô đang phân vân trong gùi.",
+              result: "Bạn cầm lên xem: lá, thân, mùi hắc nhẹ. Thú thật ngay cả bạn cũng không dám chắc. Cái không chắc của cô, hóa ra là cái không chắc thật, chứ không phải tại cô vụng.",
+              effects: { tam: 1 },
+            },
+            {
+              label: "“Mẹ cháu, dạy được tới đâu thì đi?”",
+              result: "Cô khựng tay. “Tới chỗ phân biệt thuốc với cỏ thôi ạ. Mấy cái khó, mẹ bảo để cháu lớn thêm rồi dạy. Cháu chưa kịp lớn thì...” Cô bỏ lửng, nhìn ra màn mưa.",
+              effects: { duyen: 1 },
+            },
+            {
+              label: "Không hỏi gì, cùng cô ngồi nhìn mưa xối xuống sân.",
+              result: "Hai người ngồi im nghe mưa. Cô thôi liến thoắng xin lỗi, vai cũng bớt co. Mưa trên mái đều đều, gột cái sân xanh thêm một chút.",
+              effects: { tinh: 1 },
+            },
+          ],
         },
+        // --- nhịp 2: mưa ngớt, cái gùi không chắc (quyết định của ngày) ---
         {
-          label: "Vào thư phòng, lấy cuốn sách thuốc cũ đưa cô mượn.",
-          result: "Cô nhận sách bằng hai tay, bọc vào vải dầu trước cả khi bọc gùi thuốc. Mưa chưa dứt hẳn cô đã xuống tới khúc quành, một tay giữ gùi, một tay ôm sách trước ngực.",
-          effects: { duyen: 1 },
-          flags: ["muon_sach_thuoc"],
-        },
-        {
-          label: "Pha trà gừng, ngồi nghe cô kể về mẹ.",
-          result: "Mưa tạnh lúc nào không hay. Chuyện về mẹ còn dở thì trời đã hửng. Cô xuống núi, bước chân nhẹ hơn lúc chạy vào; chén trà gừng cạn tới đáy.",
-          effects: { tinh: 1, duyen: 1 },
+          paras: [
+            { text: "Mưa ngớt dần, chỉ còn giọt tranh rơi thưa trên thềm. Cô sắp lại gùi thuốc, tay dừng ở mấy cây không dám chắc." },
+            { text: "Cái gùi này mang xuống núi bây giờ, là mang cả cái không chắc theo cô." },
+          ],
+          choices: [
+            {
+              label: "“Không chắc, thì đổ đi. Cả gùi cũng đổ.”",
+              result: "Cô gái tròn mắt: nguyên một buổi hái. Rồi cô gật: “Dạ. Thuốc mà đoán thì thành độc.” Cô đổ thật, không tiếc nữa.",
+              effects: { tam: 1 },
+              quote: "q_khongchac",
+            },
+            {
+              label: "Vào thư phòng, lấy cuốn sách thuốc cũ đưa cô mượn.",
+              result: "Cô nhận sách bằng hai tay, bọc vào vải dầu trước cả khi bọc gùi thuốc. Mưa chưa dứt hẳn cô đã xuống tới khúc quành, một tay giữ gùi, một tay ôm sách trước ngực.",
+              effects: { duyen: 1 },
+              flags: ["muon_sach_thuoc"],
+            },
+            {
+              label: "Pha một ấm trà gừng, để cô ngồi lại cho ấm bụng rồi hẵng đi.",
+              result: "Trà gừng nóng, cô uống chậm, kể nốt về mẹ. Chuyện còn dở thì trời đã hửng. Cô xuống núi, bước chân nhẹ hơn lúc chạy vào; chén trà gừng cạn tới đáy.",
+              effects: { tinh: 1, duyen: 1 },
+            },
+          ],
         },
       ],
     },
@@ -160,26 +189,55 @@ const SEASON_EVENTS = {
     {
       id: "h_kiemkhach",
       title: "Kiếm khách say",
-      paras: [
-        { text: "Trưa đứng bóng, một kiếm khách nằm vắt ngang trước cổng, say mèm, hơi rượu nồng cả một khúc đường. Thanh kiếm bên hông thì ngược lại: bao kiếm cũ nhưng được lau chuốt kỹ, dây buộc chắc, là kiếm của người có nghề." },
-        { text: "Kiếm rất tốt. Người rất tệ." },
-      ],
-      choices: [
+      beats: [
+        // --- nhịp 1: nhìn ra người nằm trước cổng ---
         {
-          label: "Kéo vào hiên cho khỏi cảm nắng, đặt bên chum nước.",
-          result: "Chiều hắn tỉnh, uống nửa chum nước, nhìn quanh, rồi đi không một lời. Ba ngày sau có người để trước cổng một vò rượu ngon và một dòng chữ: “Trả cái hiên.”",
-          effects: { duyen: 1 },
-          flags: ["cuu_kiemkhach"],
+          paras: [
+            { text: "Trưa đứng bóng, một kiếm khách nằm vắt ngang trước cổng, say mèm, hơi rượu nồng cả một khúc đường. Thanh kiếm bên hông thì ngược lại: bao kiếm cũ mà lau chuốt kỹ, dây buộc chắc, là kiếm của người có nghề." },
+            { text: "Kiếm rất tốt. Người thì đang phơi mình giữa nắng." },
+          ],
+          choices: [
+            {
+              label: "Lại gần, nhìn thanh kiếm kỹ hơn nhìn người.",
+              result: "Bao kiếm mòn đúng chỗ bàn tay hay nắm, mà không một vệt gỉ. Thứ người ta giữ kỹ đến vậy giữa cơn bê tha, thường là thứ sau cùng còn lại. Bạn đứng thẳng lên, chưa vội phán gì thêm.",
+              effects: { tam: 1 },
+            },
+            {
+              label: "Ngồi xuống thềm, nghe hắn lảm nhảm trong cơn say.",
+              result: "Hắn nói mê, câu được câu mất, có một tiếng gọi ai đó cứ lặp lại rồi nghẹn ngang. Nghe không ra tên, chỉ ra được một điều: người này đang trốn một thứ mà tỉnh dậy vẫn phải gặp.",
+              effects: { tinh: 1 },
+            },
+            {
+              label: "Nhìn ra con dốc, xem có ai đi cùng hắn không.",
+              result: "Dốc vắng. Hắn lên núi một mình, say một mình, ngã lại một mình giữa trưa. Cái cổng nhà bạn, tình cờ, là chỗ chân hắn đưa tới lúc không còn đi nổi nữa.",
+              effects: { duyen: 1 },
+            },
+          ],
         },
+        // --- nhịp 2: nắng xế, phải quyết ---
         {
-          label: "Múc nước dội cho tỉnh.",
-          result: "Hắn choàng dậy, tay chụp cán kiếm theo phản xạ, rồi thấy gáo nước, thấy bạn, thấy mình. Hắn cười méo xẹo, chắp tay một cái rất sâu, đi thẳng. Vệt nước trên nền đá khô dần theo bóng hắn xuống dốc.",
-          effects: { tam: 1 },
-        },
-        {
-          label: "Để yên. Say ở đâu tỉnh ở đó.",
-          result: "Hắn nằm tới xế chiều, tỉnh dậy tự đi. Trước khi đi, hắn sửa lại đôi dép cho ngay ngắn: của hắn, và của bạn để ở thềm.",
-          effects: { tinh: 1 },
+          paras: [
+            { text: "Nắng xế dần trên vai hắn. Hắn cựa mình, chưa tỉnh hẳn, một tay vẫn vắt hờ lên cán kiếm như giữ lấy vật gì quý." },
+            { text: "Không thể để một người nằm mãi ngang cổng của mình." },
+          ],
+          choices: [
+            {
+              label: "Kéo vào hiên cho khỏi cảm nắng, đặt bên chum nước.",
+              result: "Chiều hắn tỉnh, uống nửa chum nước, nhìn quanh, rồi đi không một lời. Ba ngày sau có người để trước cổng một vò rượu ngon và một dòng chữ: “Trả cái hiên.”",
+              effects: { duyen: 1 },
+              flags: ["cuu_kiemkhach"],
+            },
+            {
+              label: "Múc một gáo nước, dội cho tỉnh.",
+              result: "Hắn choàng dậy, tay chụp cán kiếm theo phản xạ, rồi thấy gáo nước, thấy bạn, thấy mình. Hắn cười méo xẹo, chắp tay một cái rất sâu, đi thẳng. Vệt nước trên nền đá khô dần theo bóng hắn xuống dốc.",
+              effects: { tam: 1 },
+            },
+            {
+              label: "Để yên. Say ở đâu tỉnh ở đó.",
+              result: "Hắn nằm tới xế chiều, tỉnh dậy tự đi. Trước khi đi, hắn sửa lại đôi dép cho ngay ngắn: của hắn, và của bạn để ở thềm.",
+              effects: { tinh: 1 },
+            },
+          ],
         },
       ],
     },
@@ -217,75 +275,160 @@ const SEASON_EVENTS = {
     {
       id: "t_lathu",
       title: "Lá thư không tên",
-      paras: [
-        { text: "Trong chồng hàng gửi từ bến đò lên có một phong thư không đề tên người gửi, không đề tên người nhận, chỉ ghi: “Tiểu viện dưới núi.”" },
-        { text: "Trong thư vỏn vẹn một câu, nằm giữa trang giấy trắng:" },
-        { text: "“Năm đó nếu không có chén nước ở sân ông, tôi đã không qua nổi con dốc ấy.”" },
-      ],
-      choices: [
+      beats: [
+        // --- nhịp 1: phong thư không tên ---
         {
-          label: "Cố nhớ xem là ai. Bao nhiêu người đã qua sân này?",
-          result: "Nhớ không ra. Người qua sân nhiều như lá qua mùa. Bạn rót một chén nước, đặt lên thềm, chỗ vẫn hay đặt cho khách qua đường, rồi ngồi nhìn nó nguội.",
-          effects: { tam: 1 },
-          quote: "q_chennuoc",
-          item: "buc_thu_vodanh",
+          paras: [
+            { text: "Trong chồng hàng gửi từ bến đò lên có một phong thư không đề tên người gửi, không đề tên người nhận, chỉ ghi: “Tiểu viện dưới núi.”" },
+            { text: "Trong thư vỏn vẹn một câu, nằm giữa trang giấy trắng:" },
+            { text: "“Năm đó nếu không có chén nước ở sân ông, tôi đã không qua nổi con dốc ấy.”" },
+          ],
+          choices: [
+            {
+              label: "Đọc lại câu ấy lần nữa, chậm hơn.",
+              result: "Đọc lần hai, chữ vẫn vậy mà nghe khác. Cái chum nước, cái gáo bạn vẫn để ngoài hiên cho khách qua đường, xưa nay đặt đó không nghĩ ngợi. Hóa ra có gáo nước từng đỡ một người qua con dốc của đời họ.",
+              effects: { tam: 1 },
+            },
+            {
+              label: "Lật phong bì, xem nét chữ, xem dấu bến đò.",
+              result: "Nét chữ đằm, người có học. Dấu gửi thì mờ, không rõ từ đâu. Người viết giấu mình kỹ, như thể món ân này chỉ cần một phía nhớ là đủ.",
+              effects: { tinh: 1 },
+            },
+            {
+              label: "Đặt thư xuống, nhìn ra con dốc trước sân.",
+              result: "Con dốc vẫn con dốc ấy, sáng nào cũng người lên kẻ xuống. Trong bao nhiêu bóng người đã qua, không biết ai là người của lá thư. Cũng có thể họ chưa từng quay lại, mà vẫn nhớ.",
+              effects: { duyen: 1 },
+            },
+          ],
         },
+        // --- nhịp 2: giữ lại điều không tên ---
         {
-          label: "Không cần nhớ. Gấp thư, để lên kệ sách.",
-          result: "Bạn gấp thư theo đúng nếp cũ của nó, để lên kệ. Phong thư mỏng như một chiếc lá, vậy mà kệ sách, từ hôm đó, nhìn có vẻ đầy hơn.",
-          effects: { tinh: 1 },
-          quote: "q_chennuoc",
-          item: "buc_thu_vodanh",
+          paras: [
+            { text: "Lá thư nằm đó, mỏng như một chiếc lá, mà nặng một điều khó gọi thành tên." },
+          ],
+          choices: [
+            {
+              label: "Cố nhớ xem là ai. Bao nhiêu người đã qua sân này?",
+              result: "Nhớ không ra. Người qua sân nhiều như lá qua mùa. Bạn rót một chén nước, đặt lên thềm, chỗ vẫn hay đặt cho khách qua đường, rồi ngồi nhìn nó nguội.",
+              effects: { tam: 1 },
+              quote: "q_chennuoc",
+              item: "buc_thu_vodanh",
+            },
+            {
+              label: "Không cần nhớ. Gấp thư, để lên kệ sách.",
+              result: "Bạn gấp thư theo đúng nếp cũ của nó, để lên kệ. Phong thư mỏng như một chiếc lá, vậy mà kệ sách, từ hôm đó, nhìn có vẻ đầy hơn.",
+              effects: { tinh: 1 },
+              quote: "q_chennuoc",
+              item: "buc_thu_vodanh",
+            },
+          ],
         },
       ],
     },
     {
       id: "t_timcon",
       title: "Người mẹ tìm con",
-      paras: [
-        { text: "Một người phụ nữ áo nâu bạc lên núi từ sớm, hỏi thăm từng nhà dọc đường. Con trai bà bỏ nhà đi ba năm trước, sau một trận cãi nhau với cha nó. Có người mách hồi đầu năm thấy thằng bé làm ở xưởng gỗ mạn ngược." },
-        { text: "“Tôi không mong nó về. Tôi chỉ muốn nhắn với nó một câu: cha nó dạo này yếu rồi, mà tính vẫn cứng, không đời nào chịu nhắn.”" },
-      ],
-      choices: [
+      beats: [
+        // --- nhịp 1: bà lên tới, đặt gánh lòng xuống ---
         {
-          label: "Mài mực, viết giúp bà một lá thư gửi theo người buôn mạn ngược.",
-          result: "Bà đọc không thạo, bạn viết, bà nói. Nói đến câu cuối, “về hay không cũng được, nhớ mặc ấm”, thì bà nghẹn. Thư gửi đi theo chuyến hàng cuối tuần.",
-          effects: { duyen: 1, tam: 1 },
-          flags: ["thu_gui_me"],
+          paras: [
+            { text: "Một người phụ nữ áo nâu bạc lên núi từ sớm, hỏi thăm từng nhà dọc đường. Con trai bà bỏ nhà đi ba năm trước, sau một trận cãi nhau với cha nó. Có người mách hồi đầu năm thấy thằng bé làm ở xưởng gỗ mạn ngược." },
+            { text: "“Tôi không mong nó về. Tôi chỉ muốn nhắn với nó một câu: cha nó dạo này yếu rồi, mà tính vẫn cứng, không đời nào chịu nhắn.”" },
+          ],
+          choices: [
+            {
+              label: "Rót một chén nước, mời bà ngồi xuống thềm cái đã.",
+              result: "Bà ngồi xuống mép thềm, hai tay ôm chén nước cho ấm mà không uống. Ngồi rồi mới thở ra được, như quãng dốc lên núi tới giờ mới đặt hẳn xuống.",
+              effects: { tinh: 1 },
+            },
+            {
+              label: "“Ba năm rồi. Bà còn giận nó không?”",
+              result: "Bà lắc đầu chậm. “Giận thì nguôi lâu rồi. Chỉ còn lo.” Mắt bà nhìn về phía mạn ngược, nơi có đứa con ba năm bặt tin.",
+              effects: { tam: 1 },
+            },
+            {
+              label: "Hỏi khẽ: hồi đó, giữa hai cha con ai nói lời nặng trước.",
+              result: "Bà im một quãng dài. “Cả hai. Giống nhau như đúc, nên mới chẳng ai chịu ai.” Rồi bà khẽ cười, cái cười của người thương cả hai bên mà không ngả về bên nào được.",
+              effects: { duyen: 1 },
+            },
+          ],
         },
+        // --- nhịp 2: câu nhắn, đưa đi bằng cách nào (quyết định của ngày) ---
         {
-          label: "“Câu đó bà phải tự đi nói. Thư không chở nổi.”",
-          result: "Bà đứng lặng hồi lâu, rồi hỏi đường lên mạn ngược, hỏi kỹ, từng chặng một, như người sắp đi thật. Hôm ấy bà xuống núi sớm hơn lúc lên.",
-          effects: { tam: 1 },
-          quote: "q_loinhan",
-        },
-        {
-          label: "Mời bà nghỉ chân, nghe hết chuyện ba năm.",
-          result: "Chuyện ba năm kể hết một buổi chiều. Cuối cùng bà tự nói, không hẳn với bạn: “Chắc tôi phải đi tìm nó thật.” Chén trà trước mặt bà nguội từ lâu, chưa vơi một nửa.",
-          effects: { tinh: 1, duyen: 1 },
-          quote: "q_ngoiim",
+          paras: [
+            { text: "Câu nhắn thì bà đã giữ sẵn trong lòng từ lâu. Cái bà chưa có, là cách đưa nó qua mấy chặng đường tới tận mạn ngược." },
+            { text: "Bà nhìn bạn, chờ một hướng đi." },
+          ],
+          choices: [
+            {
+              label: "Mài mực, viết giúp bà một lá thư gửi theo người buôn mạn ngược.",
+              result: "Bà đọc không thạo, bạn viết, bà nói. Nói đến câu cuối, “về hay không cũng được, nhớ mặc ấm”, thì bà nghẹn. Thư gửi đi theo chuyến hàng cuối tuần.",
+              effects: { duyen: 1, tam: 1 },
+              flags: ["thu_gui_me"],
+            },
+            {
+              label: "“Câu đó bà phải tự đi nói. Thư không chở nổi.”",
+              result: "Bà đứng lặng hồi lâu, rồi hỏi đường lên mạn ngược, hỏi kỹ, từng chặng một, như người sắp đi thật. Hôm ấy bà xuống núi sớm hơn lúc lên.",
+              effects: { tam: 1 },
+              quote: "q_loinhan",
+            },
+            {
+              label: "Mời bà nghỉ thêm, nghe hết chuyện ba năm.",
+              result: "Chuyện ba năm kể hết một buổi chiều. Cuối cùng bà tự nói, không hẳn với bạn: “Chắc tôi phải đi tìm nó thật.” Chén trà trước mặt bà nguội từ lâu, chưa vơi một nửa.",
+              effects: { tinh: 1, duyen: 1 },
+              quote: "q_ngoiim",
+            },
+          ],
         },
       ],
     },
     {
       id: "t_tangnhan",
       title: "Tăng nhân qua đường",
-      paras: [
-        { text: "Một tăng nhân vân du xin nghỉ nhờ một đêm. Ăn một bát cơm rau, không nhận gì thêm. Sáng hôm sau dậy trước gà, quét sạch lá cả sân trước sân sau, rồi đắp y lên đường." },
-        { text: "Trên chồng lá quét gọn, ông đặt lại một chiếc lá đề, không biết nhặt được từ cây nào, quanh đây không có bồ đề." },
-      ],
-      choices: [
+      beats: [
+        // --- nhịp 1: người khách một đêm, quét sân rồi đi ---
         {
-          label: "Ép chiếc lá vào cuốn sách dày nhất trong thư phòng.",
-          result: "Chiếc lá nằm giữa hai trang sách. Nhiều năm sau, ai đó mở đúng trang ấy, sẽ gặp một mùa thu.",
-          effects: { tinh: 1 },
-          item: "la_de",
+          paras: [
+            { text: "Một tăng nhân vân du xin nghỉ nhờ một đêm. Ăn một bát cơm rau, không nhận gì thêm. Sáng hôm sau dậy trước gà, quét sạch lá cả sân trước sân sau, rồi đắp y lên đường." },
+            { text: "Trên chồng lá quét gọn, ông đặt lại một chiếc lá đề, không biết nhặt được từ cây nào, quanh đây không có bồ đề." },
+          ],
+          choices: [
+            {
+              label: "Nhìn cái sân ông vừa quét, trước khi đụng tới chiếc lá.",
+              result: "Sân sạch đến lạ, lá dồn thành đống vuông vức như có thước. Người quét sân người khác kỹ đến vậy, trong lòng hẳn cũng ít bụi. Bạn đứng nhìn một lúc, chưa vội cầm chiếc lá lên.",
+              effects: { tam: 1 },
+            },
+            {
+              label: "Cầm chiếc lá đề lên, xem cho kỹ.",
+              result: "Lá đề thật, gân lá còn tươi, mà quanh núi này tuyệt không có cây bồ đề nào. Ông nhặt ở đâu, mang tới làm gì, đi rồi mới để lại, không một lời. Câu hỏi ở lại, người thì đã xa.",
+              effects: { tinh: 1 },
+            },
+            {
+              label: "Nhìn theo bóng ông đã ra tới cổng.",
+              result: "Tăng nhân đi thong thả, y bạc vắt vai, không ngoái lại. Mới ở một đêm mà cái sân như quen bước chân ông tự bao giờ. Bóng ông xuống dốc, hòa dần vào sương sớm.",
+              effects: { duyen: 1 },
+            },
+          ],
         },
+        // --- nhịp 2: chiếc lá, và một đoạn dốc ---
         {
-          label: "Chạy theo, tiễn ông một đoạn dốc.",
-          result: "Tăng nhân không từ chối. Hai người đi một đoạn không nói gì. Tới khúc quành, ông chắp tay: “Đưa nhau một đoạn, cũng là một đoạn.” Rồi đi.",
-          effects: { duyen: 1 },
-          quote: "q_motdoan",
+          paras: [
+            { text: "Ông đã ra tới cổng. Chiếc lá đề nằm trên chồng lá quét gọn, đợi bạn định liệu." },
+          ],
+          choices: [
+            {
+              label: "Ép chiếc lá vào cuốn sách dày nhất trong thư phòng.",
+              result: "Chiếc lá nằm giữa hai trang sách. Nhiều năm sau, ai đó mở đúng trang ấy, sẽ gặp một mùa thu.",
+              effects: { tinh: 1 },
+              item: "la_de",
+            },
+            {
+              label: "Chạy theo, tiễn ông một đoạn dốc.",
+              result: "Tăng nhân không từ chối. Hai người đi một đoạn không nói gì. Tới khúc quành, ông chắp tay: “Đưa nhau một đoạn, cũng là một đoạn.” Rồi đi.",
+              effects: { duyen: 1 },
+              quote: "q_motdoan",
+            },
+          ],
         },
       ],
     },
@@ -346,48 +489,104 @@ const SEASON_EVENTS = {
     {
       id: "d_baotuyet",
       title: "Đêm bão tuyết",
-      paras: [
-        { text: "Nửa đêm gió rít, tuyết quất ngang trời. Có tiếng đập cửa gấp: hai cha con người lỡ đường, gánh hàng đông về muộn, lạc mất lối xuống làng." },
-        { text: "Mái hiên vá hồi giữa năm chắc chắn, kín gió. Bạn nhóm lửa ngay dưới hiên, hai cha con hơ tay, dần hoàn hồn.", if: "va_maihien" },
-        { text: "Mái hiên dột từ mùa mưa chưa chữa, gió lùa tuyết vào tận thềm. Đành đưa cả hai vào nhà trong, chen chúc quanh bếp lửa.", ifNot: "va_maihien" },
-      ],
-      choices: [
+      beats: [
+        // --- nhịp 1: tiếng đập cửa giữa đêm ---
         {
-          label: "Nấu nồi cháo nóng, nhường chăn.",
-          result: "Sáng ra trời quang. Người cha vét túi đòi gửi tiền, bạn không nhận. Ông ta bèn bổ hết đống củi sau nhà rồi mới chịu xuống núi. Đứa con gánh đỡ nửa gánh hàng của cha, ngoái lại chào tới ba lần.",
-          effects: { duyen: 1, danh: 1 },
+          paras: [
+            { text: "Nửa đêm gió rít, tuyết quất ngang trời. Có tiếng đập cửa gấp: hai cha con người lỡ đường, gánh hàng đông về muộn, lạc mất lối xuống làng." },
+            { text: "Mái hiên vá hồi giữa năm chắc chắn, kín gió. Bạn nhóm lửa ngay dưới hiên, hai cha con hơ tay, dần hoàn hồn.", if: "va_maihien" },
+            { text: "Mái hiên dột từ mùa mưa chưa chữa, gió lùa tuyết vào tận thềm. Đành đưa cả hai vào nhà trong, chen chúc quanh bếp lửa.", ifNot: "va_maihien" },
+          ],
+          choices: [
+            {
+              label: "Rót cho mỗi người một bát nước nóng trước đã.",
+              result: "Hai bàn tay đứa nhỏ cóng đến không cầm nổi bát, người cha phải đỡ. Nước nóng đi tới đâu, mặt hai cha con giãn ra tới đó. Ngoài kia gió vẫn quật vào vách như đòi vào theo.",
+              effects: { tinh: 1 },
+            },
+            {
+              label: "Hỏi thăm đường đi nước bước, xem lạc từ đâu.",
+              result: "Người cha kể, giọng còn run: qua đèo thì tuyết ập, gánh nặng, con lại nhỏ, quờ quạng thế nào thành lạc. “May thấy đèn nhà bác.” Ngọn đèn bạn vẫn để ngoài hiên mỗi đêm, hóa ra có đêm thành cái phao.",
+              effects: { duyen: 1 },
+            },
+            {
+              label: "Không hỏi gì, lặng lẽ chất thêm củi vào bếp.",
+              result: "Bạn thêm củi, lửa bùng cao hơn. Đứa nhỏ dán mắt vào ngọn lửa, mí mắt ríu dần. Người cha định mở lời cảm ơn thì bạn đã quay đi lấy thêm củi.",
+              effects: { tam: 1 },
+            },
+          ],
         },
+        // --- nhịp 2: đêm còn dài (quyết định của ngày) ---
         {
-          label: "Chỉ chỗ ngủ, còn mình thức canh bếp lửa.",
-          result: "Đêm đó bạn ngồi canh lửa tới sáng, nghe gió đổi giọng ba lần trên mái. Hai cha con ngủ say, người con mê ngủ còn cười. Củi trong bếp cháy suốt đêm, đỏ một màu rất bền.",
-          effects: { tam: 1, tinh: 1 },
-          quote: "q_canhlua",
+          paras: [
+            { text: "Gió ngoài kia chưa có ý ngớt. Đêm còn dài, mà hai cha con thì kiệt sức thấy rõ." },
+          ],
+          choices: [
+            {
+              label: "Nấu nồi cháo nóng, nhường chăn.",
+              result: "Sáng ra trời quang. Người cha vét túi đòi gửi tiền, bạn không nhận. Ông ta bèn bổ hết đống củi sau nhà rồi mới chịu xuống núi. Đứa con gánh đỡ nửa gánh hàng của cha, ngoái lại chào tới ba lần.",
+              effects: { duyen: 1, danh: 1 },
+            },
+            {
+              label: "Chỉ chỗ ngủ, còn mình thức canh bếp lửa.",
+              result: "Đêm đó bạn ngồi canh lửa tới sáng, nghe gió đổi giọng ba lần trên mái. Hai cha con ngủ say, người con mê ngủ còn cười. Củi trong bếp cháy suốt đêm, đỏ một màu rất bền.",
+              effects: { tam: 1, tinh: 1 },
+              quote: "q_canhlua",
+            },
+          ],
         },
       ],
     },
     {
       id: "d_meo",
       title: "Con mèo gầy",
-      paras: [
-        { text: "Một con mèo tam thể gầy trơ xương xuất hiện ở góc sân, nép dưới chum nước, nhìn bạn bằng cặp mắt nửa cảnh giác nửa van nài. Tuyết còn dính trên lưng nó." },
-      ],
-      choices: [
+      beats: [
+        // --- nhịp 1: cặp mắt dưới chum nước ---
         {
-          label: "Để một bát cơm trộn cá khô ở bậc cửa, rồi vào nhà.",
-          result: "Nó chờ bạn khuất hẳn mới dám lại gần. Ăn xong nó không đi. Hôm sau nó vẫn ở đó. Hôm sau nữa, nó nằm hẳn lên bậc cửa. Vậy là tiểu viện có mèo.",
-          effects: { duyen: 1, tinh: 1 },
-          item: "con_meo",
+          paras: [
+            { text: "Một con mèo tam thể gầy trơ xương xuất hiện ở góc sân, nép dưới chum nước, nhìn bạn bằng cặp mắt nửa cảnh giác nửa van nài. Tuyết còn dính trên lưng nó." },
+          ],
+          choices: [
+            {
+              label: "Ngồi thụp xuống, không lại gần, chỉ để nó nhìn.",
+              result: "Bạn ngồi im. Con mèo không chạy, cũng không lại, hai bên nhìn nhau hồi lâu qua màn tuyết mỏng, như đang mặc cả một điều không nói thành lời.",
+              effects: { tinh: 1 },
+            },
+            {
+              label: "Đưa mắt xem nó gầy tới đâu, có thương tật gì không.",
+              result: "Xương sườn nổi rõ dưới lớp lông xơ, một tai sứt. Con vật này đã qua một quãng khó, mà vẫn tới được đây, vẫn dám nhìn người. Cái nhìn nửa van nài kia, hóa ra là còn muốn sống.",
+              effects: { tam: 1 },
+            },
+            {
+              label: "Khẽ đẩy cửa hé ra chút hơi ấm bếp.",
+              result: "Hơi ấm trong nhà tràn ra một luồng mỏng. Con mèo hếch mũi, nhích lại nửa bước rồi dừng, còn ngờ. Nhưng nó đã thôi nép dưới chum nước.",
+              effects: { duyen: 1 },
+            },
+          ],
         },
+        // --- nhịp 2: khách qua đường, hay lâu hơn thế ---
         {
-          label: "Bắt vào nhà, lau khô, sưởi lửa.",
-          result: "Nó giãy được ba cái thì thôi, nằm im cho lau. Đêm đó nó ngủ cạnh bếp. Nó gầy, nhưng tiếng gừ gừ thì no đủ lắm.",
-          effects: { duyen: 1 },
-          item: "con_meo",
-        },
-        {
-          label: "Kệ. Mèo hoang tự biết đường sống.",
-          result: "Sáng hôm sau nó biến mất. Chỉ còn dấu chân nhỏ trên tuyết, đi về phía làng. Chắc nó tìm được chỗ. Chắc vậy.",
-          effects: { tinh: 1, duyen: -1 },
+          paras: [
+            { text: "Tuyết lại lất phất. Con mèo vẫn ở góc sân, đợi bạn định nó là khách qua đường, hay một cái gì ở lại lâu hơn." },
+          ],
+          choices: [
+            {
+              label: "Để một bát cơm trộn cá khô ở bậc cửa, rồi vào nhà.",
+              result: "Nó chờ bạn khuất hẳn mới dám lại gần. Ăn xong nó không đi. Hôm sau nó vẫn ở đó. Hôm sau nữa, nó nằm hẳn lên bậc cửa. Vậy là tiểu viện có mèo.",
+              effects: { duyen: 1, tinh: 1 },
+              item: "con_meo",
+            },
+            {
+              label: "Bắt vào nhà, lau khô, sưởi lửa.",
+              result: "Nó giãy được ba cái thì thôi, nằm im cho lau. Đêm đó nó ngủ cạnh bếp. Nó gầy, nhưng tiếng gừ gừ thì no đủ lắm.",
+              effects: { duyen: 1 },
+              item: "con_meo",
+            },
+            {
+              label: "Kệ. Mèo hoang tự biết đường sống.",
+              result: "Sáng hôm sau nó biến mất. Chỉ còn dấu chân nhỏ trên tuyết, đi về phía làng. Chắc nó tìm được chỗ. Chắc vậy.",
+              effects: { tinh: 1, duyen: -1 },
+            },
+          ],
         },
       ],
     },
@@ -481,4 +680,17 @@ const SEASON_INTRO = {
     mark: "冬",
     line: "Đông về. Tuyết phủ kín đường núi. Năm sắp cạn, và có những chuyện cũng sắp tới lúc khép lại.",
   },
+};
+
+// ===== BẢN TÂM — soi lòng người chơi khi sang mùa =====
+// Không phải điểm số, không phải danh hiệu. Chỉ là một câu để người chơi
+// tự thấy mình đang nghiêng về đâu, có nhẹ/thuận thêm hay đang nặng dần.
+// Khóa lấy từ core.banTamKey(S). Ẩn ở mùa xuân (ngày 1, chưa có gì để soi).
+const BAN_TAM = {
+  chom: "Mùa đầu ở đây trôi qua như nước qua tay. Bạn chưa gọi được tên thứ mình đang giữ, nhưng sân mỗi sáng vẫn sạch, ấm trà vẫn nóng, và điều đó có vẻ là đủ.",
+  tinh: "Dạo này bạn thấy mình bớt cần phải làm gì cho đúng. Khách tới thì rót trà, khách đi thì quét lá; tay nhẹ dần, như đã thuận theo cái sân này lúc nào không hay.",
+  tam:  "Ngồi đây đủ lâu, có những chuyện trước kia làm bạn động, giờ nhìn qua đã lặng. Không phải bạn nén nó xuống, mà nó tự nhẹ đi.",
+  duyen: "Người qua sân này bắt đầu quay lại. Có kẻ chỉ để uống một chén trà, có kẻ để nói nốt một câu bỏ dở. Bạn không giữ ai, mà sân vẫn dần đông người cũ.",
+  danh: "Tiếng lành theo người xuống núi, rồi theo người khác lên. Bạn được nhắc tới nhiều hơn trước, điều đó vừa ấm, vừa hơi nặng ở một chỗ khó gọi tên.",
+  huongngoai: "Càng nhiều người tìm lên, sân càng ít khi thật sự vắng. Có hôm pha trà mà tai vẫn hướng ra cổng; cái tĩnh của mùa đầu, không rõ đã cất đâu mất.",
 };

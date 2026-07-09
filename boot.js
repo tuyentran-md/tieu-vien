@@ -695,10 +695,17 @@
     el.querySelector(".interlude-season").textContent = "Mùa " + info.name;
     const textEl = el.querySelector(".interlude-text");
     textEl.innerHTML = "";
-    [info.prologue, info.line].forEach(function (t) {
-      if (!t) return;
+    const paras = [{ t: info.prologue }, { t: info.line }];
+    // từ mùa thứ hai trở đi: soi bản tâm đang nghiêng đâu (ngày 1 chưa có gì để soi)
+    if (S.day > 1 && typeof BAN_TAM !== "undefined") {
+      const bt = BAN_TAM[C.banTamKey(S)];
+      if (bt) paras.push({ t: bt, cls: "interlude-mind" });
+    }
+    paras.forEach(function (o) {
+      if (!o.t) return;
       const p = document.createElement("p");
-      p.textContent = t;
+      p.textContent = o.t;
+      if (o.cls) p.className = o.cls;
       textEl.appendChild(p);
     });
 

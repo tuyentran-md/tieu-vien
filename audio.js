@@ -210,8 +210,11 @@ const Ambient = (() => {
   function schedule(season, weather) {
     clearInterval(chimeTimer); clearInterval(birdTimer); clearInterval(musicTimer);
     chimeTimer = null;
-    if ((season==="xuan" || season==="ha") && weather!=="rain")
-      birdTimer = setInterval(() => { if (Math.random()<.66) chirp(); }, 6200);
+    // chim: sếp thích — Xuân/Hạ rộn, Thu thưa hơn một chút, Đông và mưa thì im
+    if (season!=="dong" && weather!=="rain") {
+      const bp = season==="thu" ? .5 : .68;
+      birdTimer = setInterval(() => { if (Math.random()<bp) chirp(); }, season==="thu" ? 7200 : 6000);
+    }
     const scale = PENTA_LOW[season] || PENTA_LOW.xuan;
     // Nhiều câu nhạc, dài ngắn khác nhau, để giai điệu không lặp một kiểu.
     const motifs = [
@@ -240,13 +243,13 @@ const Ambient = (() => {
         const oct = (idx >= 3 && Math.random() < .5) ? 3 : 2;
         const f = scale[idx % scale.length] * oct;
         const dur = 2.0 + Math.random() * .9;
-        musicNote(f, season === "dong" ? .03 : .044, clock, dur);
+        musicNote(f, season === "dong" ? .042 : .06, clock, dur);
         // nhịp co giãn: có nốt liền, có nốt ngân
         clock += .46 + Math.random() * .5 + (n % 3 === 2 ? .3 : 0);
       });
       if (Math.random() < .6) {
         const root = scale[seq[0] % scale.length] * 2;
-        setTimeout(() => softNote(root, season === "dong" ? .014 : .018, 4.6), 200 + Math.random() * 400);
+        setTimeout(() => softNote(root, season === "dong" ? .018 : .024, 4.6), 200 + Math.random() * 400);
       }
     };
     setTimeout(playDrift, 700);
@@ -263,8 +266,8 @@ const Ambient = (() => {
     if (!ac || !on) return;
     const t = ac.currentTime;
     rainGain.gain.linearRampToValueAtTime(weather==="rain" ? .075 : 0, t+1.5);
-    windGain.gain.linearRampToValueAtTime(season==="dong" ? .04 : season==="ha" ? .016 : .024, t+1.5);
-    waterGain.gain.linearRampToValueAtTime(weather==="rain" ? .022 : season==="xuan" ? .014 : season==="dong" ? .006 : .01, t+1.5);
+    windGain.gain.linearRampToValueAtTime(season==="dong" ? .026 : season==="ha" ? .01 : .015, t+1.5);
+    waterGain.gain.linearRampToValueAtTime(weather==="rain" ? .016 : season==="xuan" ? .009 : season==="dong" ? .004 : .007, t+1.5);
     setPad(season, 0);
     schedule(season, weather);
   }

@@ -573,7 +573,7 @@
         walkTimer = setTimeout(function () {
           if (run !== npcRun) return;
           place(POS.yard, .95);
-          arriveTimer = setTimeout(settle, 4700);
+          arriveTimer = setTimeout(settle, 6400);
         }, 60);
       },
       // tap vào bóng người đang đi: khách vào sân ngay, khỏi đợi
@@ -597,7 +597,7 @@
         else { place(POS.gate, 1); }
         leaveTimer = setTimeout(function () {
           if (run === npcRun) npcG.classList.remove("on", "walking");
-        }, 3800);
+        }, 5400);
       },
       setPhase: function (p) {
         rootEl.dataset.phase = p;
