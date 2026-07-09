@@ -14,6 +14,7 @@
   let typeTimer = null;
   let revealAllText = null;
   let advancing = false;
+  let autoplayOn = false;
 
   const $ = sel => document.querySelector(sel);
   const HOTSPOTS = ["tree", "gate", "jar", "porch"];
@@ -518,7 +519,10 @@
       S.chosen = null;
       S.phase = "day";
       S.beat = 0;
-      if (ensureDay() && typeof Ambient !== "undefined" && Ambient.isOn()) Ambient.setScene(season(), weather());
+      if (ensureDay()) {
+        if (typeof Ambient !== "undefined" && Ambient.isOn()) Ambient.setScene(season(), weather());
+        if (shouldInterlude()) showInterlude();
+      }
     }, world ? 750 : 0);
   }
 
@@ -667,6 +671,55 @@
     btn.classList.toggle("muted", !Ambient.isOn());
   }
 
+  // ---- interlude: thẻ chương ở ngày đầu mỗi mùa ----
+  function shouldInterlude() {
+    if (autoplayOn) return false;
+    if (S.phase !== "day" || S.beat !== 0 || S.chosen) return false;
+    if (((S.day - 1) % C.DAYS_PER_SEASON) !== 0) return false;
+    if (typeof SEASON_INTRO === "undefined") return false;
+    if (!S.shownSeasons) S.shownSeasons = [];
+    return S.shownSeasons.indexOf(C.seasonOf(S.day)) < 0;
+  }
+
+  function showInterlude(cb) {
+    const done = typeof cb === "function" ? cb : function () {};
+    const sk = C.seasonOf(S.day);
+    const info = typeof SEASON_INTRO !== "undefined" ? SEASON_INTRO[sk] : null;
+    const el = $("#interlude");
+    if (!info || !el) { done(); return; }
+
+    el.dataset.season = sk;
+    el.querySelector(".interlude-mark").textContent = info.mark;
+    el.querySelector(".interlude-kicker").textContent =
+      S.day === 1 ? "Dưới núi có một tiểu viện" : "Sang mùa · Ngày " + S.day + "/" + C.TOTAL_DAYS;
+    el.querySelector(".interlude-season").textContent = "Mùa " + info.name;
+    const textEl = el.querySelector(".interlude-text");
+    textEl.innerHTML = "";
+    [info.prologue, info.line].forEach(function (t) {
+      if (!t) return;
+      const p = document.createElement("p");
+      p.textContent = t;
+      textEl.appendChild(p);
+    });
+
+    if (!S.shownSeasons) S.shownSeasons = [];
+    if (S.shownSeasons.indexOf(sk) < 0) S.shownSeasons.push(sk);
+    save();
+
+    el.classList.remove("hidden");
+    let closed = false;
+    function dismiss() {
+      if (closed) return;
+      closed = true;
+      el.classList.add("hidden");
+      if (typeof Ambient !== "undefined") Ambient.play("menu");
+      done();
+    }
+    const go = $("#interlude-go");
+    if (go) go.onclick = dismiss;
+    el.onclick = function (e) { if (e.target === el) dismiss(); };
+  }
+
   function enterGame(opts) {
     const unlockAudio = !opts || opts.unlockAudio !== false;
 
@@ -682,7 +735,8 @@
 
     if (unlockAudio && Ambient) Ambient.boot(season(), weather());
     syncSoundButton();
-    maybeCoach();
+    if (shouldInterlude()) showInterlude(maybeCoach);
+    else maybeCoach();
   }
 
   function maybeCoach() {
@@ -744,6 +798,7 @@
 
     const autoplay = parseInt(new URLSearchParams(location.search).get("autoplay") || "0", 10);
     if (autoplay > 0) {
+      autoplayOn = true;
       runAutoplay(autoplay);
       enterGame({ unlockAudio: false });
     }

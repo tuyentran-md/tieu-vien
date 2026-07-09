@@ -456,3 +456,29 @@ const EMPTY_DAY = {
     },
   ],
 };
+
+// ===== KHÚC CHUYỂN MÙA — thẻ chương, hiện ở ngày đầu mỗi mùa =====
+// prologue chỉ in ở mùa xuân (ngày 1), dựng khung cả câu chuyện.
+const SEASON_INTRO = {
+  xuan: {
+    name: "Xuân",
+    mark: "春",
+    prologue: "Bạn giữ một tiểu viện dưới chân núi. Không ai giao, cũng không ai đến nhận. Một mái hiên, một gốc cây già, một ấm trà cũ. Người lên núi ghé qua, kể một đoạn đời, rồi đi tiếp đường mình. Bạn ở lại, giữ cái sân cho sạch, giữ ấm trà cho nóng.",
+    line: "Xuân về. Sương tan chậm trên lối đá. Dưới làng, đã có người hỏi đường lên núi.",
+  },
+  ha: {
+    name: "Hạ",
+    mark: "夏",
+    line: "Hạ sang. Ve ran trong rặng trúc. Chum nước đầu hè đặt ngoài cổng, đã có người ghé uống.",
+  },
+  thu: {
+    name: "Thu",
+    mark: "秋",
+    line: "Thu tới. Lá rụng không cần gió. Mùa này, người cũ hay trở lại, và chuyện cũ hay tìm về.",
+  },
+  dong: {
+    name: "Đông",
+    mark: "冬",
+    line: "Đông về. Tuyết phủ kín đường núi. Năm sắp cạn, và có những chuyện cũng sắp tới lúc khép lại.",
+  },
+};

@@ -236,7 +236,7 @@
   // khách lỡ đường đội nón như người đưa thư — cùng một dáng
   FIGS.traveler = FIGS.master;
 
-  const POS = { gate: [150, 438], yard: [340, 416], talk: [340, 402], mountain: [58, 310] };
+  const POS = { gate: [150, 438], yard: [525, 416], talk: [560, 406], mountain: [58, 310] };
 
   const SVG = ''
   + '<svg class="ink-svg" viewBox="0 0 800 520" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">'
@@ -398,7 +398,7 @@
             + '%;width:' + h[3] + '%;height:' + h[4] + '%"><span class="dot"></span></button>';
         }).join("")
       + '<button class="ink-hot ink-npc-hot" data-hot="npc" aria-label="Mở lời với khách" '
-      + 'style="left:33%;top:48%;width:20%;height:42%"><span class="dot"></span></button>'
+      + 'style="left:59%;top:46%;width:26%;height:44%"><span class="dot"></span></button>'
       + '</div>'
       + '<div class="ink-grain"></div><div class="ink-vignette"></div>'
       + '<div class="ink-tip"></div>'

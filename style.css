@@ -505,6 +505,42 @@ header nav button:hover .nav-cap { color: rgba(255,248,232,.72); }
   padding: .4rem 1.4rem; cursor: pointer; color: var(--ink);
 }
 
+/* ---- Interlude (thẻ chương chuyển mùa) ---- */
+#interlude {
+  position: fixed; inset: 0; z-index: 20;
+  display: flex; align-items: center; justify-content: center;
+  text-align: center; padding: 2rem;
+  background: radial-gradient(130% 120% at 50% 28%, rgba(22,24,19,.85), rgba(11,12,10,.97));
+  -webkit-backdrop-filter: blur(5px); backdrop-filter: blur(5px);
+  color: var(--wash);
+  animation: fade .9s ease both;
+}
+#interlude.hidden { display: none; }
+.interlude-inner {
+  max-width: 540px; width: 100%; min-width: 0;
+  animation: panel-rise .85s cubic-bezier(.2,.72,.24,1) both;
+}
+.interlude-mark {
+  font-size: 3rem; color: #e2bc6f;
+  border: 1px solid rgba(226,188,111,.42); border-radius: 50%;
+  width: 5.6rem; height: 5.6rem; line-height: 5.4rem;
+  margin: 0 auto 1.5rem;
+}
+.interlude-kicker {
+  font-family: var(--font-ui); text-transform: uppercase; letter-spacing: .22em;
+  font-size: .74rem; color: rgba(255,248,232,.58); margin-bottom: .6rem;
+}
+.interlude-season {
+  font-family: var(--font-display); font-size: 2rem; font-weight: 600;
+  letter-spacing: .16em; margin-bottom: 1.5rem; color: var(--wash);
+}
+.interlude-text {
+  line-height: 1.92; color: rgba(247,241,228,.9);
+  margin-bottom: 2.3rem; text-wrap: balance;
+}
+.interlude-text p { margin-bottom: 1rem; }
+.interlude-text p:last-child { margin-bottom: 0; }
+
 /* ---- transitions ---- */
 .fade-in { animation: fade .7s ease; }
 @keyframes fade { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
