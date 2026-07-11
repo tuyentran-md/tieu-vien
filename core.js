@@ -1,7 +1,7 @@
 // ===== Dưới Núi Có Một Tiểu Viện — core logic (pure, no DOM) =====
 // Browser: <script> sau data/*.js → window.createCore(...)
 // Node:    const createCore = require("../core.js"); createCore(data)
-// MỌI logic game nằm ở đây. UI (Phaser) và test/sim.js đều gọi qua core — không mirror.
+// MỌI logic game nằm ở đây. UI DOM và test/sim.js đều gọi qua core — không mirror.
 
 (function (root, factory) {
   if (typeof module !== "undefined" && module.exports) module.exports = factory;
@@ -25,7 +25,7 @@
       journal: [],   // quote ids, in unlock order
       items: [],     // item ids
       current: null, // {kind,id} — node đã rút cho hôm nay (chống reroll khi reload)
-      chosen: null,  // {result,quote,item} — đã chọn xong, đợi "Qua ngày"/"tiếp"
+      chosen: null,  // {result,quote,item} — đã chọn xong, đợi nút kết ngày/tiếp
       beat: 0,       // nhịp hiện tại trong ngày (node nhiều nhịp)
       phase: "day",  // day | beat | result | end
     };

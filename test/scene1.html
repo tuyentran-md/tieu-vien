@@ -1,9 +1,15 @@
-<!DOCTYPE html><html><head><meta charset="UTF-8"><link rel="stylesheet" href="../style.css"></head>
-<body><div id="stage" style="height:300px;position:relative;overflow:hidden"></div>
-<script src="../scene.js"></script>
+<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><base href="../"><link rel="stylesheet" href="ink/scene.css"></head>
+<body style="margin:0"><div id="stage" style="height:min(100vh,720px);position:relative;overflow:hidden"></div>
+<script src="ink/scene.js"></script>
 <script>
 const q = new URLSearchParams(location.search);
-Scene.update({season:q.get("s")||"xuan", weather:q.get("w")||"clear", items:(q.get("i")||"").split(",").filter(Boolean)});
-Scene.build(document.getElementById("stage"));
-Scene.update({season:q.get("s")||"xuan", weather:q.get("w")||"clear", items:(q.get("i")||"").split(",").filter(Boolean)});
+const world = InkScene.boot(document.getElementById("stage"));
+world.setDay({
+  day: Number(q.get("d")) || 1,
+  season: q.get("s") || "xuan",
+  weather: q.get("w") || "clear",
+  phase: q.get("p") || "day",
+  items: (q.get("i") || "").split(",").filter(Boolean),
+  flags: {}, kind: "empty", focus: q.get("f") || "center",
+});
 </script></body></html>

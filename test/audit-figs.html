@@ -8,13 +8,13 @@
   .row { display: flex; flex-wrap: wrap; gap: 6px; padding: 12px; }
   .cell { text-align: center; }
   .cell .label { font-size: 11px; color: #6b6353; margin-top: 2px; }
-  .fig { width: 112px; height: 180px; background: linear-gradient(#ded6c2, #cfc4a6); border: 1px solid #b8ae92; }
-  .fig svg { width: 100%; height: 100%; overflow: visible; }
+  .fig { width: 112px; height: 180px; background: linear-gradient(#ded6c2, #cfc4a6); border: 1px solid #b8ae92; overflow: hidden; }
+  .fig img { width: 100%; height: 100%; object-fit: contain; }
   /* on top of the real painting for blend check */
   .onart { position: relative; height: 320px; margin: 12px;
-    background: url("../assets/art/courtyard-master-spring-bright.png") center bottom / cover; }
+    background: url("../assets/art/courtyard-master-clean-xuan.png") center bottom / cover; }
   .onart .npc { position: absolute; width: 74px; }
-  .onart .npc svg { width: 100%; height: 100%; overflow: visible; filter: drop-shadow(0 2px 2px rgba(45,39,28,.22)); }
+  .onart .npc img { width: 100%; height: auto; filter: drop-shadow(0 2px 2px rgba(45,39,28,.22)); }
 </style>
 </head>
 <body>
@@ -22,30 +22,24 @@
 <div class="onart" id="onart"></div>
 <script src="../ink/scene.js?v=2"></script>
 <script>
-  // reach the private FIGS via a scratch boot
-  const holder = document.createElement("div");
-  const world = InkScene.boot(holder);
-  // pull figure markup out of the walker by faking arrivals
   const roles = InkScene.FIGS;
-  const walker = holder.querySelector(".walker");
   const grid = document.getElementById("grid");
   roles.forEach(r => {
-    world.npcArrive(r, null);
+    const fileRole = r === "traveler" ? "master" : r;
     const cell = document.createElement("div");
     cell.className = "cell";
-    cell.innerHTML = '<div class="fig"><svg viewBox="-28 -84 56 90">' + walker.innerHTML + '</svg></div><div class="label">' + r + "</div>";
+    cell.innerHTML = '<div class="fig"><img src="../assets/art/fig/' + fileRole + '.png" alt=""></div><div class="label">' + r + "</div>";
     grid.appendChild(cell);
   });
   // blend check: place a few figures over the painting at yard positions
   const onart = document.getElementById("onart");
   [["boy", 24, 88], ["oldman", 40, 82], ["scholar", 55, 86], ["woman", 68, 90]].forEach(([r, x, y]) => {
-    world.npcArrive(r, null);
     const d = document.createElement("div");
     d.className = "npc";
     d.style.left = x + "%";
     d.style.top = y + "%";
     d.style.transform = "translate(-50%,-100%)";
-    d.innerHTML = '<svg viewBox="-28 -84 56 90">' + walker.innerHTML + "</svg>";
+    d.innerHTML = '<img src="../assets/art/fig/' + r + '.png" alt="">';
     onart.appendChild(d);
   });
 </script>

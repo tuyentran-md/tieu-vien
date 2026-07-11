@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Audit harness N2 (không commit vào release; chỉ dùng cho headless check) -->
+<!-- Browser regression harness for the current day loop. -->
 <html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><style>
   body { font: 16px monospace; padding: 20px; } .ok { color: green; } .bad { color: red; }
   iframe { width: 900px; height: 700px; border: 1px solid #ccc; display: block; margin-top: 12px; }
@@ -18,7 +18,7 @@ const step = (ms) => new Promise(r => setTimeout(r, ms));
 const loadFrame = (src) => new Promise(r => { f.onload = r; f.src = src; });
 
 async function main() {
-  // ---- Test 1: fresh day 1 = Mộc, NPC tap → dialog → 4 choices ----
+  // ---- Test 1: fresh day 1 = Mộc, NPC tap → dialog → visible choices ----
   localStorage.removeItem("tieuvien_save_v1");
   await loadFrame("/index.html?audit=t1");
   const d = () => f.contentDocument;
@@ -26,12 +26,24 @@ async function main() {
   await step(300);
   const npcOn = d().querySelector("#ink-npc").classList.contains("on");
   put("NPC xuất hiện ngày 1", npcOn);
-  await step(5200); // walk 4.6s + glow
+  await step(7000); // current walk/settle animation is 6.4s
   const npcHot = d().querySelector(".ink-npc-hot");
   const hotRect = npcHot.getBoundingClientRect();
   const hotReady = d().getElementById("ink-root").classList.contains("npc-ready");
   put("Hotspot khách sẵn sàng", hotReady && hotRect.width > 40 && hotRect.height > 80,
     "ready=" + hotReady + " size=" + Math.round(hotRect.width) + "x" + Math.round(hotRect.height));
+
+  // Every shipped painted figure must be selected instead of the SVG fallback.
+  const scratch = d().createElement("div");
+  scratch.hidden = true;
+  d().body.appendChild(scratch);
+  const scratchWorld = f.contentWindow.InkScene.boot(scratch);
+  scratchWorld.npcArrive("oldman", null);
+  const oldmanNode = scratch.querySelector("#ink-npc");
+  const oldmanSrc = scratch.querySelector(".npc-img").getAttribute("src") || "";
+  put("Ông lão dùng ảnh painted", oldmanNode.classList.contains("has-img") && /oldman\.png$/.test(oldmanSrc), oldmanSrc);
+  scratchWorld.destroy();
+  scratch.remove();
   npcHot.click();
   await step(400);
   const title = d().getElementById("event-title").textContent;
@@ -75,7 +87,7 @@ async function main() {
   const nextShown = !d().getElementById("next-day").classList.contains("hidden");
   const finalBtn = d().getElementById("next-day").textContent;
   const dusk = d().getElementById("ink-root").dataset.phase === "result";
-  put("Nhịp cuối: result + Qua ngày + dusk", resShown && nextShown && dusk && /Qua ngày/.test(finalBtn),
+  put("Nhịp cuối: result + nút kết ngày + dusk", resShown && nextShown && dusk && /Khép lại một ngày/.test(finalBtn),
     "res=" + resShown + " btn=" + finalBtn + " phase=" + d().getElementById("ink-root").dataset.phase);
 
   await loadFrame("/index.html?audit=t1-result");
@@ -88,7 +100,7 @@ async function main() {
   d().getElementById("next-day").click();
   await step(1300);
   const day2 = d().getElementById("hud-day").textContent;
-  put("Qua ngày 2", /Ngày 2/.test(day2), day2);
+  put("Sang ngày 2", /Ngày 2/.test(day2), day2);
 
   // ---- Test 2: reload resumes saved day ----
   await loadFrame("/index.html?audit=t2");
@@ -98,7 +110,7 @@ async function main() {
   put("Tiếp tục sau reload về đúng ngày", /Ngày 2/.test(d().getElementById("hud-day").textContent),
     d().getElementById("hud-day").textContent);
 
-  // ---- Test 3: autoplay 47 ngày + 1 Qua ngày → epilogue ----
+  // ---- Test 3: autoplay 47 ngày + kết ngày 48 → epilogue ----
   localStorage.removeItem("tieuvien_save_v1");
   await loadFrame("/index.html?autoplay=47&audit=t3");
   await step(700);

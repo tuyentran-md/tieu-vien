@@ -6,7 +6,7 @@
 
 ## Core loop
 - 1 năm game = 4 mùa (Xuân → Hạ → Thu → Đông), mỗi mùa 12 ngày = 48 ngày.
-- Mỗi ngày: 1 event. Arc event đã lên lịch ưu tiên; không có thì rút từ season pool; không có nữa thì "ngày vắng" (solo choices).
+- Mỗi ngày: 1 event, có thể gồm nhiều nhịp. Arc event đã lên lịch ưu tiên; không có thì rút từ season pool; không có nữa thì "ngày vắng" (solo choices).
 - Mỗi choice: chỉnh chỉ số ẩn, set flags, có thể schedule arc node tương lai (day + N), unlock câu vào Sổ Nhỏ, thêm vật vào sân.
 - Hết Đông ngày 48 → epilogue lắp ghép từ kết cục các arc + chỉ số.
 
@@ -25,7 +25,7 @@ Không chỉ số nào "cao là tốt": Danh cao → event phiền toái vào po
 2. **Trần Thức — thư sinh tay áo có máu.** 4 node. Mystery nhẹ: máu của bạn đồng hành, hắn đã bỏ chạy. Chủ đề: hèn nhát và chuộc lỗi.
 3. **Ông lão đánh cờ.** 4 node, kỳ ảo nhẹ kiểu Lạn Kha. Ván cờ kéo qua các mùa. Chủ đề: thời gian và buông.
 
-Mỗi node: text → 2–4 choices → resultText ngắn (một câu, không nổ tung) → schedule node sau.
+Mỗi node/nhịp: text → 2–4 choices → resultText ngắn → có thể chuyển nhịp hoặc schedule node sau.
 Arc có thể **chết** (NPC không quay lại) — đó cũng là một kết cục hợp lệ, có câu riêng trong Sổ Nhỏ.
 
 ## One-shots theo mùa (mỗi mùa 4–6)
@@ -33,18 +33,21 @@ Xuân: người trẻ. Hạ: nóng nảy, tranh chấp. Thu: thư cũ, người 
 Ngày vắng (mưa/tuyết): Đọc sách / Vá mái hiên / Đánh cờ một mình / Ngồi nhìn mưa — mỗi cái có hậu quả trễ thật (vá mái → event đông; đọc sách → mở choice thư sinh...).
 
 ## Sổ Nhỏ Dưới Núi
-Mỗi câu chuyện khép lại → unlock 1 câu. ~20 câu total. Xem lại được từ menu.
+Một số lựa chọn mở khóa câu đáng nhớ. Hiện có 28 câu; xem lại được từ menu.
 
 ## Sân tiểu viện
 Vật xuất hiện từ chuyện đã qua (kiếm gỗ treo hiên, bàn cờ đá, chum nước, cây mai, con mèo...). Click vật → 1 dòng nhớ lại.
 
 ## Epilogue
-Mỗi arc 2–4 kết cục ngắn + 1 đoạn tổng theo chỉ số trội. Kết bằng: "Mùa xuân năm sau, tuyết tan sớm." → nút "Qua thêm một năm nữa" (NG+ giữ Sổ Nhỏ — v2).
+Mỗi arc có 2–4 kết cục ngắn + 1 đoạn tổng theo chỉ số trội. Nút "Qua thêm một năm nữa" xóa save hiện tại và bắt đầu lại từ đầu.
 
 ## Tone chữ (bất di bất dịch)
 - Không thuật ngữ tu tiên đao to búa lớn. Không giải thích bài học — người chơi tự nhận.
 - Result text mẫu: "Thiếu niên ôm kiếm gỗ rời đi. Ngoài sân, lá trúc rơi rất chậm."
 
 ## Files
-- `index.html` / `style.css` / `game.js` — engine + UI
+- `core.js` — logic game thuần, dùng chung cho browser và simulator
+- `boot.js` / `index.html` / `style.css` — day loop và UI DOM
+- `ink/scene.js` / `ink/scene.css` — scene painted, NPC, vật, thời tiết và hiệu ứng
+- `audio.js` — ambient và SFX sinh bằng WebAudio
 - `data/arcs.js`, `data/events.js`, `data/quotes.js`, `data/epilogue.js` — content

@@ -584,6 +584,7 @@
       });
     }
     $("#modal").classList.remove("hidden");
+    $("#modal").setAttribute("aria-hidden", "false");
   }
 
   function openCourtyard() {
@@ -623,6 +624,7 @@
       });
     }
     $("#modal").classList.remove("hidden");
+    $("#modal").setAttribute("aria-hidden", "false");
   }
 
   function resetGame() {
@@ -714,11 +716,13 @@
     save();
 
     el.classList.remove("hidden");
+    el.setAttribute("aria-hidden", "false");
     let closed = false;
     function dismiss() {
       if (closed) return;
       closed = true;
       el.classList.add("hidden");
+      el.setAttribute("aria-hidden", "true");
       if (typeof Ambient !== "undefined") Ambient.play("menu");
       done();
     }
@@ -753,8 +757,10 @@
     const coach = $("#coach");
     if (!coach) return;
     coach.classList.remove("hidden");
+    coach.setAttribute("aria-hidden", "false");
     function dismiss() {
       coach.classList.add("hidden");
+      coach.setAttribute("aria-hidden", "true");
       try { localStorage.setItem("tieuvien_coached_v12", "1"); } catch (e) {}
       if (typeof Ambient !== "undefined") Ambient.play("menu");
     }
@@ -769,11 +775,16 @@
     $("#btn-journal").onclick = openJournal;
     $("#btn-courtyard").onclick = openCourtyard;
     $("#btn-reset").onclick = resetGame;
-    $("#modal-close").onclick = () => { if (typeof Ambient !== "undefined") Ambient.play("cancel"); $("#modal").classList.add("hidden"); };
+    $("#modal-close").onclick = () => {
+      if (typeof Ambient !== "undefined") Ambient.play("cancel");
+      $("#modal").classList.add("hidden");
+      $("#modal").setAttribute("aria-hidden", "true");
+    };
     $("#modal").onclick = e => {
       if (e.target.id === "modal") {
         if (typeof Ambient !== "undefined") Ambient.play("cancel");
         $("#modal").classList.add("hidden");
+        $("#modal").setAttribute("aria-hidden", "true");
       }
     };
     $("#next-day").onclick = onNextButton;

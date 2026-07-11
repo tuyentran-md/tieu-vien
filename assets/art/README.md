@@ -19,10 +19,11 @@ Generated with the built-in Codex image generation tool.
   - Earlier mood frame with a boy near the gate.
   - Do not use as a generic scene background because the character is baked into the image.
 
-## Next Asset Pass
+## Overlay Assets
 
-Keep the clean background stable. Add future assets as overlays:
+The clean background stays stable. Runtime overlays now live in:
 
-- NPC cutouts/sprite sheets.
-- Seasonal clean plates if CSS tone is not enough.
-- Event overlays for chess table, letter, rain shelter, snow, and courtyard objects.
+- `fig/` — transparent painted NPC cutouts used by `ink/scene.js`.
+- `items/` — courtyard objects and quiet-day traces used by `ink/scene.js`.
+
+Season and weather still use CSS tone/particles. Add separate clean plates only if those effects stop being sufficient.

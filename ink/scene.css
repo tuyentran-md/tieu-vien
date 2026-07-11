@@ -243,6 +243,15 @@ svg .ground-far, svg .ground-near, svg .fol-a, svg .fol-b { transition: fill 1.6
 }
 #it-ban_co img, #fx-danh_co_mot_minh img { filter: saturate(.62) contrast(.82) brightness(.82); }
 .ink-item.on { opacity: .72; pointer-events: auto; cursor: pointer; }
+.ink-item.on::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: max(100%, 40px);
+  height: max(100%, 40px);
+  transform: translate(-50%, -50%);
+}
 .ink-item:hover { opacity: 1; transform: translateY(-1px); }
 .yi.pop { animation: ink-item-pop 1.8s ease both; }
 @keyframes ink-item-pop {
@@ -252,7 +261,7 @@ svg .ground-far, svg .ground-near, svg .fol-a, svg .fol-b { transition: fill 1.6
 }
 .yf { opacity: 0; transition: opacity 1s; pointer-events: none; }
 .yf.on { opacity: 1; }
-.ink-item.yf.on { opacity: .6; }
+.ink-item.yf.on { opacity: .6; pointer-events: none; }
 .cat-tail { transform-origin: left center; animation: ink-tail 4s ease-in-out infinite; }
 @keyframes ink-tail { 0%,100% { transform: rotate(0); } 50% { transform: rotate(-14deg); } }
 
@@ -313,8 +322,9 @@ svg .ground-far, svg .ground-near, svg .fol-a, svg .fol-b { transition: fill 1.6
 #epilogue .fx-snow { background: #c6ccd2; opacity: .7; }
 
 @media (prefers-reduced-motion: reduce) {
-  .ink-mist, .fx-p, .ink-steam, .lamp, .cat-tail, .stride, .breathe { animation: none !important; }
-  #ink-npc g.walker { transition: none; }
+  .ink-mist, .fx-p, .ink-steam, .lamp, .cat-tail, .stride, .breathe,
+  .npc-img, .yi.pop, .ink-memory { animation: none !important; }
+  #ink-npc { transition: none !important; }
 }
 
 @media (max-width: 560px) {

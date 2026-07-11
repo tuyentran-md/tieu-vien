@@ -6,9 +6,17 @@ const C = createCore({ ARCS, ARC_STARTS, SEASON_EVENTS, EMPTY_DAY, QUOTES, ITEMS
 const S = C.newState(); const log = [];
 for (; S.day <= C.TOTAL_DAYS; S.day++) {
   const t = C.resolveNode(S, C.pickToday(S));
-  const vis = C.visibleChoices(S, t.node);
-  log.push(`d${S.day} ${t.id} choices=${vis.length}`);
-  C.applyChoice(S, vis[0]);
+  S.beat = 0;
+  let choices = 0;
+  for (;;) {
+    const vis = C.visibleChoices(S, t.node);
+    choices += vis.length;
+    if (!vis.length) throw new Error(`d${S.day} ${t.id}: no visible choice at beat ${S.beat}`);
+    C.applyChoice(S, vis[0]);
+    if (C.isFinalBeat(t.node, S)) break;
+    S.beat += 1;
+  }
+  log.push(`d${S.day} ${t.id} visible choices=${choices}`);
 }
 log.push('EPILOGUE ' + C.epilogueParas(S).length + ' paras; ' + C.statsLine(S));
 document.getElementById('out').textContent = log.join('\n');

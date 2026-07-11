@@ -7,7 +7,7 @@
 //   beats: [ {paras,choices}, {paras,choices}, ... ]
 // Mỗi nhịp là một lượt trong CÙNG một ngày (quan sát → trò chuyện → quyết định).
 // Nhịp giữa: chọn xong hiện result + nút "Lặng nghe tiếp…" để sang nhịp kế.
-// Nhịp CUỐI mới kết ngày (result + "Qua ngày"): đặt schedule/kill/item quan trọng ở đây.
+// Nhịp CUỐI mới kết ngày (result + nút kết ngày): đặt schedule/kill/item quan trọng ở đây.
 // Nhịp giữa nên chỉ effects nhỏ (dựng không khí), không schedule. Xem moc_1 làm mẫu.
 //
 // Giọng văn: hình ảnh đi trước, kết luận nhường cho người chơi.

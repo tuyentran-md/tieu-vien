@@ -355,10 +355,10 @@
 
   // hotspots: [id, left%, top%, width%, height%]
   const HOTS = [
-    ["tree", 0, 5, 25, 76],
-    ["gate", 6, 38, 24, 51],
-    ["jar", 52, 58, 12, 22],
-    ["porch", 66, 38, 32, 48],
+    ["tree", 0, 5, 25, 76, "Chạm dưới gốc cây"],
+    ["gate", 6, 38, 24, 51, "Chạm gần cổng"],
+    ["jar", 52, 58, 12, 22, "Chạm vào chum nước"],
+    ["porch", 66, 38, 32, 48, "Chạm vào bậc hiên"],
   ];
 
   const ITEM_IDS = ["kiem_go_hien", "ban_co", "quan_co_khuyet", "buc_thu", "cay_mai", "la_de", "con_meo"];
@@ -394,7 +394,7 @@
       + '<div class="ink-fx"></div><div class="ink-memory"></div><div class="ink-steam"></div>'
       + '<div class="ink-dusk"></div>'
       + '<div class="ink-hots">' + HOTS.map(function (h) {
-          return '<button class="ink-hot" data-hot="' + h[0] + '" style="left:' + h[1] + '%;top:' + h[2]
+          return '<button class="ink-hot" data-hot="' + h[0] + '" aria-label="' + h[5] + '" style="left:' + h[1] + '%;top:' + h[2]
             + '%;width:' + h[3] + '%;height:' + h[4] + '%"><span class="dot"></span></button>';
         }).join("")
       + '<button class="ink-hot ink-npc-hot" data-hot="npc" aria-label="Mở lời với khách" '
@@ -413,7 +413,7 @@
 
     // vai đã có ảnh painted (grow dần khi Codex xuất thêm); còn lại fallback SVG
     const FIG_BASE = "assets/art/fig/";
-    const FIG_IMG = { boy: 1, scholar: 1, oldman2: 1, child: 1, monk: 1,
+    const FIG_IMG = { boy: 1, scholar: 1, oldman: 1, oldman2: 1, child: 1, monk: 1,
       swordsman: 1, woman: 1, oldwoman: 1, trader: 1, villager: 1, master: 1 };
     function setFigure(role) {
       const imgRole = role === "traveler" ? "master" : role;
@@ -432,6 +432,7 @@
     let curSeason = "xuan", curWeather = "";
     let npcRun = 0, arriveTimer = null, leaveTimer = null, walkTimer = null;
     let pendingArrive = null; // {run, role, cb} — để tap "giục" khách vào sân
+    const reduceMotion = !!(root.matchMedia && root.matchMedia("(prefers-reduced-motion: reduce)").matches);
 
     function emit(id) { if (tapCb) tapCb(id); }
     function itemDomId(id) { return id === "buc_thu_vodanh" ? "buc_thu" : id; }
@@ -575,7 +576,7 @@
         walkTimer = setTimeout(function () {
           if (run !== npcRun) return;
           place(POS.yard, .95);
-          arriveTimer = setTimeout(settle, 6400);
+          arriveTimer = setTimeout(settle, reduceMotion ? 80 : 6400);
         }, 60);
       },
       // tap vào bóng người đang đi: khách vào sân ngay, khỏi đợi
@@ -599,7 +600,7 @@
         else { place(POS.gate, 1); }
         leaveTimer = setTimeout(function () {
           if (run === npcRun) npcG.classList.remove("on", "walking");
-        }, 5400);
+        }, reduceMotion ? 80 : 5400);
       },
       setPhase: function (p) {
         rootEl.dataset.phase = p;

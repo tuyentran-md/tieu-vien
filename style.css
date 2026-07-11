@@ -204,13 +204,13 @@ header nav a {
   border-radius: 14px;
   cursor: pointer;
   color: rgba(255,248,232,.82);
-  min-height: 38px;
+  min-height: 40px;
   padding: .32rem .7rem;
   backdrop-filter: blur(6px);
   text-decoration: none;
 }
 header nav button.btn-icon,
-header nav a.btn-icon { border-radius: 999px; font-size: 1rem; padding: .3rem .55rem; }
+header nav a.btn-icon { min-width: 40px; border-radius: 999px; font-size: 1rem; padding: .3rem .55rem; }
 header nav a.music-link {
   color: #f1d58f;
   border-color: rgba(241,213,143,.28);
@@ -623,5 +623,10 @@ header nav button:hover .nav-cap { color: rgba(255,248,232,.72); }
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .fade-in { animation: none; }
+  *, *::before, *::after {
+    scroll-behavior: auto !important;
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+  }
 }
