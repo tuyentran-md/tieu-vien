@@ -527,13 +527,16 @@
   }
 
   function showEpilogue() {
+    const audioReady = !autoplayOn && typeof Ambient !== "undefined" && !Ambient.isOn()
+      ? Ambient.bootEpilogue()
+      : null;
     S.phase = "end";
     save();
     $("#title-screen").classList.add("hidden");
     $("#game").classList.add("hidden");
     $("#epilogue").classList.remove("hidden");
     document.body.dataset.season = "dong";
-    if (typeof Ambient !== "undefined" && Ambient.isOn()) Ambient.setEpilogue();
+    if (typeof Ambient !== "undefined" && Ambient.isOn() && !audioReady) Ambient.setEpilogue();
 
     if (!$("#epilogue .ink-fx")) {
       const fxc = document.createElement("div");
@@ -670,7 +673,11 @@
 
   function syncSoundButton() {
     const btn = $("#btn-sound");
-    btn.classList.toggle("muted", !Ambient.isOn());
+    const enabled = Ambient.isOn();
+    const running = Ambient.isRunning ? Ambient.isRunning() : enabled;
+    btn.classList.toggle("muted", !enabled || !running);
+    btn.title = enabled && running ? "Tắt âm thanh" : "Chạm để bật âm thanh";
+    btn.setAttribute("aria-label", btn.title);
   }
 
   // ---- interlude: thẻ chương ở ngày đầu mỗi mùa ----
@@ -733,6 +740,10 @@
 
   function enterGame(opts) {
     const unlockAudio = !opts || opts.unlockAudio !== false;
+    // Audio phải được mở khóa trước mọi dựng scene/layout để giữ user activation trên iOS.
+    const audioReady = unlockAudio && typeof Ambient !== "undefined"
+      ? Ambient.boot(season(), weather())
+      : null;
 
     $("#title-screen").classList.add("hidden");
     $("#epilogue").classList.add("hidden");
@@ -744,8 +755,8 @@
 
     if (!ensureDay()) return;
 
-    if (unlockAudio && Ambient) Ambient.boot(season(), weather());
     syncSoundButton();
+    if (audioReady && typeof audioReady.then === "function") audioReady.then(syncSoundButton);
     if (shouldInterlude()) showInterlude(maybeCoach);
     else maybeCoach();
   }
@@ -791,13 +802,32 @@
     $("#scene").onclick = handleTextTap;
     $("#btn-again").onclick = () => { localStorage.removeItem(SAVE_KEY); location.reload(); };
     $("#btn-sound").onclick = () => {
+      if (Ambient.isOn() && Ambient.isRunning && !Ambient.isRunning()) {
+        Ambient.ensure().then(ok => {
+          if (ok && S) {
+            if (S.phase === "end") Ambient.setEpilogue();
+            else Ambient.setScene(season(), weather());
+          }
+          syncSoundButton();
+        });
+        return;
+      }
       Ambient.toggle();
       if (Ambient.isOn() && S) {
         if (S.phase === "end") Ambient.setEpilogue();
         else Ambient.setScene(season(), weather());
       }
       syncSoundButton();
+      if (Ambient.isOn() && Ambient.ensure) Ambient.ensure().then(syncSoundButton);
     };
+
+    // Nếu browser chặn lần đầu, mọi cú chạm thật tiếp theo đều thử resume lại.
+    document.addEventListener("pointerdown", e => {
+      if (e.target.closest && e.target.closest("#btn-sound")) return;
+      if (Ambient.isOn() && Ambient.ensure && !Ambient.isRunning()) {
+        Ambient.ensure().then(syncSoundButton);
+      }
+    }, { capture: true });
 
     const saved = load();
     const begin = $("#btn-begin");

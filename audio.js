@@ -2,7 +2,7 @@
 
 const Ambient = (() => {
   let ac = null, master = null, on = false;
-  let windGain, rainGain, waterGain, padGain, chimeTimer = null, birdTimer = null, musicTimer = null;
+  let windGain, rainGain, waterGain, padGain, chimeTimer = null, birdTimer = null, musicTimer = null, musicIntroTimer = null;
   let padOscs = [];
   const PREF_KEY = "tieuvien_sound";
   const PAD_CHORDS = {
@@ -26,8 +26,13 @@ const Ambient = (() => {
   }
 
   function start() {
-    if (ac) { ac.resume(); return; }
-    ac = new (window.AudioContext || window.webkitAudioContext)();
+    if (ac) return resumeContext();
+    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+    if (!AudioContextClass) { on = false; return Promise.resolve(false); }
+    try { ac = new AudioContextClass(); }
+    catch (e) { on = false; return Promise.resolve(false); }
+    // Gọi resume ngay lập tức, trước khi tạo các buffer tương đối nặng bên dưới.
+    const initialResume = resumeContext();
     const comp = ac.createDynamicsCompressor();
     comp.threshold.value = -24;
     comp.knee.value = 16;
@@ -80,6 +85,25 @@ const Ambient = (() => {
       o.start();
       return o;
     });
+    return Promise.resolve(initialResume).then(ok => ok ? true : resumeContext());
+  }
+
+  // Resume ngay trong user gesture và phát một buffer im lặng để mở khóa iOS/WebKit.
+  function resumeContext() {
+    if (!ac) return Promise.resolve(false);
+    let resumed;
+    try { resumed = ac.state === "suspended" ? ac.resume() : Promise.resolve(); }
+    catch (e) { return Promise.resolve(false); }
+    return Promise.resolve(resumed).then(() => {
+      if (ac.state !== "running") return false;
+      try {
+        const source = ac.createBufferSource();
+        source.buffer = ac.createBuffer(1, 1, ac.sampleRate);
+        source.connect(master || ac.destination);
+        source.start(0);
+      } catch (e) {}
+      return true;
+    }).catch(() => false);
   }
 
   function setPad(season, gain) {
@@ -208,7 +232,7 @@ const Ambient = (() => {
   }
 
   function schedule(season, weather) {
-    clearInterval(chimeTimer); clearInterval(birdTimer); clearInterval(musicTimer);
+    clearInterval(chimeTimer); clearInterval(birdTimer); clearInterval(musicTimer); clearTimeout(musicIntroTimer);
     chimeTimer = null;
     // chim: sếp thích — Xuân/Hạ rộn, Thu thưa hơn một chút, Đông và mưa thì im
     if (season!=="dong" && weather!=="rain") {
@@ -252,7 +276,7 @@ const Ambient = (() => {
         setTimeout(() => softNote(root, season === "dong" ? .018 : .024, 4.6), 200 + Math.random() * 400);
       }
     };
-    setTimeout(playDrift, 700);
+    musicIntroTimer = setTimeout(playDrift, 700);
     // khoảng lặng giữa các câu cũng thay đổi, tránh cảm giác đếm nhịp
     const base = season === "ha" ? 8200 : 9000;
     const tick = () => {
@@ -274,7 +298,7 @@ const Ambient = (() => {
 
   function setEpilogue() {
     if (!ac || !on) return;
-    clearInterval(chimeTimer); clearInterval(birdTimer); clearInterval(musicTimer);
+    clearInterval(chimeTimer); clearInterval(birdTimer); clearInterval(musicTimer); clearTimeout(musicIntroTimer);
     const t = ac.currentTime;
     rainGain.gain.linearRampToValueAtTime(0, t+1.5);
     windGain.gain.linearRampToValueAtTime(.026, t+2);
@@ -290,9 +314,17 @@ const Ambient = (() => {
   // SFX tổng hợp — cùng chất liệu với ambient
   function play(name) {
     if (!on || !ac) return;
+    if (ac.state !== "running") {
+      resumeContext().then(ok => { if (ok) play(name); });
+      return;
+    }
     if (name === "accept") knock(170, .11);                    // chọn — một tiếng mõ mềm
     else if (name === "menu") tick(1900, .05, .05);            // lật/giở — tick giấy
     else if (name === "cancel") tick(760, .05, .07);           // gấp lại — tick trầm
+    else if (name === "start") {                               // xác nhận audio đã thực sự mở
+      bell(392, .024, 1.7);
+      setTimeout(() => bell(523.25, .016, 2.0), 180);
+    }
     else if (name === "quote") {                               // mở khóa — hai nốt bowl mềm
       bell(392, .018, 2.5);
       setTimeout(() => bell(523.25, .014, 2.8), 220);
@@ -308,14 +340,42 @@ const Ambient = (() => {
       clearInterval(chimeTimer);
       clearInterval(birdTimer);
       clearInterval(musicTimer);
+      clearTimeout(musicIntroTimer);
     }
     return on;
   }
   function enabledPref() { try { return localStorage.getItem(PREF_KEY) !== "0"; } catch(e){ return true; } }
-  function boot(season, weather) { // gọi sau user gesture đầu tiên
+  function boot(season, weather) { // gọi ngay trong user gesture đầu tiên
     if (!enabledPref()) { on = false; return false; }
-    on = true; start(); setScene(season, weather); return true;
+    on = true;
+    const ready = start();
+    setScene(season, weather);
+    return Promise.resolve(ready).then(ok => {
+      if (ok) play("start");
+      return ok;
+    });
   }
 
-  return { toggle, boot, setScene, setEpilogue, play, isOn: () => on };
+  function bootEpilogue() {
+    if (!enabledPref()) { on = false; return false; }
+    on = true;
+    const ready = start();
+    setEpilogue();
+    return Promise.resolve(ready).then(ok => {
+      if (ok) play("start");
+      return ok;
+    });
+  }
+
+  function ensure() {
+    if (!on) return Promise.resolve(false);
+    return ac ? resumeContext() : start();
+  }
+
+  return {
+    toggle, boot, bootEpilogue, ensure, setScene, setEpilogue, play,
+    isOn: () => on,
+    isRunning: () => !!(on && ac && ac.state === "running"),
+    state: () => !on ? "off" : (ac ? ac.state : "idle"),
+  };
 })();
