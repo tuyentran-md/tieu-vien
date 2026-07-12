@@ -678,6 +678,8 @@
     btn.classList.toggle("muted", !enabled || !running);
     btn.title = enabled && running ? "Tắt âm thanh" : "Chạm để bật âm thanh";
     btn.setAttribute("aria-label", btn.title);
+    const state = $("#sound-state");
+    if (state) state.textContent = enabled && running ? "Đang bật" : "Đang tắt";
   }
 
   // ---- interlude: thẻ chương ở ngày đầu mỗi mùa ----

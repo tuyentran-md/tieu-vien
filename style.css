@@ -211,6 +211,8 @@ header nav a {
 }
 header nav button.btn-icon,
 header nav a.btn-icon { min-width: 40px; border-radius: 999px; font-size: 1rem; padding: .3rem .55rem; }
+#btn-sound { gap: .08rem; }
+#sound-state { font-size: .52rem; font-weight: 500; line-height: 1; white-space: nowrap; color: rgba(255,248,232,.62); }
 header nav a.music-link {
   color: #f1d58f;
   border-color: rgba(241,213,143,.28);
