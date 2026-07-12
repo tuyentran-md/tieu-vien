@@ -808,6 +808,7 @@
             if (S.phase === "end") Ambient.setEpilogue();
             else Ambient.setScene(season(), weather());
           }
+          if (ok) Ambient.play("start");
           syncSoundButton();
         });
         return;
@@ -818,7 +819,12 @@
         else Ambient.setScene(season(), weather());
       }
       syncSoundButton();
-      if (Ambient.isOn() && Ambient.ensure) Ambient.ensure().then(syncSoundButton);
+      if (Ambient.isOn() && Ambient.ensure) {
+        Ambient.ensure().then(ok => {
+          if (ok) Ambient.play("start");
+          syncSoundButton();
+        });
+      }
     };
 
     // Nếu browser chặn lần đầu, mọi cú chạm thật tiếp theo đều thử resume lại.

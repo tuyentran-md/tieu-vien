@@ -267,7 +267,7 @@ const Ambient = (() => {
         const oct = (idx >= 3 && Math.random() < .5) ? 3 : 2;
         const f = scale[idx % scale.length] * oct;
         const dur = 2.0 + Math.random() * .9;
-        musicNote(f, season === "dong" ? .042 : .06, clock, dur);
+        musicNote(f, season === "dong" ? .06 : .085, clock, dur);
         // nhịp co giãn: có nốt liền, có nốt ngân
         clock += .46 + Math.random() * .5 + (n % 3 === 2 ? .3 : 0);
       });
@@ -322,8 +322,8 @@ const Ambient = (() => {
     else if (name === "menu") tick(1900, .05, .05);            // lật/giở — tick giấy
     else if (name === "cancel") tick(760, .05, .07);           // gấp lại — tick trầm
     else if (name === "start") {                               // xác nhận audio đã thực sự mở
-      bell(392, .024, 1.7);
-      setTimeout(() => bell(523.25, .016, 2.0), 180);
+      bell(392, .09, 1.5);
+      setTimeout(() => bell(523.25, .06, 1.8), 180);
     }
     else if (name === "quote") {                               // mở khóa — hai nốt bowl mềm
       bell(392, .018, 2.5);
