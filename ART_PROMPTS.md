@@ -2,7 +2,7 @@
 
 Mục tiêu: một bộ hình **đồng bộ một phong cách** để thay hết SVG. Tạo trong **một project GPT-image** (hoặc Midjourney/NanoBanana), giữ nguyên style anchor + seed để các hình ăn khớp với nền tranh đã có.
 
-Nền hiện dùng: `assets/art/courtyard-master-clean-xuan.png` — hãy đính kèm ảnh này làm **style reference** cho mọi lần tạo, để ánh sáng/màu/chất cọ khớp.
+Nền runtime dùng `courtyard-season-xuan.png` cho Xuân/Hạ và `courtyard-master-clean-xuan.png` cho Thu/Đông. Giữ biến đổi mùa vừa phải; không redraw cảnh quá tay.
 
 ---
 
@@ -30,7 +30,7 @@ Cỡ đề xuất: nhân vật 768×1024 (dọc), vật 768×768, nền 1920×10
 
 ## 1. NỀN (backgrounds)
 
-Đã có bản xuân. Nếu muốn 4 mùa rõ (khuyến nghị — để "một năm" cảm được):
+Prompt dưới đây chỉ là mốc nếu cần chỉnh tiếp; ưu tiên đổi tone nhẹ trên hai plate runtime hiện có:
 
 **Nền — khung chung**
 ```

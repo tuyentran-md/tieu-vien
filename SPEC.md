@@ -7,7 +7,7 @@ Contract for implementation. English for precision; in-game text is Vietnamese. 
 1. **`data/*.js` voice pass done (2026-07).** Mọi chỉnh sửa văn sau này phải giữ chuẩn giọng: hình ảnh trước, không đóng bài học trong result, choice là cử chỉ/câu nói; aphorism chỉ nằm trong Sổ Nhỏ hoặc lời thoại. Structure (flags/effects/schedule) không đổi tùy tiện.
 2. **`core.js` is the only game logic.** UI consumes `createCore(...)`; never reimplement pickToday/condOk/applyChoice. `node test/sim.js` must stay green (303 playthroughs).
 3. **Static site, no build step, no Phaser.** Plain `<script>` tags, runs from `python3 -m http.server`. (Legacy `vendor/`, `px/`, `game.js`, `assets/ninja/` đã xóa.)
-4. **The scene = painted bitmap plate + DOM/PNG/SVG/CSS overlays.** Nền: `assets/art/courtyard-master-clean-xuan.png` (season/weather = CSS tone + particles). NPC và phần lớn yard items dùng transparent PNG; SVG chỉ là fallback/legacy scenery trong `ink/scene.js`. All text = DOM, serif stack, full diacritics.
+4. **The scene = painted bitmap plate + DOM/PNG/SVG/CSS overlays.** Xuân dùng plate sáng `courtyard-season-xuan.png`; Hạ dùng cùng plate với tone trầm nhẹ; Thu dùng plate cũ `courtyard-master-clean-xuan.png`; Đông dùng plate cũ làm lạnh nhẹ + tuyết động. Không đổi cảnh quá tay giữa mùa. NPC và phần lớn yard items dùng transparent PNG; SVG chỉ là fallback/legacy scenery trong `ink/scene.js`. All text = DOM, serif stack, full diacritics.
 5. **Save compatibility:** localStorage key `tieuvien_save_v1`, shape from `core.newState()`. Persist after every mutation. Reload mid-day must NOT reroll the day.
 6. No new dependencies, no runtime network requests (Google Fonts allowed).
 
