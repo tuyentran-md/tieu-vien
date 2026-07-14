@@ -1,6 +1,6 @@
 # The Courtyard Below the Mountain
 
-*Vietnamese title: Dưới Núi Có Một Tiểu Viện*
+*Vietnamese title: Tiểu Viện Dưới Núi*
 
 ## English
 
@@ -27,7 +27,7 @@ Then open `http://localhost:8000/`.
 
 Bản public chạy trên GitHub Pages, không cần tài khoản, đăng nhập, backend hay cài đặt: bất kỳ ai có trình duyệt hiện đại và đường link đều chơi được.
 
-*Dưới Núi Có Một Tiểu Viện* là một game kể chuyện tĩnh lặng bằng tiếng Việt. Bạn giữ một tiểu viện dưới chân núi. Người qua đường ghé vào, kể một đoạn đời, rồi đi tiếp. Bạn nghe, đáp lại, giữ lại, hoặc buông xuống. Những lựa chọn nhỏ sẽ quay về qua bốn mùa.
+*Tiểu Viện Dưới Núi* là một game kể chuyện tĩnh lặng bằng tiếng Việt. Bạn giữ một tiểu viện dưới chân núi. Người qua đường ghé vào, kể một đoạn đời, rồi đi tiếp. Bạn nghe, đáp lại, giữ lại, hoặc buông xuống. Những lựa chọn nhỏ sẽ quay về qua bốn mùa.
 
 Một năm trong game có 48 ngày. Tiến trình được lưu trong trình duyệt bằng `localStorage`.
 Save nằm riêng trên từng trình duyệt/thiết bị; xóa dữ liệu trình duyệt hoặc đổi máy sẽ không mang tiến trình theo.
