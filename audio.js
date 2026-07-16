@@ -6,10 +6,10 @@ const Ambient = (() => {
   let padOscs = [];
   const PREF_KEY = "tieuvien_sound";
   const PAD_CHORDS = {
-    xuan: [196, 261.63, 329.63, 392],
-    ha: [174.61, 220, 293.66, 349.23],
-    thu: [196, 246.94, 293.66, 392],
-    dong: [164.81, 196, 246.94, 329.63],
+    xuan: [196, 261.63, 329.63, 392],       // G C E G
+    ha:   [174.61, 220, 261.63, 293.66],    // F A C D — khớp scale hạ mới
+    thu:  [220, 261.63, 293.66, 392],       // A C D G
+    dong: [164.81, 196, 246.94, 293.66],    // E G B D — Em7
   };
 
   function noiseBuffer(seconds, brown) {
@@ -132,10 +132,17 @@ const Ambient = (() => {
   }
   const PENTA = [440, 523.25, 587.33, 659.25, 783.99];
   const PENTA_LOW = {
-    xuan: [196, 220, 261.63, 293.66, 329.63],
-    ha: [174.61, 220, 246.94, 293.66, 329.63],
-    thu: [196, 246.94, 293.66, 329.63, 392],
-    dong: [164.81, 196, 246.94, 293.66, 329.63],
+    xuan: [196, 220, 261.63, 293.66, 329.63],    // G A C D E — ngũ cung chuẩn (giữ nguyên)
+    ha:   [174.61, 196, 220, 261.63, 293.66],    // F G A C D — bỏ quãng tritone F–B chối tai
+    thu:  [220, 261.63, 293.66, 349.23, 392],    // A C D F G — trầm ấm, hay đi xuống
+    dong: [164.81, 196, 220, 246.94, 293.66],    // E G A B D — Em ngũ cung, lạnh và thưa
+  };
+  // Màu nhạc mỗi mùa: hạ rộn-nhanh, thu chậm-thả xuống, đông trầm-thưa. Xuân = mốc gốc.
+  const SEASON_FEEL = {
+    xuan: { vol: .085, soft: .024, gap: 9000,  step: 1.0,  reverse: .28, lift: .5 },
+    ha:   { vol: .082, soft: .022, gap: 7800,  step: .88,  reverse: .3,  lift: .62 },
+    thu:  { vol: .076, soft: .022, gap: 9800,  step: 1.18, reverse: .5,  lift: .38 },
+    dong: { vol: .056, soft: .016, gap: 11500, step: 1.36, reverse: .2,  lift: .3, sparse: 1 },
   };
 
   function softNote(freq, vol, dur) {
@@ -240,6 +247,7 @@ const Ambient = (() => {
       birdTimer = setInterval(() => { if (Math.random()<bp) chirp(); }, season==="thu" ? 7200 : 6000);
     }
     const scale = PENTA_LOW[season] || PENTA_LOW.xuan;
+    const feel = SEASON_FEEL[season] || SEASON_FEEL.xuan;
     // Nhiều câu nhạc, dài ngắn khác nhau, để giai điệu không lặp một kiểu.
     const motifs = [
       [0, 2, 4, 3, 2, 1],
@@ -258,27 +266,30 @@ const Ambient = (() => {
       let mi = Math.floor(Math.random() * motifs.length);
       if (mi === lastMotif) mi = (mi + 1) % motifs.length;
       lastMotif = mi;
-      const motif = motifs[mi];
+      let motif = motifs[mi];
+      // đông: rút bớt nốt cho câu nhạc thưa và lạnh hơn
+      if (feel.sparse && motif.length > 4) motif = motif.filter((_, k) => k % 3 !== 2);
       // đôi lúc chơi từ cuối lên đầu, để cùng một câu nghe vẫn khác
-      const seq = Math.random() < .28 ? motif.slice().reverse() : motif;
+      const seq = Math.random() < feel.reverse ? motif.slice().reverse() : motif;
       let clock = 0;
       seq.forEach((idx, n) => {
         // quãng lên cao thất thường thay vì đều đặn
-        const oct = (idx >= 3 && Math.random() < .5) ? 3 : 2;
+        const oct = (idx >= 3 && Math.random() < feel.lift) ? 3 : 2;
         const f = scale[idx % scale.length] * oct;
-        const dur = 2.0 + Math.random() * .9;
-        musicNote(f, season === "dong" ? .06 : .085, clock, dur);
+        // step co giãn theo mùa: hạ nhặt, thu-đông ngân dài hơn
+        const dur = (2.0 + Math.random() * .9) * feel.step;
+        musicNote(f, feel.vol, clock, dur);
         // nhịp co giãn: có nốt liền, có nốt ngân
-        clock += .46 + Math.random() * .5 + (n % 3 === 2 ? .3 : 0);
+        clock += (.46 + Math.random() * .5 + (n % 3 === 2 ? .3 : 0)) * feel.step;
       });
       if (Math.random() < .6) {
         const root = scale[seq[0] % scale.length] * 2;
-        setTimeout(() => softNote(root, season === "dong" ? .018 : .024, 4.6), 200 + Math.random() * 400);
+        setTimeout(() => softNote(root, feel.soft, 4.6), 200 + Math.random() * 400);
       }
     };
     musicIntroTimer = setTimeout(playDrift, 700);
     // khoảng lặng giữa các câu cũng thay đổi, tránh cảm giác đếm nhịp
-    const base = season === "ha" ? 8200 : 9000;
+    const base = feel.gap;
     const tick = () => {
       playDrift();
       musicTimer = setTimeout(tick, base + Math.random() * 3200);

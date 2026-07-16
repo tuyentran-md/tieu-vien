@@ -389,6 +389,55 @@ header nav button:hover .nav-cap { color: rgba(255,248,232,.72); }
 }
 #next-day.btn-continue:hover { background: rgba(255,248,232,.16); color: var(--wash); }
 
+/* ---- Sổ tay: nút ghi khoảnh khắc trong khung thoại ---- */
+.keep-row { margin-top: .85rem; }
+.keep-row.hidden { display: none; }
+.keep-btn {
+  font-family: var(--font-ui); font-size: .82rem; font-weight: 600;
+  color: #f1d58f;
+  background: rgba(28,26,21,.34);
+  border: 1px solid rgba(241,213,143,.34);
+  border-radius: 999px;
+  padding: .42rem 1.05rem; cursor: pointer;
+  text-shadow: 0 1px 8px rgba(0,0,0,.42);
+  transition: background .25s, border-color .25s, color .25s;
+}
+.keep-btn:hover { background: rgba(241,213,143,.16); border-color: rgba(241,213,143,.62); }
+.keep-btn.kept {
+  color: rgba(255,248,232,.62);
+  border-color: rgba(255,248,232,.2);
+  background: transparent;
+  cursor: default;
+}
+
+/* ---- Sổ tay: nội dung trong modal ---- */
+.nb-actions { display: flex; flex-wrap: wrap; gap: .6rem; margin-bottom: 1.35rem; }
+.nb-export {
+  font-family: var(--font-ui); font-size: .86rem; font-weight: 600;
+  color: var(--ink); background: none;
+  border: 1px solid var(--accent); border-radius: 999px;
+  padding: .48rem 1.2rem; cursor: pointer;
+  transition: background .25s, color .25s;
+}
+.nb-export:hover { background: var(--accent); color: var(--paper); }
+.nb-export:disabled { opacity: .4; cursor: default; }
+.nb-entry { margin-bottom: 1.3rem; padding-bottom: 1.15rem; border-bottom: 1px solid var(--line); }
+.nb-entry:last-child { border-bottom: none; margin-bottom: 0; }
+.nb-meta {
+  font-family: var(--font-ui); font-size: .72rem; font-weight: 600;
+  letter-spacing: .05em; text-transform: uppercase;
+  color: var(--accent); margin-bottom: .42rem;
+}
+.nb-text { font-style: italic; line-height: 1.72; margin-bottom: .6rem; color: var(--ink); }
+.nb-card-btn {
+  font-family: var(--font-ui); font-size: .78rem;
+  color: var(--ink-dim); background: none;
+  border: 1px solid var(--line); border-radius: 6px;
+  padding: .34rem .82rem; cursor: pointer;
+  transition: border-color .25s, color .25s;
+}
+.nb-card-btn:hover { color: var(--ink); border-color: var(--accent); }
+
 /* ---- onboarding ---- */
 #coach {
   position: absolute; inset: 0; z-index: 12;

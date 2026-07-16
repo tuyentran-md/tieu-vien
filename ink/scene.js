@@ -363,17 +363,19 @@
 
   const ITEM_IDS = ["kiem_go_hien", "ban_co", "quan_co_khuyet", "buc_thu", "cay_mai", "la_de", "con_meo"];
   const FLAG_IDS = ["va_maihien", "doc_sach", "danh_co_mot_minh"];
+  // Vị trí theo lời kể: bàn cờ đá nằm DƯỚI GỐC CÂY (mé trái tranh),
+  // sách/lá/thư nằm trên sàn hiên — không thả giữa lối cửa.
   const IMG_ITEMS = [
-    ["it-ban_co", "assets/art/items/item-ban_co.png", 79.8, 69.6, 14.5, 16.0],
-    ["it-quan_co_khuyet", "assets/art/items/item-quan_co_khuyet.png", 87.0, 73.6, 2.5, 3.8],
+    ["it-ban_co", "assets/art/items/item-ban_co.png", 2.5, 70.0, 13.0, 15.0],
+    ["it-quan_co_khuyet", "assets/art/items/item-quan_co_khuyet.png", 7.6, 72.4, 2.4, 3.6],
     ["it-kiem_go_hien", "assets/art/items/item-kiem_go_hien.png", 63.8, 56.0, 7.2, 17.2],
-    ["it-buc_thu", "assets/art/items/item-buc_thu.png", 77.6, 66.2, 7.2, 10.8],
-    ["it-la_de", "assets/art/items/item-la_de.png", 84.4, 67.4, 7.6, 7.6],
+    ["it-buc_thu", "assets/art/items/item-buc_thu.png", 77.2, 68.2, 6.8, 10.2],
+    ["it-la_de", "assets/art/items/item-la_de.png", 74.2, 71.0, 4.8, 4.8],
     ["it-con_meo", "assets/art/items/item-con_meo.png", 88.3, 66.2, 8.0, 10.6],
   ];
   const IMG_FLAGS = [
-    ["fx-doc_sach", "assets/art/items/fx-doc_sach.png", 82.2, 66.2, 7.6, 10.6],
-    ["fx-danh_co_mot_minh", "assets/art/items/item-ban_co.png", 79.8, 69.6, 14.5, 16.0],
+    ["fx-doc_sach", "assets/art/items/fx-doc_sach.png", 70.6, 68.6, 6.6, 9.2],
+    ["fx-danh_co_mot_minh", "assets/art/items/item-ban_co.png", 2.5, 70.0, 13.0, 15.0],
   ];
 
   function imageLayerMarkup() {

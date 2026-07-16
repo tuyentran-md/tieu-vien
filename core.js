@@ -24,6 +24,7 @@
       usedEvents: [],
       journal: [],   // quote ids, in unlock order
       items: [],     // item ids
+      notebook: [],  // {text,label,day,season} — do người chơi CHỦ ĐỘNG ghi lại
       current: null, // {kind,id} — node đã rút cho hôm nay (chống reroll khi reload)
       chosen: null,  // {result,quote,item} — đã chọn xong, đợi nút kết ngày/tiếp
       beat: 0,       // nhịp hiện tại trong ngày (node nhiều nhịp)
@@ -179,12 +180,62 @@
   function hudLine(S)   { return SEASON_NAMES[seasonOf(S.day)] + " · Ngày " + S.day; }
   function statsLine(S) { return "Sổ Nhỏ: " + S.journal.length + " câu · Vật trong sân: " + S.items.length; }
 
+  // ---- Sổ tay: người chơi chủ động giữ lại một khoảnh khắc ----
+  // entry: {text, label?, day?}. Chống trùng theo text. Trả về true nếu vừa thêm.
+  function keepNote(S, entry) {
+    if (!S.notebook) S.notebook = [];
+    const text = ((entry && entry.text) || "").replace(/\s+/g, " ").trim();
+    if (!text) return false;
+    if (S.notebook.some(n => n.text === text)) return false;
+    const day = entry && entry.day != null ? entry.day : S.day;
+    S.notebook.push({
+      text: text,
+      label: ((entry && entry.label) || "").trim(),
+      day: day,
+      season: seasonOf(day),
+    });
+    return true;
+  }
+  function hasNote(S, text) {
+    const t = (text || "").replace(/\s+/g, " ").trim();
+    return !!(S.notebook && S.notebook.some(n => n.text === t));
+  }
+
+  // Xuất cả cuốn "sổ nhỏ" ra Markdown: khoảnh khắc tự ghi + câu đã ghi + vật đã giữ.
+  function notebookMarkdown(S) {
+    const nb = S.notebook || [], L = [];
+    L.push("# Sổ Nhỏ — Tiểu Viện Dưới Núi", "");
+    L.push("> Những khung hình và câu chữ giữ lại trên đường qua một năm dưới núi.", "");
+    if (nb.length) {
+      L.push("## Khoảnh khắc đã ghi", "");
+      nb.forEach(n => {
+        L.push("### " + (SEASON_NAMES[n.season] || "") + " · Ngày " + n.day + (n.label ? " · " + n.label : ""), "");
+        L.push("> " + n.text, "");
+      });
+    }
+    if (S.journal && S.journal.length) {
+      L.push("## Câu đã ghi", "");
+      S.journal.forEach(q => { if (D.QUOTES[q]) L.push("- “" + D.QUOTES[q] + "”"); });
+      L.push("");
+    }
+    if (S.items && S.items.length) {
+      L.push("## Vật đã giữ", "");
+      S.items.forEach(id => { const it = D.ITEMS[id]; if (it) L.push("- **" + it.name + "** — " + it.memory); });
+      L.push("");
+    }
+    L.push("---", "");
+    L.push("_" + nb.length + " khoảnh khắc · " + (S.journal ? S.journal.length : 0) + " câu · "
+      + (S.items ? S.items.length : 0) + " vật · Ngày " + S.day + "/" + TOTAL_DAYS + "_");
+    return L.join("\n");
+  }
+
   return {
     TOTAL_DAYS, DAYS_PER_SEASON, SEASONS, SEASON_NAMES, EMPTY_WEATHER,
     newState, seasonOf, hasFlag, condOk, seededRand, weatherOf, dominantStat, banTamKey,
     pickToday, resolveNode, visibleParas, visibleChoices, applyChoice,
     beatOf, beatCount, isFinalBeat,
     epilogueParas, yardLine, hudLine, statsLine,
+    keepNote, hasNote, notebookMarkdown,
     data: D,
   };
 });
